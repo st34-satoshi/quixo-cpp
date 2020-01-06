@@ -5,7 +5,7 @@
 // 0: empty, 1: o, 2: x
 using namespace std;
 typedef long long ll;
-typedef unordered_map<int, int> stateMap; // TODO: int -> ll
+typedef unordered_map<ll, int> stateMap;
 const int boardSize = 5;
 // i=0; bottom
 // j=0; right
@@ -22,9 +22,13 @@ void init(){
     cellNumbers = cells;
 }
 
-ll getCellNumber(int row, int column, int state){
-    // todo:
-    return state & cellNumbers[row][column];
+ll getCellNumber(int row, int column, ll state){
+    return cellNumbers[row][column] & state;
+}
+
+int getShiftedCellNumber(int row, int column, ll state){
+    ll cellNumber = getCellNumber(row, column, state);
+    return int(cellNumber >> (row*boardSize + column)*2);
 }
 
 stateMap *createNextStates(int presentState, bool chooseEmpty){
@@ -36,7 +40,8 @@ stateMap *createNextStates(int presentState, bool chooseEmpty){
     auto *nextStates = new stateMap;
     for(int i=0;i<boardSize;i++){
         for(int j=0;j<boardSize;j++){
-            if (chooseEmpty){
+            // todo
+            if (chooseEmpty && getCellNumber(i, j, presentState)){
                 // check this cell is empty?
             }else{
                 // check this cell is o
@@ -83,28 +88,10 @@ int createTree(){
     return 0;
 }
 
-int main(){
-    // 4*4
-    cout << "start initialize h" << endl;
-    init();
-    cout << "start creating tree" << endl;
-    for(int i=0;i<boardSize;i++){
-        for(int j=0;j<boardSize;j++){
-            cout << bitset<50>(cellNumbers.at(i).at(j)) << ",";
-        }
-    }
-    ll big = 3<<24;
-    cout << endl;
-    cout << big << endl;
-    big = 3ll;
-    for (int i=0;i<25;i++){
-        cout << big << ",";
-        big *= 4ll;
-    }
-    createTree();
-    ll test;
-    test = 7ll;
-    cout << endl;
-    cout << getCellNumber(0, 1, test) << endl;
-    return 0;
-}
+//int main(){
+//    // 4*4
+//    cout << "start initialize h" << endl;
+//    init();
+//    cout << "start creating tree" << endl;
+//    return 0;
+//}
