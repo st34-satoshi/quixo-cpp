@@ -39,12 +39,24 @@ void testMoveLeft(){
     }
 }
 
+void testMoveRight(){
+    cout << "start move right test" << endl;
+    int r;
+    for(int i=0;i<510;i++){
+        for (int j=0;j<boardSize;j++){
+            r = moveRight(i, j);
+            cout << bitset<10>(i) << ", " << j << ", " << bitset<10>(r) << endl;
+        }
+    }
+}
+
 int main(){
     cout << "test" << endl;
     init();
 //    testInitialize();
 //    testGetCellNumber();
-    testMoveLeft();
+//    testMoveLeft();
+    testMoveRight();
 
     return 0;
 }
