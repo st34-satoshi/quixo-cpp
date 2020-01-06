@@ -35,6 +35,24 @@ void init(){
     rowNumbers = rows;
 }
 
+int moveLeft(int rowState, int i){
+    // move the piece(index) to left
+    // rowState is one row state
+    // index 0 is right
+    int movingPiece = (int(cellNumbers[0][i]) & rowState) >> i*2;
+    int newRow = 0;
+    // add cell from right
+    for(int j=0;j<boardSize-1;j++){
+        if (j<i){
+            newRow += int(cellNumbers[0][j]) & rowState; // same as base row state
+        }else{
+            newRow += (int(cellNumbers[0][j+1]) & rowState) >> 2; // 1 bit shift to right
+        }
+    }
+    newRow += movingPiece << (boardSize-1)*2; // the left is moving piece
+    return newRow;
+}
+
 ll getCellNumber(int row, int column, ll state){
     return cellNumbers[row][column] & state;
 }

@@ -28,11 +28,23 @@ void testGetCellNumber(){
     cout << getShiftedCellNumber(0, 1, test) << endl; // 01 -> 1
 }
 
+void testMoveLeft(){
+    cout << "start move left test" << endl;
+    int r;
+    for(int i=0;i<510;i++){
+        for (int j=0;j<boardSize;j++){
+            r = moveLeft(i, j);
+            cout << bitset<10>(i) << ", " << j << ", " << bitset<10>(r) << endl;
+        }
+    }
+}
+
 int main(){
     cout << "test" << endl;
     init();
-    testInitialize();
+//    testInitialize();
 //    testGetCellNumber();
+    testMoveLeft();
 
     return 0;
 }
