@@ -10,6 +10,7 @@ const int boardSize = 5;
 // i=0; bottom
 // j=0; right
 vector< vector<ll> > cellNumbers;  // it is used to get a cell number.
+vector<ll> rowNumbers;  // it is used to get a row numbers.
 
 void init(){
     // initialize cellNumbers
@@ -20,6 +21,18 @@ void init(){
         }
     }
     cellNumbers = cells;
+
+    // initialize rowNumbers
+    vector<ll> rows(boardSize);
+    // create base number: 1111111111 (binary number)
+    ll baseNumber = 3ll;
+    for(int i=0;i<boardSize-1;i++){
+        baseNumber = (baseNumber<<2) + 3ll;
+    }
+    for(int i=0;i<boardSize;i++){
+        rows[i] = baseNumber << i*boardSize*2;
+    }
+    rowNumbers = rows;
 }
 
 ll getCellNumber(int row, int column, ll state){
@@ -34,20 +47,31 @@ int getShiftedCellNumber(int row, int column, ll state){
 stateMap *createNextStates(int presentState, bool chooseEmpty){
     // if chooseEmpty, increase o number. choose e. turn is o.
     // else, the number of o, x, e are same. choose o.  turn is o.
-    // after creating states, swap turn
-    // TODO implement soon:
-    // choose only first/last row, then rotate and choose first/last row again.
+    // before creating states, swap turn
+    // TODO implement soon: swap turn
+
     auto *nextStates = new stateMap;
+    // choose only switch row, then rotate and switch row again.
+    vector<int> columns = {0, boardSize-1};  // search only top and bottom
+    // todo rotate state.
     for(int i=0;i<boardSize;i++){
         for(int j=0;j<boardSize;j++){
+            if(0<i && i<boardSize-1 && 0<j && j<boardSize-1){
+                continue;
+            }
+            if(j==0){
+                // move to left
+                // todo
+            }
             // todo
-            if (chooseEmpty && getCellNumber(i, j, presentState)){
-                // check this cell is empty?
-            }else{
-                // check this cell is o
+            if ((chooseEmpty && getShiftedCellNumber(i, j, presentState)==0) ||
+            (!chooseEmpty && getShiftedCellNumber(i, j, presentState)==2)){
+                // create
+                // todo: move
             }
         }
     }
+    return nextStates;
 }
 
 stateMap *createSaveStateSet(stateMap *initialStates){

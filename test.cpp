@@ -2,12 +2,20 @@
 #include "main.cpp"
 using namespace std;
 
-void outputCellNumbers(){
+void testInitialize(){
+    cout << "test initialize" << endl;
     for(int i=0;i<boardSize;i++){
         for(int j=0;j<boardSize;j++){
             cout << bitset<50>(cellNumbers.at(i).at(j)) << ",";
         }
     }
+    cout << endl;
+
+    cout << "hoge" << endl;
+    for(int i=0;i<boardSize;i++){
+        cout << bitset<50>(rowNumbers[i]) << ",";
+    }
+    cout << "end initialize" << endl;
 }
 
 void testGetCellNumber(){
@@ -23,7 +31,8 @@ void testGetCellNumber(){
 int main(){
     cout << "test" << endl;
     init();
-    testGetCellNumber();
+    testInitialize();
+//    testGetCellNumber();
 
     return 0;
 }
