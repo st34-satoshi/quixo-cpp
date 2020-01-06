@@ -22,8 +22,9 @@ void init(){
     cellNumbers = cells;
 }
 
-int getCellNumber(int row, int column, int state){
+ll getCellNumber(int row, int column, int state){
     // todo:
+    return state & cellNumbers[row][column];
 }
 
 stateMap *createNextStates(int presentState, bool chooseEmpty){
@@ -101,5 +102,9 @@ int main(){
         big *= 4ll;
     }
     createTree();
+    ll test;
+    test = 7ll;
+    cout << endl;
+    cout << getCellNumber(0, 1, test) << endl;
     return 0;
 }
