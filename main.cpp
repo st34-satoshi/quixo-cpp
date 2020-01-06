@@ -5,7 +5,7 @@
 // 0: empty, 1: o, 2: x
 using namespace std;
 typedef long long ll;
-typedef unordered_map<ll, int> stateMap;
+typedef unordered_map<ll, int> stateMap; // element is 1. no meaning
 const int boardSize = 5;
 // i=0; bottom
 // j=0; right
@@ -90,21 +90,36 @@ stateMap *createNextStates(int presentState, bool chooseEmpty){
     // choose only switch row, then rotate and switch row again.
     vector<int> columns = {0, boardSize-1};  // search only top and bottom
     // todo rotate state.
+
+    int movingRow, newRow;
+    ll newState;
     for(int i=0;i<boardSize;i++){
         for(int j=0;j<boardSize;j++){
             if(0<i && i<boardSize-1 && 0<j && j<boardSize-1){
+                // not edge
+                continue;
+            }
+            if (chooseEmpty && getShiftedCellNumber(i, j, presentState)!=0){
+                // need to choose empty but the cell is not empty.
+                continue;
+            }
+            if (!chooseEmpty && getShiftedCellNumber(i, j, presentState)!=2){
+                // need to choose o(circle) but the cell is not o.
                 continue;
             }
             if(j==0){
                 // move to left
+                movingRow = int((presentState & rowNumbers[i]) >> 2*i);
+                newRow = moveLeft(movingRow, j);
+                newState = (presentState & ~rowNumbers[i]) | (ll(newRow) << 2*i);
+                // TODO implement: symmetric
+                // add to nextStates
+                if (nextStates->find(newState) == nextStates->end()){
+                    (*nextStates)[newState] = 1;
+                }
                 // todo
             }
-            // todo
-            if ((chooseEmpty && getShiftedCellNumber(i, j, presentState)==0) ||
-            (!chooseEmpty && getShiftedCellNumber(i, j, presentState)==2)){
-                // create
-                // todo: move
-            }
+            // todo: j==boardSize, else
         }
     }
     return nextStates;
