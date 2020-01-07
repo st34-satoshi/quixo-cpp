@@ -50,13 +50,21 @@ void testMoveRight(){
     }
 }
 
+void testSwap(){
+    cout << "start test swao" << endl;
+    for(int i=0;i<510;i++){
+        cout << bitset<10>(i) << "s " << bitset<10>(swapPlayer(i)) << endl;
+    }
+}
+
 int main(){
     cout << "test" << endl;
     init();
 //    testInitialize();
 //    testGetCellNumber();
 //    testMoveLeft();
-    testMoveRight();
+//    testMoveRight();
+    testSwap();
 
     return 0;
 }

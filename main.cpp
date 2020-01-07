@@ -80,6 +80,24 @@ int getShiftedCellNumber(int row, int column, ll state){
     return int(cellNumber >> (row*boardSize + column)*2);
 }
 
+int swapPlayer(int state){
+    ll newState = 0;
+    int n;
+    for(int i=boardSize-1;i>=0;i--){
+        for(int j=boardSize-1;j>=0;j--){
+            newState = newState << 2;
+            n = getShiftedCellNumber(i, j, state);
+            // swap 1 and 2 (o and x)
+            if (n == 1){
+                newState += 2ll;
+            }else if (n == 2){
+                newState += 1ll;
+            }
+        }
+    }
+    return newState;
+}
+
 stateMap *createNextStates(int presentState, bool chooseEmpty){
     // if chooseEmpty, increase o number. choose e. turn is o.
     // else, the number of o, x, e are same. choose o.  turn is o.
@@ -131,13 +149,21 @@ stateMap *createSaveStateSet(stateMap *initialStates){
 
     stateMap *createdStates = initialStates;
     auto *nextInitialStates = new stateMap;  // next state has 2 types. #o and #x has 2 types
-    (*nextInitialStates)[1] = 1;
+    auto *presentStateSet = new stateMap;
+//    (*nextInitialStates)[1] = 1;
     while (createdStates != nullptr && !createdStates->empty()){
-        // create new states which is reachable from newState
+        // create new states which is reachable from createdState
+        // save present state
         auto *newStates = new stateMap;
         for(auto itr = createdStates->begin(); itr != createdStates->end(); ++itr){
+            // save
+            // for debug. TODO: remove
+            if (presentStateSet->find(itr->first) != presentStateSet->end()){
+                cout << "strange Error: present states has already have this state" << endl;
+            }
+            (*presentStateSet)[itr->first] = 1;
             // create reachable states
-            // todo:
+            // todo: add to present and next
         }
         createdStates = newStates;
     }
@@ -160,6 +186,7 @@ int createTree(){
     // TODO implement: save initial states to storage
 
     stateMap *nextInitialStates = createSaveStateSet(initialStates);
+    // todo: repeat until nextInitialStates is null
     return 0;
 }
 
