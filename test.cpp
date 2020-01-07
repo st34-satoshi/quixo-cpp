@@ -76,6 +76,20 @@ void testSymmetricState(){
     cout << bitset<18 >(symmetricState(symmetricState(t))) << endl;
 }
 
+void testCreateNextState(){
+    cout << "start test create next state" << endl;
+    ll t = 0b010100101010000000;
+    auto nextStates = createNextStates(t, true);
+    for(auto itr = nextStates->begin(); itr != nextStates->end(); ++itr){
+        cout << bitset<18>(itr->first) << endl;
+    }
+    cout << "choose o (1)" << endl;
+    nextStates = createNextStates(t, false);
+    for(auto itr = nextStates->begin(); itr != nextStates->end(); ++itr){
+        cout << bitset<18>(itr->first) << endl;
+    }
+}
+
 int main(){
     cout << "test" << endl;
     init();
@@ -86,7 +100,8 @@ int main(){
     // testSwap();
     // testRotate();
     // testReverseState();
-    testSymmetricState();
+    // testSymmetricState();
+    testCreateNextState();
 
     return 0;
 }

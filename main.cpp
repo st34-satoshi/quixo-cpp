@@ -149,12 +149,11 @@ stateMap *createNextStates(ll presentState, bool chooseEmpty){
     presentState = swapPlayer(presentState);
 
     auto *nextStates = new stateMap;
+    int movingRow, newRow;
+    ll newState;
     // choose only switch row, then rotate and switch row again.
     // search present state and rotated state.
     vector<ll> searchingStates = {presentState, rotatedState(presentState)};
-
-    int movingRow, newRow;
-    ll newState;
     for(ll state : searchingStates){
         for(int i=0;i<boardSize;i++){
             for(int j=0;j<boardSize;j++){
@@ -166,23 +165,33 @@ stateMap *createNextStates(ll presentState, bool chooseEmpty){
                     // need to choose empty but the cell is not empty.
                     continue;
                 }
-                if (!chooseEmpty && getShiftedCellNumber(i, j, state)!=1){
+                if (!chooseEmpty && getShiftedCellNumber(i, j, state)!=2){
                     // need to choose x but the cell is not x. turn is already changed.
                     continue;
                 }
+                // TODO: move right and move left are similar. make it simple.
                 if(j!=boardSize-1){
                     // move to left
                     movingRow = int((state & rowNumbers[i]) >> 2*i*boardSize);
                     newRow = moveLeft(movingRow, j);
                     newState = (state & ~rowNumbers[i]) | (ll(newRow) << 2*i*boardSize);
-                    // TODO: implement: symmetric
+                    newState = symmetricState(newState);  // select minimum state in symmetric states.
                     // add to nextStates
                     if (nextStates->find(newState) == nextStates->end()){
                         (*nextStates)[newState] = 1;
                     }
-                    // TODO:
                 }
-                // TODO: j==boardSize, else
+                if(j!=0){
+                    // move to right
+                    movingRow = int((state & rowNumbers[i]) >> 2*i*boardSize);
+                    newRow = moveRight(movingRow, j);
+                    newState = (state & ~rowNumbers[i]) | (ll(newRow) << 2*i*boardSize);
+                    newState = symmetricState(newState);  // select minimum state in symmetric states.
+                    // add to nextStates
+                    if (nextStates->find(newState) == nextStates->end()){
+                        (*nextStates)[newState] = 1;
+                    }
+                }
             }
         }
     }
