@@ -132,8 +132,8 @@ int main(){
     // testSymmetricState();
     // testCreateNextState();
     // testCreateSave();
-    // testCreateTree();
-    testContains();
+    testCreateTree();
+    // testContains();
 
     return 0;
 }

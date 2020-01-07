@@ -13,7 +13,6 @@ vector< vector<ll> > cellNumbers;  // it is used to get a cell number.
 vector<ll> rowNumbers;  // it is used to get a row numbers.
 
 bool contains(stateMap *base, ll state){
-    cout << "test " << endl;
     return base->find(state) != base->end();
 }
 
@@ -231,7 +230,7 @@ stateMap *createSaveStateSet(stateMap *initialStates){
             // choose circle. add to newStates
             nextStates = createNextStates(stateItr->first, false); 
             for(auto itr=nextStates->begin();itr!=nextStates->end();itr++){
-                if(newStates->find(itr->first) == newStates->end() && presentStates->find(itr->first) == presentStates->end()){
+                if(!contains(newStates, itr->first) && !contains(presentStates, itr->first) && !contains(createdStates, itr->first)){
                     (*newStates)[itr->first] = 1;
                 }
             }
