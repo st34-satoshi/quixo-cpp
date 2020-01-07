@@ -111,11 +111,6 @@ ll reverseState(ll state){
     return newState;
 }
 
-ll symmetricState(ll state){
-    // return the minimum state of all symmetric states
-    // TODO: implement, reverse
-}
-
 ll rotatedState(ll state){
     // {1, 2, 3,
     //  4, 5, 6
@@ -132,6 +127,19 @@ ll rotatedState(ll state){
         }
     }
     return newState;
+}
+
+ll symmetricState(ll state){
+    // return the minimum state of all symmetric states
+    ll minState = state;
+    vector<ll> searchingStates = {state, reverseState(state)};
+    for(ll s: searchingStates){
+        for(int i=0;i<3;i++){
+            s = rotatedState(s);
+            minState = min(minState, s);
+        }
+    }
+    return minState;
 }
 
 stateMap *createNextStates(ll presentState, bool chooseEmpty){
