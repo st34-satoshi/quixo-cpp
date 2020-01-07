@@ -119,6 +119,11 @@ void testContains(){
     cout << contains(&testMap, 3ll) << endl;
 }
 
+void testPrintState(){
+    ll t = 0b010100101010000000;
+    printState(t);
+}
+
 int main(){
     cout << "test" << endl;
     init();
@@ -132,8 +137,9 @@ int main(){
     // testSymmetricState();
     // testCreateNextState();
     // testCreateSave();
-    testCreateTree();
+    // testCreateTree();
     // testContains();
+    testPrintState();
 
     return 0;
 }

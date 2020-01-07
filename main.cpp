@@ -213,10 +213,6 @@ stateMap *createSaveStateSet(stateMap *initialStates){
         auto *newStates = new stateMap;
         for(auto stateItr = createdStates->begin(); stateItr != createdStates->end(); ++stateItr){
             // save
-            // for debug. TODO: remove
-            if (presentStates->find(stateItr->first) != presentStates->end()){
-                cout << "strange Error: present states has already have this state" << endl;
-            }
             (*presentStates)[stateItr->first] = 1;
 
             // create reachable states
@@ -258,7 +254,7 @@ int createTree(){
     stateMap *nextInitialStates;
     int counter = 0;
     while (initialStates != nullptr && !initialStates->empty()){
-        // TODO: repeat until nextInitialStates is null
+        // repeat until nextInitialStates is null
         initialStates = createSaveStateSet(initialStates);
         cout << ++counter << endl;
     }
@@ -267,6 +263,24 @@ int createTree(){
 }
 
 // TODO: output state . You can understand easily
+void printState(ll state){
+    cout << "print state" << endl;
+    int n;
+    for(int i=0;i<boardSize;i++){
+        for(int j=0;j<boardSize;j++){
+            n = getShiftedCellNumber(i, j, state);
+            if(n==0){
+                cout << "-";
+            }else if (n==1){
+                cout << "o";
+            }else if (n==2){
+                cout << "x";
+            }
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
 
 //int main(){
 //    // 4*4
