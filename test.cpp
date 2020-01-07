@@ -51,10 +51,16 @@ void testMoveRight(){
 }
 
 void testSwap(){
-    cout << "start test swao" << endl;
+    cout << "start test swap" << endl;
     for(int i=0;i<510;i++){
-        cout << bitset<10>(i) << "s " << bitset<10>(swapPlayer(i)) << endl;
+        cout << bitset<10>(i) << "sst " << bitset<10>(swapPlayer(i)) << endl;
     }
+}
+
+void testRotate(){
+    cout << "start test rotate" << endl;
+    ll t = 0b010100101010000000;
+    cout << bitset<18 >(rotatedState(t)) << endl;
 }
 
 int main(){
@@ -64,7 +70,8 @@ int main(){
 //    testGetCellNumber();
 //    testMoveLeft();
 //    testMoveRight();
-    testSwap();
+    // testSwap();
+    testRotate();
 
     return 0;
 }

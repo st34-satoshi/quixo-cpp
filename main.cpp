@@ -6,7 +6,7 @@
 using namespace std;
 typedef long long ll;
 typedef unordered_map<ll, int> stateMap; // element is 1. no meaning
-const int boardSize = 5;
+const int boardSize = 3;
 // i=0; bottom
 // j=0; right
 vector< vector<ll> > cellNumbers;  // it is used to get a cell number.
@@ -80,8 +80,8 @@ int getShiftedCellNumber(int row, int column, ll state){
     return int(cellNumber >> (row*boardSize + column)*2);
 }
 
-int swapPlayer(int state){
-    ll newState = 0;
+ll swapPlayer(ll state){
+    ll newState = 0ll;
     int n;
     for(int i=boardSize-1;i>=0;i--){
         for(int j=boardSize-1;j>=0;j--){
@@ -98,16 +98,33 @@ int swapPlayer(int state){
     return newState;
 }
 
-stateMap *createNextStates(int presentState, bool chooseEmpty){
+ll rotatedState(ll state){
+    // {1, 2, 3,
+    //  4, 5, 6
+    //  7, 8, 9}
+    // to
+    // {3, 6, 9,
+    //  2, 5, 8
+    //  1, 4, 7}
+    ll newState = 0;
+    for(int i=boardSize-1;i>=0;i--){
+        for(int j=boardSize-1;j>=0;j--){
+            newState = newState << 2;
+            newState += ll(getShiftedCellNumber(j, boardSize - i - 1, state));
+        }
+    }
+    return newState;
+}
+
+stateMap *createNextStates(ll presentState, bool chooseEmpty){
     // if chooseEmpty, increase o number. choose e. turn is o.
     // else, the number of o, x, e are same. choose o.  turn is o.
     // before creating states, swap turn
-    // TODO implement soon: swap turn
+    presentState = swapPlayer(presentState);
 
     auto *nextStates = new stateMap;
     // choose only switch row, then rotate and switch row again.
-    vector<int> columns = {0, boardSize-1};  // search only top and bottom
-    // todo rotate state.
+    // TODO: rotate state.
 
     int movingRow, newRow;
     ll newState;
@@ -130,14 +147,14 @@ stateMap *createNextStates(int presentState, bool chooseEmpty){
                 movingRow = int((presentState & rowNumbers[i]) >> 2*i);
                 newRow = moveLeft(movingRow, j);
                 newState = (presentState & ~rowNumbers[i]) | (ll(newRow) << 2*i);
-                // TODO implement: symmetric
+                // TODO: implement: symmetric
                 // add to nextStates
                 if (nextStates->find(newState) == nextStates->end()){
                     (*nextStates)[newState] = 1;
                 }
-                // todo
+                // TODO:
             }
-            // todo: j==boardSize, else
+            // TODO: j==boardSize, else
         }
     }
     return nextStates;
@@ -163,7 +180,7 @@ stateMap *createSaveStateSet(stateMap *initialStates){
             }
             (*presentStateSet)[itr->first] = 1;
             // create reachable states
-            // todo: add to present and next
+            // TODO: add to present and next
         }
         createdStates = newStates;
     }
