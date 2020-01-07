@@ -124,6 +124,15 @@ void testPrintState(){
     printState(t);
 }
 
+void testCountAllStates(){
+    int sum = 0;
+    for(auto sm: allStateSet){
+        cout << sm.size() << endl;
+        sum += sm.size();
+    }
+    cout << sum << endl;
+}
+
 int main(){
     cout << "test" << endl;
     init();
@@ -137,9 +146,10 @@ int main(){
     // testSymmetricState();
     // testCreateNextState();
     // testCreateSave();
-    // testCreateTree();
+    testCreateTree();
+    testCountAllStates();
     // testContains();
-    testPrintState();
+    // testPrintState();
 
     return 0;
 }

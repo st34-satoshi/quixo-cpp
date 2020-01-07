@@ -12,6 +12,9 @@ const int boardSize = 3;
 vector< vector<ll> > cellNumbers;  // it is used to get a cell number.
 vector<ll> rowNumbers;  // it is used to get a row numbers.
 
+// TODO: remove this. it should be save to storage. if 5 by 5 not enough memory.
+vector<stateMap> allStateSet;
+
 bool contains(stateMap *base, ll state){
     return base->find(state) != base->end();
 }
@@ -233,6 +236,8 @@ stateMap *createSaveStateSet(stateMap *initialStates){
         }
         createdStates = newStates;
     }
+    // TODO: save present states
+    allStateSet.push_back(*presentStates);
 
     return nextInitialStates;
 }
@@ -250,6 +255,7 @@ int createTree(){
 
     stateMap *initialStates = createInitialStates();
     // TODO: implement: save initial states to storage
+    allStateSet.push_back(*initialStates);
 
     stateMap *nextInitialStates;
     int counter = 0;
