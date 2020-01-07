@@ -63,6 +63,12 @@ void testRotate(){
     cout << bitset<18 >(rotatedState(t)) << endl;
 }
 
+void testReverseState(){
+    cout << "start test reverse state" << endl;
+    ll t = 0b010100101010000000;
+    cout << bitset<18 >(reverseState(t)) << endl;
+}
+
 int main(){
     cout << "test" << endl;
     init();
@@ -71,7 +77,8 @@ int main(){
 //    testMoveLeft();
 //    testMoveRight();
     // testSwap();
-    testRotate();
+    // testRotate();
+    testReverseState();
 
     return 0;
 }

@@ -98,6 +98,24 @@ ll swapPlayer(ll state){
     return newState;
 }
 
+ll reverseState(ll state){
+    // return reverse (mirror) state
+    ll newState = 0ll;
+    int n;
+    for(int i=boardSize-1;i>=0;i--){
+        for(int j=boardSize-1;j>=0;j--){
+            newState = newState << 2;
+            newState += ll(getShiftedCellNumber(i, boardSize - j - 1, state));
+        }
+    }
+    return newState;
+}
+
+ll symmetricState(ll state){
+    // return the minimum state of all symmetric states
+    // TODO: implement, reverse
+}
+
 ll rotatedState(ll state){
     // {1, 2, 3,
     //  4, 5, 6
