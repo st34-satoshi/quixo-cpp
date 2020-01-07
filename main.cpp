@@ -118,8 +118,9 @@ ll rotatedState(ll state){
 
 ll symmetricState(ll state){
     // return the minimum state of all symmetric states
-    ll minState = state;
-    vector<ll> searchingStates = {state, reverseState(state)};
+    ll rState = reverseState(state);
+    ll minState = min(state, rState);
+    vector<ll> searchingStates = {state, rState};
     for(ll s: searchingStates){
         for(int i=0;i<3;i++){
             s = rotatedState(s);
@@ -142,6 +143,8 @@ void printState(ll state){
                 cout << "o";
             }else if (n==2){
                 cout << "x";
+            }else if (n==3){
+                cout << "e";
             }
         }
         cout << endl;
@@ -219,6 +222,7 @@ void init(){
     for(int i=0;i<boardSize;i++){
         oWinMasks.push_back(oWin<<(i*2));
         xWinMasks.push_back(xWin<<(i*2));
+        eWinMasks.push_back(eWin<<(i*2));
     }
 }
 
@@ -248,8 +252,10 @@ stateMap *createNextStates(ll presentState, bool chooseEmpty){
 
     auto *nextStates = new stateMap;
     // if this state is end of the game (there is line) no next states.
-    // TODO: implement check line
-
+    // TODO: save the information of win??
+    if (isWin(presentState)!=0){
+        return nextStates;
+    }
 
     int movingRow, newRow;
     ll newState;
@@ -334,7 +340,7 @@ stateMap *createSaveStateSet(stateMap *initialStates){
         createdStates = newStates;
     }
     // TODO: save present states
-    allStateSet.push_back(*presentStates);
+    // allStateSet.push_back(*presentStates);
 
     return nextInitialStates;
 }
@@ -349,15 +355,10 @@ stateMap *createInitialStates(){
 int createTree(){
     // return 0 if success
     // save results to storage.
-
     stateMap *initialStates = createInitialStates();
-    // TODO: implement: save initial states to storage
-    allStateSet.push_back(*initialStates);
-
-    stateMap *nextInitialStates;
     int counter = 0;
     while (initialStates != nullptr && !initialStates->empty()){
-        // repeat until nextInitialStates is null
+        // repeat until initialStates is null
         initialStates = createSaveStateSet(initialStates);
         cout << ++counter << endl;
     }

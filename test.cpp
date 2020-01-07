@@ -67,6 +67,8 @@ void testReverseState(){
     cout << "start test reverse state" << endl;
     ll t = 0b010100101010000000;
     cout << bitset<18 >(reverseState(t)) << endl;
+    t = 0b000000000000100100;
+    cout << bitset<18 >(reverseState(t)) << endl;
 }
 
 void testSymmetricState(){
@@ -74,6 +76,8 @@ void testSymmetricState(){
     ll t = 0b010100101010000000;
     cout << bitset<18 >(symmetricState(t)) << endl;
     cout << bitset<18 >(symmetricState(symmetricState(t))) << endl;
+    t = 0b000000000000100100;
+    cout << bitset<18 >(symmetricState(t)) << endl;
 }
 
 void testCreateNextState(){
@@ -125,16 +129,18 @@ void testPrintState(){
 }
 
 void testCountAllStates(){
+    cout << "start count" << endl;
     int sum = 0;
     for(auto sm: allStateSet){
         cout << sm.size() << endl;
         sum += sm.size();
     }
     cout << sum << endl;
+    cout << globalStates->size() << endl;
 }
 
 void testWinMasks(){
-    for(auto n: xWinMasks){
+    for(auto n: eWinMasks){
         printState(n);
     }
 }
@@ -149,8 +155,20 @@ void testIsWin(){
     t = 0b010100100110000001;
     printState(t);
     cout << isWin(t) << endl;
-    
+}
 
+void printAllStates(){
+    cout << "start print all states" << endl;
+    int i = 0;
+    for(auto sm: allStateSet){
+        for(auto itr = sm.begin(); itr != sm.end(); ++itr){
+            printState(itr->first);
+            i++;
+            if(i>10){
+                return;
+            }
+        }
+    }
 }
 
 int main(){
@@ -166,12 +184,13 @@ int main(){
     // testSymmetricState();
     // testCreateNextState();
     // testCreateSave();
-    // testCreateTree();
-    // testCountAllStates();
+    testCreateTree();
+    testCountAllStates();
     // testContains();
     // testPrintState();
     // testWinMasks();
-    testIsWin();
+    // testIsWin();
+    // printAllStates();
 
     return 0;
 }
