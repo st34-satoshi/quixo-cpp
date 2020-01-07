@@ -136,7 +136,6 @@ void testCountAllStates(){
         sum += sm.size();
     }
     cout << sum << endl;
-    cout << globalStates->size() << endl;
 }
 
 void testWinMasks(){
@@ -185,7 +184,7 @@ int main(){
     // testCreateNextState();
     // testCreateSave();
     testCreateTree();
-    testCountAllStates();
+    // testCountAllStates();
     // testContains();
     // testPrintState();
     // testWinMasks();

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
+#include <time.h>
 
 // 0: empty, 1: o, 2: x
 // i=0; bottom
@@ -8,7 +9,7 @@
 using namespace std;
 typedef long long ll;
 typedef unordered_map<ll, int> stateMap; // element is 1. no meaning
-const int boardSize = 3;
+const int boardSize = 4;
 
 vector< vector<ll> > cellNumbers;  // it is used to get a cell number.
 vector<ll> rowNumbers;  // it is used to get a row numbers.
@@ -337,10 +338,13 @@ stateMap *createSaveStateSet(stateMap *initialStates){
                 }
             }
         }
+        delete createdStates;
         createdStates = newStates;
     }
-    // TODO: save present states
+    // TODO: save present states to strage
     // allStateSet.push_back(*presentStates);
+
+    delete presentStates;
 
     return nextInitialStates;
 }
@@ -366,10 +370,10 @@ int createTree(){
     return 0;
 }
 
-//int main(){
-//    // 4*4
-//    cout << "start initialize h" << endl;
-//    init();
-//    cout << "start creating tree" << endl;
-//    return 0;
-//}
+int main(){
+    clock_t start = clock();
+    init();
+    createTree();
+    clock_t end = clock();
+    cout << "end : " << (end - start)/ CLOCKS_PER_SEC * 1000.0 << endl;
+}
