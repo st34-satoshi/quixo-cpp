@@ -342,7 +342,7 @@ stateMap *createSaveStateSet(stateMap *initialStates){
         createdStates = newStates;
     }
     // TODO: save present states to strage
-    // allStateSet.push_back(*presentStates);
+    allStateSet.push_back(*presentStates);
 
     delete presentStates;
 
@@ -364,6 +364,7 @@ int createTree(){
     while (initialStates != nullptr && !initialStates->empty()){
         // repeat until initialStates is null
         initialStates = createSaveStateSet(initialStates);
+        // TODO: it should be divided into 2 types (the numebr of o and x)
         cout << ++counter << endl;
     }
     
@@ -375,5 +376,12 @@ int main(){
     init();
     createTree();
     clock_t end = clock();
-    cout << "end : " << (end - start)/ CLOCKS_PER_SEC * 1000.0 << endl;
+    cout << "end : " << (double)(end - start)/ CLOCKS_PER_SEC << " sec" << endl;
+    // count the number of states
+    int sum = 0;
+    for(auto sm: allStateSet){
+        cout << sm.size() << endl;
+        sum += sm.size();
+    }
+    cout << sum << endl;
 }
