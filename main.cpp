@@ -124,37 +124,40 @@ stateMap *createNextStates(ll presentState, bool chooseEmpty){
 
     auto *nextStates = new stateMap;
     // choose only switch row, then rotate and switch row again.
-    // TODO: rotate state.
+    // search present state and rotated state.
+    vector<ll> searchingStates = {presentState, rotatedState(presentState)};
 
     int movingRow, newRow;
     ll newState;
-    for(int i=0;i<boardSize;i++){
-        for(int j=0;j<boardSize;j++){
-            if(0<i && i<boardSize-1 && 0<j && j<boardSize-1){
-                // not edge
-                continue;
-            }
-            if (chooseEmpty && getShiftedCellNumber(i, j, presentState)!=0){
-                // need to choose empty but the cell is not empty.
-                continue;
-            }
-            if (!chooseEmpty && getShiftedCellNumber(i, j, presentState)!=2){
-                // need to choose o(circle) but the cell is not o.
-                continue;
-            }
-            if(j==0){
-                // move to left
-                movingRow = int((presentState & rowNumbers[i]) >> 2*i);
-                newRow = moveLeft(movingRow, j);
-                newState = (presentState & ~rowNumbers[i]) | (ll(newRow) << 2*i);
-                // TODO: implement: symmetric
-                // add to nextStates
-                if (nextStates->find(newState) == nextStates->end()){
-                    (*nextStates)[newState] = 1;
+    for(ll state : searchingStates){
+        for(int i=0;i<boardSize;i++){
+            for(int j=0;j<boardSize;j++){
+                if(0<i && i<boardSize-1 && 0<j && j<boardSize-1){
+                    // not edge
+                    continue;
                 }
-                // TODO:
+                if (chooseEmpty && getShiftedCellNumber(i, j, state)!=0){
+                    // need to choose empty but the cell is not empty.
+                    continue;
+                }
+                if (!chooseEmpty && getShiftedCellNumber(i, j, state)!=1){
+                    // need to choose x but the cell is not x. turn is already changed.
+                    continue;
+                }
+                if(j!=boardSize-1){
+                    // move to left
+                    movingRow = int((state & rowNumbers[i]) >> 2*i*boardSize);
+                    newRow = moveLeft(movingRow, j);
+                    newState = (state & ~rowNumbers[i]) | (ll(newRow) << 2*i*boardSize);
+                    // TODO: implement: symmetric
+                    // add to nextStates
+                    if (nextStates->find(newState) == nextStates->end()){
+                        (*nextStates)[newState] = 1;
+                    }
+                    // TODO:
+                }
+                // TODO: j==boardSize, else
             }
-            // TODO: j==boardSize, else
         }
     }
     return nextStates;
