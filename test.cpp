@@ -106,6 +106,19 @@ void testCreateSave(){
     cout << "finish test" << endl;
 }
 
+void testCreateTree(){
+    createTree();
+}
+
+void testContains(){
+    cout << "start test contain" << endl;
+    stateMap testMap;
+    testMap[2ll] = 1;
+    cout << "nn" << endl;
+    cout << contains(&testMap, 2ll) << endl;
+    cout << contains(&testMap, 3ll) << endl;
+}
+
 int main(){
     cout << "test" << endl;
     init();
@@ -118,7 +131,9 @@ int main(){
     // testReverseState();
     // testSymmetricState();
     // testCreateNextState();
-    testCreateSave();
+    // testCreateSave();
+    // testCreateTree();
+    testContains();
 
     return 0;
 }

@@ -12,6 +12,11 @@ const int boardSize = 3;
 vector< vector<ll> > cellNumbers;  // it is used to get a cell number.
 vector<ll> rowNumbers;  // it is used to get a row numbers.
 
+bool contains(stateMap *base, ll state){
+    cout << "test " << endl;
+    return base->find(state) != base->end();
+}
+
 void init(){
     // initialize cellNumbers
     vector< vector<ll> > cells(boardSize, vector<ll>(boardSize));
@@ -226,7 +231,7 @@ stateMap *createSaveStateSet(stateMap *initialStates){
             // choose circle. add to newStates
             nextStates = createNextStates(stateItr->first, false); 
             for(auto itr=nextStates->begin();itr!=nextStates->end();itr++){
-                if(newStates->find(itr->first) == newStates->end()){
+                if(newStates->find(itr->first) == newStates->end() && presentStates->find(itr->first) == presentStates->end()){
                     (*newStates)[itr->first] = 1;
                 }
             }
@@ -251,8 +256,14 @@ int createTree(){
     stateMap *initialStates = createInitialStates();
     // TODO: implement: save initial states to storage
 
-    stateMap *nextInitialStates = createSaveStateSet(initialStates);
-    // TODO: repeat until nextInitialStates is null
+    stateMap *nextInitialStates;
+    int counter = 0;
+    while (initialStates != nullptr && !initialStates->empty()){
+        // TODO: repeat until nextInitialStates is null
+        initialStates = createSaveStateSet(initialStates);
+        cout << ++counter << endl;
+    }
+    
     return 0;
 }
 
