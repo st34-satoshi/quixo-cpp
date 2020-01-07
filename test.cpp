@@ -139,6 +139,20 @@ void testWinMasks(){
     }
 }
 
+void testIsWin(){
+    ll t = 0b010100101010000000;
+    printState(t);
+    cout << isWin(t) << endl;
+    t = 0b010100100010000000;
+    printState(t);
+    cout << isWin(t) << endl;
+    t = 0b010100100110000001;
+    printState(t);
+    cout << isWin(t) << endl;
+    
+
+}
+
 int main(){
     cout << "test" << endl;
     init();
@@ -156,7 +170,8 @@ int main(){
     // testCountAllStates();
     // testContains();
     // testPrintState();
-    testWinMasks();
+    // testWinMasks();
+    testIsWin();
 
     return 0;
 }

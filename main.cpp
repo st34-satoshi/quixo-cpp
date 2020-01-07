@@ -15,6 +15,7 @@ vector<ll> rowNumbers;  // it is used to get a row numbers.
 // use to check win
 vector<ll> xWinMasks; // check row, column and diagonal line
 vector<ll> oWinMasks;
+vector<ll> eWinMasks;
 
 // TODO: remove this. it should be save to storage. if 5 by 5 not enough memory.
 vector<stateMap> allStateSet;
@@ -173,36 +174,47 @@ void init(){
     // make masks to check win
     ll oWin = 0ll;
     ll xWin = 0ll;
+    ll eWin = 0ll;
     // diagonal
     for(int i=0;i<boardSize;i++){
         oWin += 1ll << (i*boardSize+i)*2;
         xWin += 2ll << (i*boardSize+i)*2;
+        eWin += 3ll << (i*boardSize+i)*2;
     }
     oWinMasks.push_back(oWin);
     xWinMasks.push_back(xWin);
+    eWinMasks.push_back(eWin);
     oWinMasks.push_back(reverseState(oWin));
     xWinMasks.push_back(reverseState(xWin));
+    eWinMasks.push_back(reverseState(eWin));
     // row
     oWin = 1ll;
     xWin = 2ll;
+    eWin = 3ll;
     for(int i=0;i<boardSize-1;i++){
         oWin = oWin << 2;
         xWin = xWin << 2;
+        eWin = eWin << 2;
         oWin += 1ll;
         xWin += 2ll;
+        eWin += 3ll;
     }
     for(int i=0;i<boardSize;i++){
         oWinMasks.push_back(oWin<<(2*i*boardSize));
         xWinMasks.push_back(xWin<<(2*i*boardSize));
+        eWinMasks.push_back(eWin<<(2*i*boardSize));
     }
     // column
     oWin = 1ll;
     xWin = 2ll;
+    eWin = 3ll;
     for(int i=0;i<boardSize-1;i++){
         oWin = oWin << 2*boardSize;
         xWin = xWin << 2*boardSize;
+        eWin = eWin << 2*boardSize;
         oWin += 1ll;
         xWin += 2ll;
+        eWin += 3ll;
     }
     for(int i=0;i<boardSize;i++){
         oWinMasks.push_back(oWin<<(i*2));
@@ -211,12 +223,21 @@ void init(){
 }
 
 int isWin(ll state){
-    // return 0:not decided, 1:win, 2:lose
+    // return 0:not decided, 1:win, -1:lose
     // turn is o;
     // if there is line of x, lose
     // else if there is line of o, win
-    // check diagonal
-
+    for(int i=0;i<eWinMasks.size();i++){
+        if ((state & eWinMasks.at(i)) == xWinMasks.at(i)){
+            return -1;
+        }
+    }
+    for(int i=0;i<eWinMasks.size();i++){
+        if ((state & eWinMasks.at(i)) == oWinMasks.at(i)){
+            return 1;
+        }
+    }
+    return 0;
 }
 
 stateMap *createNextStates(ll presentState, bool chooseEmpty){
