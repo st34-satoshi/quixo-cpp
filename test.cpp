@@ -79,15 +79,31 @@ void testSymmetricState(){
 void testCreateNextState(){
     cout << "start test create next state" << endl;
     ll t = 0b010100101010000000;
+    // auto nextStates = createNextStates(t, true);
+    // for(auto itr = nextStates->begin(); itr != nextStates->end(); ++itr){
+    //     cout << bitset<18>(itr->first) << endl;
+    // }
+    // cout << "choose o (1)" << endl;
+    // nextStates = createNextStates(t, false);
+    // for(auto itr = nextStates->begin(); itr != nextStates->end(); ++itr){
+    //     cout << bitset<18>(itr->first) << endl;
+    // }
+    cout << "initial state" << endl;
+    t = 0ll;
     auto nextStates = createNextStates(t, true);
     for(auto itr = nextStates->begin(); itr != nextStates->end(); ++itr){
         cout << bitset<18>(itr->first) << endl;
     }
-    cout << "choose o (1)" << endl;
-    nextStates = createNextStates(t, false);
-    for(auto itr = nextStates->begin(); itr != nextStates->end(); ++itr){
-        cout << bitset<18>(itr->first) << endl;
+}
+
+void testCreateSave(){
+    cout << "start create save test" << endl;
+    auto initialStates = createInitialStates();
+    auto nextStates = createSaveStateSet(initialStates);
+    for(auto itr=nextStates->begin(); itr!=nextStates->end();itr++){
+        cout << bitset<boardSize*boardSize*2>(itr->first) << endl;
     }
+    cout << "finish test" << endl;
 }
 
 int main(){
@@ -102,6 +118,7 @@ int main(){
     // testReverseState();
     // testSymmetricState();
     testCreateNextState();
+    // testCreateSave();
 
     return 0;
 }

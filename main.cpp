@@ -39,7 +39,6 @@ int moveLeft(int rowState, int i){
     // move the piece(index) to left
     // rowState is one row state
     // index 0 is right
-    int movingPiece = (int(cellNumbers[0][i]) & rowState) >> i*2;
     int newRow = 0;
     // add cell from right
     for(int j=0;j<boardSize-1;j++){
@@ -49,7 +48,7 @@ int moveLeft(int rowState, int i){
             newRow += (int(cellNumbers[0][j+1]) & rowState) >> 2; // 1 bit shift to right
         }
     }
-    newRow += movingPiece << (boardSize-1)*2; // the left is moving piece
+    newRow += 2 << (boardSize-1)*2; // the left is x (2). turn is always x(because the turn already changed)
     return newRow;
 }
 
@@ -57,7 +56,6 @@ int moveRight(int rowState, int i){
     // move the piece(index) to right
     // rowState is one row state
     // index 0 is right
-    int movingPiece = (int(cellNumbers[0][i]) & rowState) >> i*2;
     int newRow = 0;
     // add cell from left
     for(int j=boardSize-1;j>0;j--){
@@ -67,7 +65,7 @@ int moveRight(int rowState, int i){
             newRow += (int(cellNumbers[0][j-1]) & rowState) << 2; // 1 bit shift to left
         }
     }
-    newRow += movingPiece; // the right is moving piece
+    newRow += 2; // the right is x.
     return newRow;
 }
 
@@ -169,7 +167,7 @@ stateMap *createNextStates(ll presentState, bool chooseEmpty){
                     // need to choose x but the cell is not x. turn is already changed.
                     continue;
                 }
-                // TODO: move right and move left are similar. make it simple.
+                // TODO: refactor. move right and move left are similar. make it simple.
                 if(j!=boardSize-1){
                     // move to left
                     movingRow = int((state & rowNumbers[i]) >> 2*i*boardSize);
@@ -203,22 +201,35 @@ stateMap *createSaveStateSet(stateMap *initialStates){
     // return next initial state map pointer
 
     stateMap *createdStates = initialStates;
-    auto *nextInitialStates = new stateMap;  // next state has 2 types. #o and #x has 2 types
-    auto *presentStateSet = new stateMap;
-//    (*nextInitialStates)[1] = 1;
+    auto *nextInitialStates = new stateMap;  // next state has 2 types. #o and #x
+    auto *presentStates = new stateMap;
     while (createdStates != nullptr && !createdStates->empty()){
         // create new states which is reachable from createdState
         // save present state
         auto *newStates = new stateMap;
-        for(auto itr = createdStates->begin(); itr != createdStates->end(); ++itr){
+        for(auto stateItr = createdStates->begin(); stateItr != createdStates->end(); ++stateItr){
             // save
             // for debug. TODO: remove
-            if (presentStateSet->find(itr->first) != presentStateSet->end()){
+            if (presentStates->find(stateItr->first) != presentStates->end()){
                 cout << "strange Error: present states has already have this state" << endl;
             }
-            (*presentStateSet)[itr->first] = 1;
+            (*presentStates)[stateItr->first] = 1;
+
             // create reachable states
-            // TODO: add to present and next
+            // choose empty. add to nextInitialStates
+            auto nextStates = createNextStates(stateItr->first, true); 
+            for(auto itr=nextStates->begin();itr!=nextStates->end();itr++){
+                if(nextInitialStates->find(itr->first) == nextInitialStates->end()){
+                    (*nextInitialStates)[itr->first] = 1;
+                }
+            }
+            // choose circle. add to newStates
+            nextStates = createNextStates(stateItr->first, false); 
+            for(auto itr=nextStates->begin();itr!=nextStates->end();itr++){
+                if(newStates->find(itr->first) == newStates->end()){
+                    (*newStates)[itr->first] = 1;
+                }
+            }
         }
         createdStates = newStates;
     }
@@ -238,12 +249,14 @@ int createTree(){
     // save results to storage.
 
     stateMap *initialStates = createInitialStates();
-    // TODO implement: save initial states to storage
+    // TODO: implement: save initial states to storage
 
     stateMap *nextInitialStates = createSaveStateSet(initialStates);
-    // todo: repeat until nextInitialStates is null
+    // TODO: repeat until nextInitialStates is null
     return 0;
 }
+
+// TODO: output state . You can understand easily
 
 //int main(){
 //    // 4*4
