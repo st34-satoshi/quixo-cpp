@@ -133,6 +133,12 @@ void testCountAllStates(){
     cout << sum << endl;
 }
 
+void testWinMasks(){
+    for(auto n: xWinMasks){
+        printState(n);
+    }
+}
+
 int main(){
     cout << "test" << endl;
     init();
@@ -146,10 +152,11 @@ int main(){
     // testSymmetricState();
     // testCreateNextState();
     // testCreateSave();
-    testCreateTree();
-    testCountAllStates();
+    // testCreateTree();
+    // testCountAllStates();
     // testContains();
     // testPrintState();
+    testWinMasks();
 
     return 0;
 }

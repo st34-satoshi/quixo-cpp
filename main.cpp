@@ -3,43 +3,24 @@
 #include <vector>
 
 // 0: empty, 1: o, 2: x
+// i=0; bottom
+// j=0; right
 using namespace std;
 typedef long long ll;
 typedef unordered_map<ll, int> stateMap; // element is 1. no meaning
 const int boardSize = 3;
-// i=0; bottom
-// j=0; right
+
 vector< vector<ll> > cellNumbers;  // it is used to get a cell number.
 vector<ll> rowNumbers;  // it is used to get a row numbers.
+// use to check win
+vector<ll> xWinMasks; // check row, column and diagonal line
+vector<ll> oWinMasks;
 
 // TODO: remove this. it should be save to storage. if 5 by 5 not enough memory.
 vector<stateMap> allStateSet;
 
 bool contains(stateMap *base, ll state){
     return base->find(state) != base->end();
-}
-
-void init(){
-    // initialize cellNumbers
-    vector< vector<ll> > cells(boardSize, vector<ll>(boardSize));
-    for(int i=0;i<boardSize;i++){
-        for(int j=0;j<boardSize;j++){
-            cells[i][j] = 3ll << (i * boardSize + j)*2;
-        }
-    }
-    cellNumbers = cells;
-
-    // initialize rowNumbers
-    vector<ll> rows(boardSize);
-    // create base number: 1111111111 (binary number)
-    ll baseNumber = 3ll;
-    for(int i=0;i<boardSize-1;i++){
-        baseNumber = (baseNumber<<2) + 3ll;
-    }
-    for(int i=0;i<boardSize;i++){
-        rows[i] = baseNumber << i*boardSize*2;
-    }
-    rowNumbers = rows;
 }
 
 int moveLeft(int rowState, int i){
@@ -147,6 +128,97 @@ ll symmetricState(ll state){
     return minState;
 }
 
+void printState(ll state){
+    cout << "print state" << endl;
+    cout << bitset<boardSize*boardSize*2>(state) << endl;
+    int n;
+    for(int i=0;i<boardSize;i++){
+        for(int j=0;j<boardSize;j++){
+            n = getShiftedCellNumber(i, j, state);
+            if(n==0){
+                cout << "-";
+            }else if (n==1){
+                cout << "o";
+            }else if (n==2){
+                cout << "x";
+            }
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+void init(){
+    // initialize cellNumbers
+    vector< vector<ll> > cells(boardSize, vector<ll>(boardSize));
+    for(int i=0;i<boardSize;i++){
+        for(int j=0;j<boardSize;j++){
+            cells[i][j] = 3ll << (i * boardSize + j)*2;
+        }
+    }
+    cellNumbers = cells;
+
+    // initialize rowNumbers
+    vector<ll> rows(boardSize);
+    // create base number: 1111111111 (binary number)
+    ll baseNumber = 3ll;
+    for(int i=0;i<boardSize-1;i++){
+        baseNumber = (baseNumber<<2) + 3ll;
+    }
+    for(int i=0;i<boardSize;i++){
+        rows[i] = baseNumber << i*boardSize*2;
+    }
+    rowNumbers = rows;
+
+    // make masks to check win
+    ll oWin = 0ll;
+    ll xWin = 0ll;
+    // diagonal
+    for(int i=0;i<boardSize;i++){
+        oWin += 1ll << (i*boardSize+i)*2;
+        xWin += 2ll << (i*boardSize+i)*2;
+    }
+    oWinMasks.push_back(oWin);
+    xWinMasks.push_back(xWin);
+    oWinMasks.push_back(reverseState(oWin));
+    xWinMasks.push_back(reverseState(xWin));
+    // row
+    oWin = 1ll;
+    xWin = 2ll;
+    for(int i=0;i<boardSize-1;i++){
+        oWin = oWin << 2;
+        xWin = xWin << 2;
+        oWin += 1ll;
+        xWin += 2ll;
+    }
+    for(int i=0;i<boardSize;i++){
+        oWinMasks.push_back(oWin<<(2*i*boardSize));
+        xWinMasks.push_back(xWin<<(2*i*boardSize));
+    }
+    // column
+    oWin = 1ll;
+    xWin = 2ll;
+    for(int i=0;i<boardSize-1;i++){
+        oWin = oWin << 2*boardSize;
+        xWin = xWin << 2*boardSize;
+        oWin += 1ll;
+        xWin += 2ll;
+    }
+    for(int i=0;i<boardSize;i++){
+        oWinMasks.push_back(oWin<<(i*2));
+        xWinMasks.push_back(xWin<<(i*2));
+    }
+}
+
+int isWin(ll state){
+    // return 0:not decided, 1:win, 2:lose
+    // turn is o;
+    // if there is line of x, lose
+    // else if there is line of o, win
+    // check diagonal
+
+}
+
 stateMap *createNextStates(ll presentState, bool chooseEmpty){
     // if chooseEmpty, increase o number. choose e. turn is o.
     // else, the number of o, x, e are same. choose o.  turn is o.
@@ -154,6 +226,10 @@ stateMap *createNextStates(ll presentState, bool chooseEmpty){
     presentState = swapPlayer(presentState);
 
     auto *nextStates = new stateMap;
+    // if this state is end of the game (there is line) no next states.
+    // TODO: implement check line
+
+
     int movingRow, newRow;
     ll newState;
     // choose only switch row, then rotate and switch row again.
@@ -266,26 +342,6 @@ int createTree(){
     }
     
     return 0;
-}
-
-// TODO: output state . You can understand easily
-void printState(ll state){
-    cout << "print state" << endl;
-    int n;
-    for(int i=0;i<boardSize;i++){
-        for(int j=0;j<boardSize;j++){
-            n = getShiftedCellNumber(i, j, state);
-            if(n==0){
-                cout << "-";
-            }else if (n==1){
-                cout << "o";
-            }else if (n==2){
-                cout << "x";
-            }
-        }
-        cout << endl;
-    }
-    cout << endl;
 }
 
 //int main(){
