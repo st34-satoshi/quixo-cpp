@@ -1,3 +1,19 @@
+/*
+Next player is o.
+states are represented by long long.
+0:empty, 1:o, 2:x
+ox-
+o-o
+--x
+is
+011000_010001_000010
+
+you can change size by boardSize.
+
+Run
+c++ -std=c++17 main.cpp 
+./a.out
+*/
 #include <iostream>
 #include <unordered_map>
 #include <vector>

@@ -124,7 +124,7 @@ void testContains(){
 }
 
 void testPrintState(){
-    ll t = 0b010100101010000000;
+    ll t = 0b011000010001000010;
     printState(t);
 }
 
@@ -183,10 +183,10 @@ int main(){
     // testSymmetricState();
     // testCreateNextState();
     // testCreateSave();
-    testCreateTree();
+    // testCreateTree();
     // testCountAllStates();
     // testContains();
-    // testPrintState();
+    testPrintState();
     // testWinMasks();
     // testIsWin();
     // printAllStates();
