@@ -11,7 +11,7 @@ is
 you can change size by boardSize.
 
 Run
-c++ -std=c++17 main.cpp 
+c++ -std=c++17 -O3 main.cpp 
 ./a.out
 */
 #include <iostream>
@@ -105,7 +105,6 @@ ll swapPlayer(ll state){
 ll reverseState(ll state){
     // return reverse (mirror) state
     ll newState = 0ll;
-    int n;
     for(int i=boardSize-1;i>=0;i--){
         for(int j=boardSize-1;j>=0;j--){
             newState = newState << 2;
