@@ -14,7 +14,18 @@ void testCombinations(){
     }
 }
 
+void testGenerateState(){
+    cout << "start test generate state" << endl;
+    for(int i=50;i<1000;i+=50){
+        cout << "i=" << i << endl;
+        ll state = generateState(i, 2, 4);
+        printState(state);
+    }
+}
+
 int main(int argc, char* argv[]){
-    testCombinations();
+    init();
+    // testCombinations();
+    testGenerateState();
     return 0;
 }
