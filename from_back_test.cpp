@@ -4,7 +4,7 @@ using namespace std;
 
 void testCombinations(){
     cout << "test combinations" << endl;
-    creatCombinations();
+    // createCombinations();
     for(int i=0;i<=boardSize*boardSize;i++){
         cout << "i " << i << ": ";
         for(int j=0;j<=boardSize*boardSize;j++){
@@ -14,8 +14,7 @@ void testCombinations(){
     }
 }
 
-int main(){
-    //
+int main(int argc, char* argv[]){
     testCombinations();
     return 0;
 }
