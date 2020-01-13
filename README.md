@@ -2,5 +2,5 @@
 solve real quixo 
 
 ## Run
-- `c++ -std=c++17 main.cpp`
+- `c++ -std=c++17 reachable_state.cpp`
 - `./a.out`
