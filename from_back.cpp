@@ -49,11 +49,12 @@ void createCombinations(){
 }
 
 ll calculatePatterns(int spaceNumber, int oNumber, int xNumber){
+    // cout << "caculate patterns " << spaceNumber << ", " << oNumber << ", " << xNumber << endl;
     return combinations.at(spaceNumber).at(oNumber) * combinations.at(spaceNumber-oNumber).at(xNumber);
 }
 
 ll generateMark(int spaceNumber, ll indexNumber, int oNumber, int xNumber){
-    cout << "generate mark" << endl;
+    // cout << "generate mark" << endl;
     // 1=o, 2=x, 0=no mark
     // at the end
     if (spaceNumber == oNumber){
@@ -66,19 +67,22 @@ ll generateMark(int spaceNumber, ll indexNumber, int oNumber, int xNumber){
         return 0ll;
     }
     // not at the end
-    ll patternsSelectedO = calculatePatterns(spaceNumber-1, oNumber-1, xNumber);
-    if (indexNumber <= patternsSelectedO){
-        return 1ll;
+    if (oNumber > 0){
+        ll patternsSelectedO = calculatePatterns(spaceNumber-1, oNumber-1, xNumber);
+        if (indexNumber <= patternsSelectedO){
+            return 1ll;
+        }
+        indexNumber -= patternsSelectedO;
     }
     ll patternsSelectedX = calculatePatterns(spaceNumber-1, oNumber, xNumber-1);
-    if (indexNumber <= patternsSelectedO + patternsSelectedX){
+    if (indexNumber <= patternsSelectedX){
         return 2ll;
     }
     return 0ll;
 }
 
 ll generateState(ll indexNumber, int oNumber, int xNumber){
-    cout << "generate state" << endl;
+    // cout << "generate state" << endl;
     // change to state from indexNumber
     // it is possible to represent state using indexNumber but it is difficult to find symmetric states using indexNumber.
     ll remainingIndexNumber = indexNumber;
@@ -87,7 +91,7 @@ ll generateState(ll indexNumber, int oNumber, int xNumber){
     ll newState = 0;
     for(int i=combinationSize;i>0;i--){
         ll mark = generateMark(i, remainingIndexNumber, remainingONumber, remainingXNumber);
-        cout << "hhoo" << endl;
+        // cout << "hhoo" << endl;
         newState = newState << 2;
         newState += mark;
         if (mark == 1ll){

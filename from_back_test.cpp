@@ -24,8 +24,10 @@ void testGenerateState(){
 }
 
 int main(int argc, char* argv[]){
+    cout << "start test !!" << endl;
     init();
     // testCombinations();
     testGenerateState();
+    cout << "end test !!" << endl;
     return 0;
 }
