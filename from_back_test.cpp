@@ -16,11 +16,22 @@ void testCombinations(){
 
 void testGenerateState(){
     cout << "start test generate state" << endl;
-    for(int i=50;i<1000;i+=50){
+    for(int i=50;i<1000;i+=5){
         cout << "i=" << i << endl;
         ll state = generateState(i, 2, 4);
-        printState(state);
+        ll indexNumber = generateIndexNumber(state);
+        if (indexNumber != i){
+            cout << "not same" << endl;
+            cout << i << ", " << indexNumber << ", " << state << endl;
+            printState(state);
+        }else{
+            cout << "same state !!!" << endl;
+        }
     }
+}
+
+void testGenerateIndexNumber(){
+    //
 }
 
 int main(int argc, char* argv[]){

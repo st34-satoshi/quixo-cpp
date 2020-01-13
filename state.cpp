@@ -46,6 +46,10 @@ ll moveRight(ll rowState, int i){
     return newRow;
 }
 
+ll getRightMark(ll state){
+    return state & 3ll;
+}
+
 ll getCellNumber(int row, int column, ll state){
     return cellNumbers[row][column] & state;
 }

@@ -48,12 +48,18 @@ void createCombinations(){
     combinations = comb;
 }
 
+void init(){
+    createCombinations();
+    initState();
+}
+
 ll calculatePatterns(int spaceNumber, int oNumber, int xNumber){
-    // cout << "caculate patterns " << spaceNumber << ", " << oNumber << ", " << xNumber << endl;
+    cout << "caculate patterns " << spaceNumber << ", " << oNumber << ", " << xNumber << endl;
     return combinations.at(spaceNumber).at(oNumber) * combinations.at(spaceNumber-oNumber).at(xNumber);
 }
 
 ll generateMark(int spaceNumber, ll indexNumber, int oNumber, int xNumber){
+    // TODO implement: return mark and reduce number
     // cout << "generate mark" << endl;
     // 1=o, 2=x, 0=no mark
     // at the end
@@ -82,31 +88,58 @@ ll generateMark(int spaceNumber, ll indexNumber, int oNumber, int xNumber){
 }
 
 ll generateState(ll indexNumber, int oNumber, int xNumber){
-    // cout << "generate state" << endl;
+    cout << "generate state" << endl;
     // change to state from indexNumber
     // it is possible to represent state using indexNumber but it is difficult to find symmetric states using indexNumber.
     ll remainingIndexNumber = indexNumber;
     int remainingONumber = oNumber;
     int remainingXNumber = xNumber;
-    ll newState = 0;
+    ll newState = 0ll;
     for(int i=combinationSize;i>0;i--){
         ll mark = generateMark(i, remainingIndexNumber, remainingONumber, remainingXNumber);
-        // cout << "hhoo" << endl;
-        newState = newState << 2;
-        newState += mark;
+        cout << "hhoo" << mark << ", " << remainingIndexNumber << ", " << remainingONumber << ", " << remainingXNumber << endl;
+        newState = (newState << 2) + mark;
         if (mark == 1ll){
             remainingONumber--;
         }else if (mark == 2ll){
+            if (remainingONumber > 0){
+                remainingIndexNumber -= calculatePatterns(i-1, remainingONumber-1, remainingXNumber);
+            }
             remainingXNumber--;
+        }else if(mark == 0ll){
+            if(remainingONumber>0){
+                remainingIndexNumber -= calculatePatterns(i-1, remainingONumber, remainingXNumber);
+            }else{
+                remainingIndexNumber -= calculatePatterns(i-1, remainingONumber, remainingXNumber)*2;
+            }
         }
-        remainingIndexNumber -= calculatePatterns(i-1, remainingONumber, remainingXNumber);
+        
     }
+    cout << "end generate state" << endl;
     return newState;
 }
 
-void init(){
-    createCombinations();
-    initState();
+ll generateIndexNumber(ll stateNumber){
+    // TODO implement:
+    ll indexNumber = 0;
+    int oNumber = 0;
+    int xNumber = 0;
+    ll mark;
+    for(int i=0;i<combinationSize;i++){
+        mark = getRightMark(stateNumber);
+        stateNumber = stateNumber >> 2;
+        if (mark == 0ll){
+            indexNumber += calculatePatterns(i, oNumber, xNumber) * 2;
+        }else if(mark == 1ll){
+            oNumber++;
+        }else if(mark == 2ll){
+            indexNumber += calculatePatterns(i, oNumber, xNumber);
+            xNumber++;
+        }else{
+            cout << "Error; not mark " << mark << endl;
+        }
+    }
+    return indexNumber;
 }
 
 void computeStatesValue(int oNumber, int xNumber){
