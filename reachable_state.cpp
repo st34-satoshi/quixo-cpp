@@ -18,6 +18,7 @@ c++ -std=c++17 -O3 main.cpp
 #include <unordered_map>
 #include <vector>
 #include <time.h>
+#include <bitset>
 
 // 0: empty, 1: o, 2: x
 // i=0; bottom
