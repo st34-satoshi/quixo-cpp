@@ -23,7 +23,7 @@ using namespace std;
 
 const int boardSize = 5;
 // 
-const array< array<int, 26>, 26> combinations{ {
+constexpr int combinations[26][26] = {
     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
     {1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
@@ -50,9 +50,11 @@ const array< array<int, 26>, 26> combinations{ {
     {1, 23, 253, 1771, 8855, 33649, 100947, 245157, 490314, 817190, 1144066, 1352078, 1352078, 1144066, 817190, 490314, 245157, 100947, 33649, 8855, 1771, 253, 23, 1, 0, 0},
     {1, 24, 276, 2024, 10626, 42504, 134596, 346104, 735471, 1307504, 1961256, 2496144, 2704156, 2496144, 1961256, 1307504, 735471, 346104, 134596, 42504, 10626, 2024, 276, 24, 1, 0},
     {1, 25, 300, 2300, 12650, 53130, 177100, 480700, 1081575, 2042975, 3268760, 4457400, 5200300, 5200300, 4457400, 3268760, 2042975, 1081575, 480700, 177100, 53130, 12650, 2300, 300, 25, 1}
-} };
+};
+const int test = 10;
+constexpr int hoge[2] = {1, 2};
 
-// this is used to create combinations. but I know the value, it is not used
+// this is used to create combinations↑. but I know the value, it is not used
 // vector< vector<int>> combinations;  // nCr, (n<boardSize^2)
 // void createCombinations(){
 //     int combinationSize = boardSize * boardSize + 1;
@@ -74,9 +76,12 @@ void init(){
 }
 
 void computeStatesValue(int oNumber, int xNumber){
-    int eNumber = boardSize * boardSize - (oNumber + xNumber);
+    const int combinationSize = boardSize * boardSize;
+    int eNumber = combinationSize - (oNumber + xNumber);
     // TODO: implement
-    // bitset<>
+    bitset<combinationSize> ddd;
+    bitset<hoge[1]> rr;
+    bitset<combinations[combinationSize][oNumber]> tt;
 }
 
 // int main(){

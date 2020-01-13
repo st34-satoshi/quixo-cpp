@@ -8,7 +8,7 @@ void testCombinations(){
     for(int i=0;i<=boardSize*boardSize;i++){
         cout << "i " << i << ": ";
         for(int j=0;j<=boardSize*boardSize;j++){
-            cout << combinations.at(i).at(j) << ", ";
+            cout << combinations[i][j] << ", ";
         }
         cout << endl;
     }
