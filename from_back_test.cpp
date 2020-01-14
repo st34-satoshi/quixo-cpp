@@ -43,14 +43,33 @@ vector<ll> testVector(){
     return tt;
 }
 
+void testCreatePreviousState(){
+    cout << "start test create previous state" << endl;
+    ll t = 0b010100101010000000;
+    printState(t);
+    auto previousStates = createPreviousStates(t, true);
+    for(auto state : previousStates){
+        printState(state);
+    }
+    cout << "from empty" << endl;
+    previousStates = createPreviousStates(t, false);
+    for(auto state : previousStates){
+        printState(state);
+    }
+    cout << "initial state" << endl;
+    t = 0ll;
+    previousStates = createPreviousStates(t, false);
+    for(auto state : previousStates){
+        printState(state);
+    } 
+}
+
 int main(int argc, char* argv[]){
     cout << "start test !!" << endl;
     init();
     // testCombinations();
     // testGenerateState();
     // testVectorSize();
-    auto tv = testVector();
-    cout << tv.at(0) << tv.at(2);
-    cout << "end test !!" << endl;
+    testCreatePreviousState();
     return 0;
 }
