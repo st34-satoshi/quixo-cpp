@@ -2,8 +2,8 @@
 Next player is o.
 states are represented by the number of index(i).
 bitset saves 2 bits.
-00: unknown(draw)
-01: lose
+00: lose
+01: unknown(draw)
 10: win
 11: ??
 
@@ -59,8 +59,7 @@ ll getPatterns(int spaceNumber, int oNumber, int xNumber){
 }
 
 ll generateMark(int spaceNumber, ll *indexNumber, int oNumber, int xNumber){
-    // TODO implement: return mark and reduce number
-    // cout << "generate mark" << endl;
+    // return mark and reduce number
     // 1=o, 2=x, 0=no mark
     // at the end
     if (spaceNumber == oNumber){
@@ -75,7 +74,6 @@ ll generateMark(int spaceNumber, ll *indexNumber, int oNumber, int xNumber){
     // not at the end
     if (oNumber > 0){
         ll patternsSelectedO = getPatterns(spaceNumber-1, oNumber-1, xNumber);
-        // cout << "patterns selected o " << patternsSelectedO << endl;
         if (*indexNumber < patternsSelectedO){
             return 1ll;
         }
@@ -83,7 +81,6 @@ ll generateMark(int spaceNumber, ll *indexNumber, int oNumber, int xNumber){
     }
     if (xNumber > 0){
         ll patternsSelectedX = getPatterns(spaceNumber-1, oNumber, xNumber-1);
-        // cout << "patterns selected x " << patternsSelectedX << endl;
         if (*indexNumber < patternsSelectedX){
             return 2ll;
         }
@@ -93,7 +90,6 @@ ll generateMark(int spaceNumber, ll *indexNumber, int oNumber, int xNumber){
 }
 
 ll generateState(ll indexNumber, int oNumber, int xNumber){
-    // cout << "generate state" << endl;
     // change to state from indexNumber
     // it is possible to represent state using indexNumber but it is difficult to find symmetric states using indexNumber.
     ll remainingIndexNumber = indexNumber;
@@ -108,24 +104,17 @@ ll generateState(ll indexNumber, int oNumber, int xNumber){
         }else if (mark == 2ll){
             remainingXNumber--;
         }
-        // cout << "hhoo" << mark << ", " << remainingIndexNumber << ", " << remainingONumber << ", " << remainingXNumber << endl;
-        
     }
-    // cout << "end generate state" << endl;
     return newState;
 }
 
 ll generateIndexNumber(ll stateNumber){
-    // TODO implement:
-    // cout << "generate index number" << endl;
     ll indexNumber = 0;
     int oNumber = 0;
     int xNumber = 0;
     ll mark;
     for(int i=0;i<combinationSize;i++){
         mark = getRightMark(stateNumber);
-        // cout << "mark = " << mark << endl;
-        // cout << indexNumber << ", " << oNumber << ", " << xNumber << endl;
         stateNumber = stateNumber >> 2;
         if(mark == 1ll){
             oNumber++;
@@ -133,7 +122,6 @@ ll generateIndexNumber(ll stateNumber){
             xNumber++;
             // not o. if it is possible to select o, add the number of patterns of next states.
             if (oNumber > 0){
-                // cout << "oo " << i << "," << oNumber << " " << xNumber << endl; 
                 indexNumber += getPatterns(i, oNumber-1, xNumber);
             }
         }else if (mark == 0ll){
@@ -141,31 +129,88 @@ ll generateIndexNumber(ll stateNumber){
                 indexNumber += getPatterns(i, oNumber-1, xNumber);
             }
             if (xNumber > 0){
-                // cout << "xx " << i << "," << oNumber << " " << xNumber << endl; 
                 indexNumber += getPatterns(i, oNumber, xNumber-1);
             }
 
         }
         
     }
-    // cout << "end generate index number" << endl;
     return indexNumber;
 }
 
 void computeStatesValue(int oNumber, int xNumber){
     // TODO implement: the case no == nx. do not need to use reverse
+    // 00: lose
+    // 01: unknown(draw)
+    // 10: win
+    // 11: ??
+
     // TODO implement:
     // oNumber != xNumber
     // initialize this state value
     // int eNumber = combinationSize - (oNumber + xNumber);
     // we need to compute reverse states at the same time. 
-    vector<bool> valaues(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
-    vector<bool> valauesReverse(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber] * 2);
+    vector<bool> values(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
+    vector<bool> valuesReverse(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber] * 2);
+    
     // read next state value
+    vector<bool> nextValues;  // next states values of values
+    vector<bool> nextReverseValues; // next states values of valuesReverse
     // TODO implement
+    if (oNumber + xNumber < combinationSize){
+        // read next state values. o+1 and x+1
+        // compute values from next state values
+        // TODO implement
+    }
 
-    // compute values from next state values
     // compute values until no update
+    bool updated = true;
+    while (updated){
+        updated = false;
+        // check all states
+        for (ll i=0ll;i<values.size();i++){
+            if (!values.at(i*2+1)){
+                // lose or win --> skip
+                continue;
+            }
+            // if all next states are win this state is lose
+            bool lose = true;
+            ll thisState = generateState(i, oNumber, xNumber);
+            // next states are reverse
+            auto nextStatesReverse = createNextStates(thisState, true);
+            for (auto state : nextStatesReverse){
+                ll indexState = generateIndexNumber(state);
+                if(!valuesReverse.at(indexState*2)){
+                    // not win (lose or draw)
+                    // at least 1 next state is not win. this state is not lose
+                    lose = false;
+                    break;
+                }
+            }
+            if (!lose){
+                continue;
+            }
+            // next states are nextState the number of o increase
+            auto nextStatesAddO = createNextStates(thisState, false);
+            for (auto state : nextStatesAddO){
+                ll indexState = generateIndexNumber(state);
+                if(!nextValues.at(indexState*2)){
+                    // not win (lose or draw)
+                    // at least 1 next state is not win. this state is not lose
+                    lose = false;
+                    break;
+                }
+            }
+            if (lose){
+                // update to lose and change previous states to win
+                // TODO implement
+                updated = true;
+                values.at(i*2+1) = 0; // 01 --> 00
+                // TODO generate previous states, update to win
+            }
+        }
+        // TODO valuesReverse
+    }
 
 }
 

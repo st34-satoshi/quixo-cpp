@@ -143,6 +143,85 @@ void printState(ll state){
     cout << endl;
 }
 
+int isWin(ll state){
+    // return 0:not decided, 1:win, -1:lose
+    // turn is o;
+    // if there is line of x, lose
+    // else if there is line of o, win
+    bool win = false;
+    ll mask;
+    for(int i=0;i<eWinMasks.size();i++){
+        mask = state & eWinMasks.at(i);
+        if (mask == xWinMasks.at(i)){
+            return -1;
+        }
+        if (mask == oWinMasks.at(i)){
+            win = true;
+        }
+    }
+    if (win){
+        return 1;
+    }
+    return 0;
+}
+
+vector<ll> createNextStates(ll presentState, bool chooseEmpty){
+    // if chooseEmpty, increase o number. choose e. turn is o.
+    // else, the number of o, x, e are same. choose o.  turn is o.
+    // before creating states, swap turn
+    presentState = swapPlayer(presentState);
+
+    vector<ll> nextStates;
+    // if this state is end of the game (there is line) no next states.
+    if (isWin(presentState)!=0){
+        return nextStates;
+    }
+
+    ll movingRow, newRow, newState;
+    // choose only switch row, then rotate and switch row again.
+    // search present state and rotated state.
+    for(ll state : {presentState, rotatedState(presentState)}){
+        for(int i=0;i<boardSize;i++){
+            for(int j=0;j<boardSize;j++){
+                if(0<i && i<boardSize-1 && 0<j && j<boardSize-1){
+                    // not edge
+                    continue;
+                }
+                if (chooseEmpty && getShiftedCellNumber(i, j, state)!=0){
+                    // need to choose empty but the cell is not empty.
+                    continue;
+                }
+                if (!chooseEmpty && getShiftedCellNumber(i, j, state)!=2){
+                    // need to choose x but the cell is not x. turn is already changed.
+                    continue;
+                }
+                // TODO: refactor. move right and move left are similar. make it simple.
+                if(j!=boardSize-1){
+                    // move to left
+                    movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
+                    newRow = moveLeft(movingRow, j);
+                    newState = (state & ~rowNumbers[i]) | (ll(newRow) << 2*i*boardSize);
+                    newState = symmetricState(newState);  // select minimum state in symmetric states.
+                    // add to nextStates
+                    // TODO: avoid the newStaet which is already in nextStates
+                    nextStates.push_back(newState);
+                }
+                if(j!=0){
+                    // move to right
+                    movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
+                    newRow = moveRight(movingRow, j);
+                    newState = (state & ~rowNumbers[i]) | (ll(newRow) << 2*i*boardSize);
+                    newState = symmetricState(newState);  // select minimum state in symmetric states.
+                    // add to nextStates
+                    // TODO: avoid the newStaet which is already in nextStates
+                    nextStates.push_back(newState);
+                }
+            }
+        }
+    }
+    return nextStates;
+}
+
 void initState(){
     // initialize cellNumbers
     vector< vector<ll> > cells(boardSize, vector<ll>(boardSize));

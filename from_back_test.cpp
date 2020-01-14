@@ -33,15 +33,24 @@ void testGenerateState(){
     cout << "re " << ok << endl;
 }
 
-void testGenerateIndexNumber(){
-    //
+void testVectorSize(){
+    vector<bool> testv(999999999999999999);
+    cout << testv.size() * 400 << endl;
+}
+
+vector<ll> testVector(){
+    vector<ll> tt(3, 4);
+    return tt;
 }
 
 int main(int argc, char* argv[]){
     cout << "start test !!" << endl;
     init();
     // testCombinations();
-    testGenerateState();
+    // testGenerateState();
+    // testVectorSize();
+    auto tv = testVector();
+    cout << tv[0] << tv[2];
     cout << "end test !!" << endl;
     return 0;
 }
