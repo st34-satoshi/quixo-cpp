@@ -203,6 +203,7 @@ void computeStatesValue(int oNumber, int xNumber){
                 // update this state to lose and change previous states to win
                 // TODO implement
                 updated = true;
+                // TODO update all symmetric states
                 values.at(i*2+1) = 0; // 01 --> 00 (draw --> lose)
                 // TODO generate previous states, update to win
             }

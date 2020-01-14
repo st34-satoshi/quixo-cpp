@@ -12,7 +12,7 @@ vector<ll> xWinMasks; // check row, column and diagonal line
 vector<ll> oWinMasks;
 vector<ll> eWinMasks;
 
-ll moveLeft(ll rowState, int i){
+ll moveLeft(ll rowState, int i, ll addMark){
     // move the piece(index) to left
     // rowState is one row state
     // index 0 is right
@@ -25,11 +25,11 @@ ll moveLeft(ll rowState, int i){
             newRow += (cellNumbers[0][j+1] & rowState) >> 2; // 1 bit shift to right
         }
     }
-    newRow += 2ll << (boardSize-1)*2; // the left is x (2). turn is always x(because the turn already changed)
+    newRow += addMark << (boardSize-1)*2; // the left is x (2). turn is always x(because the turn already changed)
     return newRow;
 }
 
-ll moveRight(ll rowState, int i){
+ll moveRight(ll rowState, int i, ll addMark){
     // move the piece(index) to right
     // rowState is one row state
     // index 0 is right
@@ -42,7 +42,7 @@ ll moveRight(ll rowState, int i){
             newRow += (cellNumbers[0][j-1] & rowState) << 2; // 1 bit shift to left
         }
     }
-    newRow += 2ll; // the right is x.
+    newRow += addMark; // the right is x.
     return newRow;
 }
 
@@ -199,8 +199,8 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
                 if(j!=boardSize-1){
                     // move to left
                     movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
-                    newRow = moveLeft(movingRow, j);
-                    newState = (state & ~rowNumbers[i]) | (ll(newRow) << 2*i*boardSize);
+                    newRow = moveLeft(movingRow, j, 2ll);
+                    newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
                     newState = symmetricState(newState);  // select minimum state in symmetric states.
                     // add to nextStates
                     // TODO: avoid the newStaet which is already in nextStates
@@ -209,8 +209,8 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
                 if(j!=0){
                     // move to right
                     movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
-                    newRow = moveRight(movingRow, j);
-                    newState = (state & ~rowNumbers[i]) | (ll(newRow) << 2*i*boardSize);
+                    newRow = moveRight(movingRow, j, 2ll);
+                    newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
                     newState = symmetricState(newState);  // select minimum state in symmetric states.
                     // add to nextStates
                     // TODO: avoid the newStaet which is already in nextStates
@@ -220,6 +220,66 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
         }
     }
     return nextStates;
+}
+
+vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
+    // turn is o. last player is x
+    // if fromEmpty, previous mark is -. 
+    // else, previous mark is x
+    // TODO: if the previous state is the end of the game avoid the state
+    // before creating states, swap turn
+    presentState = swapPlayer(presentState);
+    ll previousMark = 1ll;
+    if (fromEmpty){
+        previousMark = 0ll;
+    }
+
+    vector<ll> previousStates;
+
+    ll movingRow, newRow, newState;
+    // choose only switch row, then rotate and switch row again.
+    // search present state and rotated state.
+    for(ll state : {presentState, rotatedState(presentState)}){
+        for(int i=0;i<boardSize;i++){
+            movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
+            for(int j : {0, boardSize-1}){
+                if (getShiftedCellNumber(i, j, state)!=1ll){
+                    // need to choose o, but the cell is o.
+                    continue;
+                }
+                if(j == boardSize-1){
+                    // previous position is left (without i==0 and i== boardSize-1)
+                    newRow = moveLeft(movingRow, j, previousMark);
+                    newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                    // newState = symmetricState(newState);  // select minimum state in symmetric states.
+                    // add to previousStates
+                    // TODO: avoid the newStaet which is already in nextStates. and the state at the end of the game
+                    previousStates.push_back(newState);
+                }
+                if(j == 0){
+                    // previous position is right
+                    newRow = moveRight(movingRow, j, previousMark);
+                    newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                    previousStates.push_back(newState);
+                }
+                if (i == 0 || i == boardSize-1){
+                    // previous position is 0<j<boardsize-1
+                    for (int k=1;k<boardSize-1;k++){
+                        // previous action is k to right
+                        newRow = moveRight(movingRow, k, previousMark);
+                        newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                        previousStates.push_back(newState);
+
+                        // previous action is k to left
+                        newRow = moveLeft(movingRow, k, previousMark);
+                        newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                        previousStates.push_back(newState);
+                    }
+                }
+            }
+        }
+    }
+    return previousStates;
 }
 
 void initState(){

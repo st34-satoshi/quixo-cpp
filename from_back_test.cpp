@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
     // testGenerateState();
     // testVectorSize();
     auto tv = testVector();
-    cout << tv[0] << tv[2];
+    cout << tv.at(0) << tv.at(2);
     cout << "end test !!" << endl;
     return 0;
 }
