@@ -138,6 +138,32 @@ ll generateIndexNumber(ll stateNumber){
     return indexNumber;
 }
 
+bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAddO){
+    // if all next states are win this state is lose
+    ll thisState = generateState(indexState, oNumber, xNumber);
+    // next states are reverse of o and x.
+    auto nextStatesReverse = createNextStates(thisState, true);
+    for (auto state : nextStatesReverse){
+        ll indexState = generateIndexNumber(state);
+        if(!nextStatesValuesSame->at(indexState*2)){
+            // not win (lose or draw)
+            // at least 1 next state is not win. this state is not lose
+            return false;
+        }
+    }
+    // next states are nextState the number of o increase
+    auto nextStatesAddO = createNextStates(thisState, false);
+    for (auto state : nextStatesAddO){
+        ll indexState = generateIndexNumber(state);
+        if(!nextStatesValuesAddO->at(indexState*2)){
+            // not win (lose or draw)
+            // at least 1 next state is not win. this state is not lose
+            return false;
+        }
+    }
+    return true;
+}
+
 void computeStatesValue(int oNumber, int xNumber){
     // TODO implement: the case no == nx. do not need to use reverse
     // 00: lose
@@ -173,39 +199,11 @@ void computeStatesValue(int oNumber, int xNumber){
                 // lose or win --> skip
                 continue;
             }
-            // if all next states are win this state is lose
-            bool lose = true;
-            ll thisState = generateState(i, oNumber, xNumber);
-            // next states are reverse
-            auto nextStatesReverse = createNextStates(thisState, true);
-            for (auto state : nextStatesReverse){
-                ll indexState = generateIndexNumber(state);
-                if(!valuesReverse.at(indexState*2)){
-                    // not win (lose or draw)
-                    // at least 1 next state is not win. this state is not lose
-                    lose = false;
-                    break;
-                }
-            }
-            if (!lose){
-                continue;
-            }
-            // next states are nextState the number of o increase
-            auto nextStatesAddO = createNextStates(thisState, false);
-            for (auto state : nextStatesAddO){
-                ll indexState = generateIndexNumber(state);
-                if(!nextValues.at(indexState*2)){
-                    // not win (lose or draw)
-                    // at least 1 next state is not win. this state is not lose
-                    lose = false;
-                    break;
-                }
-            }
-            if (lose){
-                // update to lose and change previous states to win
+            if (isLoseState(i, oNumber, xNumber, &valuesReverse, &nextValues)){
+                // update this state to lose and change previous states to win
                 // TODO implement
                 updated = true;
-                values.at(i*2+1) = 0; // 01 --> 00
+                values.at(i*2+1) = 0; // 01 --> 00 (draw --> lose)
                 // TODO generate previous states, update to win
             }
         }
