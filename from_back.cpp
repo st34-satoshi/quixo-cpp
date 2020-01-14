@@ -138,6 +138,10 @@ ll generateIndexNumber(ll stateNumber){
     return indexNumber;
 }
 
+/*
+ update all values
+*/
+
 bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAddO){
     // if all next states are win this state is lose
     ll thisState = generateState(indexState, oNumber, xNumber);
@@ -162,6 +166,36 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStat
         }
     }
     return true;
+}
+
+bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAdd ){
+    bool updated = false;
+    for (ll i=0ll;i<values->size();i++){
+        if (!values->at(i*2+1)){
+            // lose or win --> skip
+            continue;
+        }
+        if (isLoseState(i, oNumber, xNumber, nextStatesValuesSame, nextStatesValuesAdd)){
+            // update this state to lose and change previous states to win
+            updated = true;
+            ll stateNumber = generateState(i, oNumber, xNumber);
+            // update all symmetric states
+            for(auto stateN : symmetricAllStates(stateNumber)){
+                ll stateI = generateIndexNumber(stateN);
+                values->at(stateI*2+1) = 0; // 01 --> 00 (draw --> lose)
+            }
+            // generate previous states, update to win
+            for( auto stateN : createPreviousStates(stateNumber, false)){
+                for(auto s : symmetricAllStates(stateN)){
+                    ll stateI = generateIndexNumber(s);
+                    nextStatesValuesSame->at(stateI*2) = 1;
+                    nextStatesValuesSame->at(stateI*2+1) = 0;
+                }
+                
+            }
+        }
+    }
+    return updated;
 }
 
 void computeStatesValue(int oNumber, int xNumber){
@@ -194,22 +228,8 @@ void computeStatesValue(int oNumber, int xNumber){
     while (updated){
         updated = false;
         // check all states
-        for (ll i=0ll;i<values.size();i++){
-            if (!values.at(i*2+1)){
-                // lose or win --> skip
-                continue;
-            }
-            if (isLoseState(i, oNumber, xNumber, &valuesReverse, &nextValues)){
-                // update this state to lose and change previous states to win
-                // TODO implement
-                updated = true;
-                ll stateNumber = generateState(i, oNumber, xNumber);
-                // TODO update all symmetric states
-                values.at(i*2+1) = 0; // 01 --> 00 (draw --> lose)
-                // TODO generate previous states, update to win
-            }
-        }
-        // TODO valuesReverse
+        updated = updateValues(&values, oNumber, xNumber, &valuesReverse, &nextValues);
+        updated = updateValues(&valuesReverse, oNumber, xNumber, &values, &nextReverseValues) || updated;
     }
 
 }
