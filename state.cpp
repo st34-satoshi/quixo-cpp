@@ -121,6 +121,21 @@ ll symmetricState(ll state){
     return minState;
 }
 
+vector<ll> symmetricAllStates(ll state){
+    // return all symmetric states
+    ll rState = reverseState(state);
+    vector<ll> symmetricStates;
+    symmetricStates.push_back(state);
+    symmetricStates.push_back(rState);
+    for(ll s: {state, rState}){
+        for(int i=0;i<3;i++){
+            s = rotatedState(s);
+            symmetricStates.push_back(s);
+        }
+    }
+    return symmetricStates;
+}
+
 void printState(ll state){
     cout << "print state" << endl;
     cout << bitset<boardSize*boardSize*2>(state) << endl;
@@ -233,9 +248,7 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
     if (fromEmpty){
         previousMark = 0ll;
     }
-
     vector<ll> previousStates;
-
     ll movingRow, newRow, newState;
     // choose only switch row, then rotate and switch row again.
     // search present state and rotated state.
