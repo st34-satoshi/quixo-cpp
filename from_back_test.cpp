@@ -16,7 +16,8 @@ void testCombinations(){
 
 void testGenerateState(){
     cout << "start test generate state" << endl;
-    for(int i=50;i<1000;i+=5){
+    bool ok = true;
+    for(int i=0;i<860;i+=1){
         cout << "i=" << i << endl;
         ll state = generateState(i, 2, 4);
         ll indexNumber = generateIndexNumber(state);
@@ -24,10 +25,12 @@ void testGenerateState(){
             cout << "not same" << endl;
             cout << i << ", " << indexNumber << ", " << state << endl;
             printState(state);
+            ok = false;
         }else{
             cout << "same state !!!" << endl;
         }
     }
+    cout << "re " << ok << endl;
 }
 
 void testGenerateIndexNumber(){
