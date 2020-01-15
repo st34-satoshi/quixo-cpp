@@ -61,6 +61,14 @@ void testCreatePreviousState(){
     for(auto state : previousStates){
         printState(state);
     } 
+    cout << "special state" << endl;
+    t = 0b010010011001101001ll;
+    printState(t);
+    cout << "previous" << endl;
+    previousStates = createPreviousStates(t, true);
+    for(auto state : previousStates){
+        printState(state);
+    } 
 }
 
 void testBool(){
@@ -128,12 +136,12 @@ int main(int argc, char* argv[]){
     // testCombinations();
     // testGenerateState();
     // testVectorSize();
-    // testCreatePreviousState();
+    testCreatePreviousState();
     // testBool();
     // testComputeStatesValue();
     // testBinaryFileWrite();
     // testBinaryFileRead();
-    computeAllStatesValue();
+    // computeAllStatesValue();
     cout << "end of test !!" << endl;
     return 0;
 }

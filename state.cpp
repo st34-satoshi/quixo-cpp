@@ -261,44 +261,45 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
                     continue;
                 }
                 if(j == boardSize-1){
-                    // previous position is left (without i==0 and i== boardSize-1)
-                    newRow = moveLeft(movingRow, j, previousMark);
+                    // previous position is right(small) (without i==0 and i== boardSize-1)
+                    newRow = moveRight(movingRow, j, previousMark);
                     newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                    // newState = symmetricState(newState);  // select minimum state in symmetric states.
+                    // newSta RightymmetricState(newState);  // select minimum state in symmetric states.
                     // add to previousStates
                     // avoid the previous state which is at the end of the game
                     if(isWin(newState)==0){
                         previousStates.push_back(newState);
                     }
+                    // previousStates.push_back(newState);
                     // TODO: avoid the newStaet which is already in nextStates. and the state at the end of the game
                     
                 }
                 if(j == 0){
-                    // previous position is right
-                    newRow = moveRight(movingRow, j, previousMark);
+                    // previous position is left
+                    newRow = moveLeft(movingRow, j, previousMark);
                     newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
                     if(isWin(newState)==0){
                         previousStates.push_back(newState);
                     }
                 }
-                if (i == 0 || i == boardSize-1){
-                    // previous position is 0<j<boardsize-1
-                    for (int k=1;k<boardSize-1;k++){
-                        // previous action is k to right
-                        newRow = moveRight(movingRow, k, previousMark);
-                        newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                        if(isWin(newState)==0){
-                            previousStates.push_back(newState);
-                        }
+                // if (i == 0 || i == boardSize-1){
+                //     // previous position is 0<j<boardsize-1
+                //     for (int k=1;k<boardSize-1;k++){
+                //         // previous action is k to right
+                //         newRow = moveRight(movingRow, k, previousMark);
+                //         newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                //         if(isWin(newState)==0){
+                //             previousStates.push_back(newState);
+                //         }
 
-                        // previous action is k to left
-                        newRow = moveLeft(movingRow, k, previousMark);
-                        newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                        if(isWin(newState)==0){
-                            previousStates.push_back(newState);
-                        }
-                    }
-                }
+                //         // previous action is k to left
+                //         newRow = moveLeft(movingRow, k, previousMark);
+                //         newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                //         if(isWin(newState)==0){
+                //             previousStates.push_back(newState);
+                //         }
+                //     }
+                // }
             }
         }
     }
