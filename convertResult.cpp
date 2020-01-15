@@ -5,11 +5,14 @@ void convertResultsTOXO(){
         cout << "totol = " << total << endl;
         for(int oNumber=0;oNumber<=total;oNumber++){
             int xNumber = total - oNumber;
-            cout << fileName(2, 3);
             vector<bool> values(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
             readStatesValue(&values, oNumber, xNumber);
-            for(auto v : values){
-                cout << v;
+            // TODO save to file
+            for(ll i=0; i<values.size()/2ll;i++){
+                ll s = generateState(i, oNumber, xNumber);
+                cout << "value = " << values.at(i*2) << values.at(i*2+1) << endl;
+                printState(s);
+                // cout << v;
             }
         }
     }
