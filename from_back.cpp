@@ -24,12 +24,6 @@ c++ -std=c++17 -O3 from_back.cpp
 ./a.out
 */
 
-#include <iostream>
-#include <bitset>
-#include <vector>
-#include <fstream>
-#include <sstream>
-
 
 #include "state.cpp"
 

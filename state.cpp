@@ -426,7 +426,8 @@ ll generateIndexNumber(ll stateNumber){
     return indexNumber;
 }
 
-string fileName(int oNumber, int xNumber){ostringstream osO, osX;
+string fileName(int oNumber, int xNumber){
+    ostringstream osO, osX;
     osO << oNumber;
     osX << xNumber;
     return "results/testo"+osO.str()+"x"+osX.str()+".bin";
