@@ -1,6 +1,7 @@
 #include "state.cpp"
 
 void convertResultsTOXO(){
+    int countState = 0;
     for(int total=combinationSize; total>=0 ;total--){
         cout << "totol = " << total << endl;
         for(int oNumber=0;oNumber<=total;oNumber++){
@@ -12,10 +13,11 @@ void convertResultsTOXO(){
                 ll s = generateState(i, oNumber, xNumber);
                 cout << "value = " << values.at(i*2) << values.at(i*2+1) << endl;
                 printState(s);
-                // cout << v;
+                countState++;
             }
         }
     }
+    cout << "total states = " << countState << endl;
 }
 
 int main(int argc, char *argv[]){
