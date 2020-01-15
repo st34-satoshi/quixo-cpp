@@ -27,6 +27,9 @@ c++ -std=c++17 -O3 from_back.cpp
 #include <iostream>
 #include <bitset>
 #include <vector>
+#include <fstream>
+#include <sstream>
+
 
 #include "state.cpp"
 
@@ -136,6 +139,24 @@ ll generateIndexNumber(ll stateNumber){
         
     }
     return indexNumber;
+}
+
+string fileName(int oNumber, int xNumber){ostringstream osO, osX;
+    osO << oNumber;
+    osX << xNumber;
+    return "results/testo"+osO.str()+"x"+osX.str()+".bin";
+}
+
+void saveStatesValues(vector<bool> *values, int oNumber, int xNumber){
+    ofstream fout(fileName(oNumber, xNumber), ios::out | ios::binary);
+    if(!fout.is_open()){
+        cout << "cannot open file" << endl;
+        return;
+    }
+    for(auto t: *values){
+        fout.put(t);
+    }
+    fout.close();
 }
 
 /*
@@ -302,14 +323,8 @@ void computeStatesValue(int oNumber, int xNumber){
     // find the states which end of the game, if it is lose update previous state to win
     updateValuesFromEnd(&values, oNumber, xNumber, &valuesReverse, &nextValues);
     updateValuesFromEnd(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues);
-    // for(ll i=0;i<values.size()/2ll;i++){
-    //     ll state = generateState(i, oNumber, xNumber);
-    //     printState(state);
-    //     cout << values.at(i*2ll) << values.at(i*2ll+1ll) << endl;
-    // }
 
     // calculate values until no update
-    // cout << "update " << endl;
     bool updated = true;
     while (updated){
         updated = false;
@@ -317,14 +332,13 @@ void computeStatesValue(int oNumber, int xNumber){
         updated = updateValues(&values, oNumber, xNumber, &valuesReverse, &nextValues);
         updated = updateValues(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues) || updated;
     }
-    // cout << "end update" << endl;
     // TODO save resutl to strage
     for(int i=0;i<values.size()/2;i++){
         ll state = generateState(i, oNumber, xNumber);
         printState(state);
         cout << values.at(i*2) << values.at(i*2+1) << endl;
     }
-
+    saveStatesValues(&values, oNumber, xNumber);
 }
 
 // int main(){
