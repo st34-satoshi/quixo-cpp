@@ -3,7 +3,7 @@
 using namespace std;
 typedef long long ll;
 
-const int boardSize = 3;
+const int boardSize = 2;
 
 vector< vector<ll> > cellNumbers;  // it is used to get a cell number.
 vector<ll> rowNumbers;  // it is used to get a row numbers.

@@ -136,12 +136,12 @@ int main(int argc, char* argv[]){
     // testCombinations();
     // testGenerateState();
     // testVectorSize();
-    testCreatePreviousState();
+    // testCreatePreviousState();
     // testBool();
     // testComputeStatesValue();
     // testBinaryFileWrite();
     // testBinaryFileRead();
-    // computeAllStatesValue();
+    computeAllStatesValue();
     cout << "end of test !!" << endl;
     return 0;
 }
