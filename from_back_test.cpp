@@ -62,7 +62,7 @@ void testCreatePreviousState(){
         printState(state);
     } 
     cout << "special state" << endl;
-    t = 0b010010011001101001ll;
+    t = 0b010101101010010110;
     printState(t);
     cout << "previous" << endl;
     previousStates = createPreviousStates(t, true);
@@ -130,6 +130,32 @@ void testComputeAllStatesValue(){
     computeAllStatesValue();
 }
 
+void debug(){
+    computeStatesValue(3, 5);
+}
+
+// void testMoveLeft(){
+//     cout << "start move left test" << endl;
+//     int r;
+//     for(int i=0;i<510;i++){
+//         for (int j=0;j<boardSize;j++){
+//             r = moveLeft(i, j);
+//             cout << bitset<10>(i) << ", " << j << ", " << bitset<10>(r) << endl;
+//         }
+//     }
+// }
+
+void testMoveRight(){
+    cout << "start move right test" << endl;
+    int r;
+    for(int i=0;i<30;i++){
+        for (int j=0;j<boardSize;j++){
+            r = moveRight(i, j, 1, 0ll);
+            cout << bitset<10>(i) << ", " << j << ", " << bitset<10>(r) << endl;
+        }
+    }
+}
+
 int main(int argc, char* argv[]){
     cout << "start test !!" << endl;
     init();
@@ -141,7 +167,9 @@ int main(int argc, char* argv[]){
     // testComputeStatesValue();
     // testBinaryFileWrite();
     // testBinaryFileRead();
-    computeAllStatesValue();
+    // computeAllStatesValue();
+    debug();
+    // testMoveRight();
     cout << "end of test !!" << endl;
     return 0;
 }

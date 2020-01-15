@@ -103,6 +103,7 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
     // cout << "start update values from end" << endl;
     // find the states which end of the game, and change previous states (to win)
     // oNumber is for values
+
     for (ll i=0ll;i<nextStatesValuesSame->size()/2ll;i++){
         if (nextStatesValuesSame->at(i*2ll) || nextStatesValuesSame->at(i*2ll+1ll)){
             // lose or win --> skip. this precious states already updated
@@ -130,25 +131,19 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
                         cout << "Strange bug. this" << endl;
                     }
                     values->at(stateI*2ll) = 1;
-                    if (isWin(s) != 0){
-                        cout << "BUG: this state is not win" << endl;
-                    }
                 }
             }
         }else if (win == 1){
             if (nextStatesValuesSame->at(i*2ll+1ll)){
                 cout << "strange bug to win" << endl;
             }
-            // TODO for symmetric states!!
+            // for symmetric states!!
             for(auto state : symmetricAllStates(stateNumber)){
                 ll stateI = generateIndexNumber(state);
                 if (nextStatesValuesSame->at(stateI*2ll+1ll)){
                     cout << "Strange bug. this state win but it is lose." << endl;
                 }
                 nextStatesValuesSame->at(stateI*2ll) = 1; // 00 --> 10 (draw --> win)
-                if (isWin(state) != 1){
-                    cout << "BUG: this state is not win  jjj" << endl;
-                }
             }
         }
     }
@@ -163,6 +158,7 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
         }
         
         ll stateNumber = generateState(i, xNumber, oNumber+1);
+        
         // generate previous states, update to win
         for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
             for(auto s : symmetricAllStates(stateN)){
@@ -172,8 +168,6 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
             
         }
     }
-
-    // cout << "end update values from end" << endl;
 }
 
 void computeStatesValue(int oNumber, int xNumber){
@@ -209,6 +203,7 @@ void computeStatesValue(int oNumber, int xNumber){
     // cout << "start from end" << endl;
     // at first find next lose states and update this values to win
     // find the states which end of the game, if it is lose update previous state to win
+
     updateValuesFromEnd(&values, oNumber, xNumber, &valuesReverse, &nextValues);
     updateValuesFromEnd(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues);
 
