@@ -1,9 +1,4 @@
-#include <vector>
-
-using namespace std;
-typedef long long ll;
-
-const int boardSize = 2;
+#include "global.cpp"
 
 vector< vector<ll> > cellNumbers;  // it is used to get a cell number.
 vector<ll> rowNumbers;  // it is used to get a row numbers.
@@ -380,4 +375,86 @@ void initState(){
         eWinMasks.push_back(eWin<<(i*2));
     }
 
+}
+
+ll generateState(ll indexNumber, int oNumber, int xNumber){
+    // change to state from indexNumber
+    // it is possible to represent state using indexNumber but it is difficult to find symmetric states using indexNumber.
+    ll remainingIndexNumber = indexNumber;
+    int remainingONumber = oNumber;
+    int remainingXNumber = xNumber;
+    ll newState = 0ll;
+    for(int i=combinationSize;i>0;i--){
+        ll mark = generateMark(i, &remainingIndexNumber, remainingONumber, remainingXNumber);
+        newState = (newState << 2) + mark;
+        if (mark == 1ll){
+            remainingONumber--;
+        }else if (mark == 2ll){
+            remainingXNumber--;
+        }
+    }
+    return newState;
+}
+
+ll generateIndexNumber(ll stateNumber){
+    ll indexNumber = 0;
+    int oNumber = 0;
+    int xNumber = 0;
+    ll mark;
+    for(int i=0;i<combinationSize;i++){
+        mark = getRightMark(stateNumber);
+        stateNumber = stateNumber >> 2;
+        if(mark == 1ll){
+            oNumber++;
+        }else if (mark == 2ll){
+            xNumber++;
+            // not o. if it is possible to select o, add the number of patterns of next states.
+            if (oNumber > 0){
+                indexNumber += getPatterns(i, oNumber-1, xNumber);
+            }
+        }else if (mark == 0ll){
+            if (oNumber > 0){
+                indexNumber += getPatterns(i, oNumber-1, xNumber);
+            }
+            if (xNumber > 0){
+                indexNumber += getPatterns(i, oNumber, xNumber-1);
+            }
+
+        }
+        
+    }
+    return indexNumber;
+}
+
+string fileName(int oNumber, int xNumber){ostringstream osO, osX;
+    osO << oNumber;
+    osX << xNumber;
+    return "results/testo"+osO.str()+"x"+osX.str()+".bin";
+}
+
+void writeStatesValue(vector<bool> *values, int oNumber, int xNumber){
+    // TODO if the file already exist, do not overwrite
+    ofstream fout(fileName(oNumber, xNumber), ios::out | ios::binary);
+    if(!fout.is_open()){
+        cout << "cannot open file" << endl;
+        return;
+    }
+    for(auto t: *values){
+        fout.put(t);
+    }
+    fout.close();
+}
+
+void readStatesValue(vector<bool> *values, int oNumber, int xNumber){
+    ifstream fin(fileName(oNumber, xNumber), ios::in | ios::binary);
+    if(!fin.is_open()){
+        cout << "cannot open file" << endl;
+        return;
+    }
+    char data;
+    ll i = 0ll;
+    while (fin.get(data)){
+        values->at(i++) = data;
+    }
+    fin.close();
 }
