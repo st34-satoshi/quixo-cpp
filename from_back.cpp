@@ -147,7 +147,8 @@ string fileName(int oNumber, int xNumber){ostringstream osO, osX;
     return "results/testo"+osO.str()+"x"+osX.str()+".bin";
 }
 
-void saveStatesValues(vector<bool> *values, int oNumber, int xNumber){
+void writeStatesValues(vector<bool> *values, int oNumber, int xNumber){
+    // TODO if the file already exist, do not overwrite
     ofstream fout(fileName(oNumber, xNumber), ios::out | ios::binary);
     if(!fout.is_open()){
         cout << "cannot open file" << endl;
@@ -157,6 +158,20 @@ void saveStatesValues(vector<bool> *values, int oNumber, int xNumber){
         fout.put(t);
     }
     fout.close();
+}
+
+void readStatesValues(vector<bool> *values, int oNumber, int xNumber){
+    ifstream fin(fileName(oNumber, xNumber), ios::in | ios::binary);
+    if(!fin.is_open()){
+        cout << "cannot open file" << endl;
+        return;
+    }
+    char data;
+    ll i = 0ll;
+    while (fin.get(data)){
+        values->at(i++) = data;
+    }
+    fin.close();
 }
 
 /*
@@ -332,13 +347,9 @@ void computeStatesValue(int oNumber, int xNumber){
         updated = updateValues(&values, oNumber, xNumber, &valuesReverse, &nextValues);
         updated = updateValues(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues) || updated;
     }
-    // TODO save resutl to strage
-    for(int i=0;i<values.size()/2;i++){
-        ll state = generateState(i, oNumber, xNumber);
-        printState(state);
-        cout << values.at(i*2) << values.at(i*2+1) << endl;
-    }
-    saveStatesValues(&values, oNumber, xNumber);
+    // save resutl to strage
+    writeStatesValues(&values, oNumber, xNumber);
+    writeStatesValues(&valuesReverse, xNumber, oNumber);
 }
 
 // int main(){

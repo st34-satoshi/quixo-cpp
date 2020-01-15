@@ -120,9 +120,6 @@ void testBinaryFileRead(){
 
 int main(int argc, char* argv[]){
     cout << "start test !!" << endl;
-    ostringstream ss;
-    ss << 2;
-    cout << "hoge"+ss.str();
     init();
     // testCombinations();
     // testGenerateState();
