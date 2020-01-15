@@ -64,12 +64,30 @@ void testCreatePreviousState(){
     } 
 }
 
+void testBool(){
+    vector<bool> testB;
+    testB.push_back(1);
+    testB.push_back(3);
+    testB.push_back(true);
+    testB.push_back(0);
+    for(auto t : testB){
+        cout << t << endl;
+    }
+}
+
+void testComputeStatesValue(){
+    computeStatesValue(5, 4);
+}
+
 int main(int argc, char* argv[]){
     cout << "start test !!" << endl;
     init();
     // testCombinations();
     // testGenerateState();
     // testVectorSize();
-    testCreatePreviousState();
+    // testCreatePreviousState();
+    // testBool();
+    testComputeStatesValue();
+    cout << "end of test !!" << endl;
     return 0;
 }

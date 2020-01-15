@@ -2,8 +2,8 @@
 Next player is o.
 states are represented by the number of index(i).
 bitset saves 2 bits.
-00: lose
-01: unknown(draw)
+00: unknown(draw)
+01: lose
 10: win
 11: ??
 
@@ -143,23 +143,27 @@ ll generateIndexNumber(ll stateNumber){
 */
 
 bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAddO){
+    // cout << "start isLoseState" << endl;
     // if all next states are win this state is lose
     ll thisState = generateState(indexState, oNumber, xNumber);
     // next states are reverse of o and x.
-    auto nextStatesReverse = createNextStates(thisState, true);
+    auto nextStatesReverse = createNextStates(thisState, /*chooseEmpty*/false);
+    // cout << "start isLoseState same" << endl;
     for (auto state : nextStatesReverse){
-        ll indexState = generateIndexNumber(state);
-        if(!nextStatesValuesSame->at(indexState*2)){
+        ll indexNextState = generateIndexNumber(state);
+        if(!nextStatesValuesSame->at(indexNextState*2)){
             // not win (lose or draw)
             // at least 1 next state is not win. this state is not lose
             return false;
         }
     }
+    // cout << "start isLoseState add o" << endl;
     // next states are nextState the number of o increase
-    auto nextStatesAddO = createNextStates(thisState, false);
+    auto nextStatesAddO = createNextStates(thisState, true);
     for (auto state : nextStatesAddO){
-        ll indexState = generateIndexNumber(state);
-        if(!nextStatesValuesAddO->at(indexState*2)){
+        ll indexNextState = generateIndexNumber(state);
+        // cout << indexNextState << endl;
+        if(!nextStatesValuesAddO->at(indexNextState*2)){
             // not win (lose or draw)
             // at least 1 next state is not win. this state is not lose
             return false;
@@ -169,39 +173,104 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStat
 }
 
 bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAdd ){
+    cout << "start update values" << endl;
     bool updated = false;
-    for (ll i=0ll;i<values->size();i++){
-        if (!values->at(i*2+1)){
+    cout << values->size()/2ll << endl;
+    cout << values->size()/2 << endl;
+    cout << values->size() << endl;
+    for (ll i=0ll;i<values->size()/2ll;i++){
+        cout << "i " << i << endl;
+        if (values->at(i*2ll) || values->at(i*2ll+1ll)){
             // lose or win --> skip
             continue;
         }
+        cout << "h" << endl;
+        // TODO refactor !!! isLoseState
         if (isLoseState(i, oNumber, xNumber, nextStatesValuesSame, nextStatesValuesAdd)){
+            cout << "lose state" << endl;
             // update this state to lose and change previous states to win
             updated = true;
             ll stateNumber = generateState(i, oNumber, xNumber);
             // update all symmetric states
             for(auto stateN : symmetricAllStates(stateNumber)){
                 ll stateI = generateIndexNumber(stateN);
-                values->at(stateI*2+1) = 0; // 01 --> 00 (draw --> lose)
+                values->at(stateI*2ll+1ll) = 1; // 00 --> 01 (draw --> lose)
             }
             // generate previous states, update to win
             for( auto stateN : createPreviousStates(stateNumber, false)){
                 for(auto s : symmetricAllStates(stateN)){
                     ll stateI = generateIndexNumber(s);
-                    nextStatesValuesSame->at(stateI*2) = 1;
-                    nextStatesValuesSame->at(stateI*2+1) = 0;
+                    nextStatesValuesSame->at(stateI*2ll) = 1;
+                    nextStatesValuesSame->at(stateI*2ll+1ll) = 0;
                 }
                 
             }
         }
     }
+    cout << "end update values" << endl;
     return updated;
+}
+
+void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAdd){
+    cout << "start update values from end" << endl;
+    // find the states which end of the game, and change previous states (to win)
+    for (ll i=0ll;i<nextStatesValuesSame->size()/2ll;i++){
+        if (nextStatesValuesSame->at(i*2ll) || nextStatesValuesSame->at(i*2ll+1ll)){
+            // lose or win --> skip. this precious states already updated
+            continue;
+        }
+        ll stateNumber = generateState(i, oNumber, xNumber);
+        int win = isWin(stateNumber); // win:1, lose:-1, draw:0
+        if (win == -1){
+            // update this state to lose and change previous states to win
+            // update all symmetric states
+            for(auto stateN : symmetricAllStates(stateNumber)){
+                ll stateI = generateIndexNumber(stateN);
+                if (nextStatesValuesSame->at(stateI*2ll)){
+                    cout << "strange bug this state already decided" << endl;
+                    cout << nextStatesValuesSame->at(stateI*2ll) << nextStatesValuesSame->at(stateI*2ll+1ll) << endl;
+                    printState(stateN);
+                }
+                nextStatesValuesSame->at(stateI*2ll+1ll) = 1; // 00 --> 01 (draw --> lose)
+            }
+            // generate previous states, update to win
+            for( auto stateN : createPreviousStates(stateNumber, false)){
+                for(auto s : symmetricAllStates(stateN)){
+                    ll stateI = generateIndexNumber(s);
+                    values->at(stateI*2ll) = 1;
+                    values->at(stateI*2ll+1ll) = 0;
+                }
+                
+            }
+        }else if (win == 1){
+            nextStatesValuesSame->at(i*2ll) = 1; // 00 --> 10 (draw --> win)
+        }
+    }
+    // find next lose staet update this state to win
+    for (ll i=0ll;i<nextStatesValuesAdd->size()/2ll;i++){
+        if (!values->at(i*2ll+1ll)){ // lose = 01
+            // not lose --> skip
+            continue;
+        }
+        ll stateNumber = generateState(i, oNumber, xNumber);
+        // generate previous states, update to win
+        for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
+            for(auto s : symmetricAllStates(stateN)){
+                ll stateI = generateIndexNumber(s);
+                values->at(stateI*2ll) = 1;
+                values->at(stateI*2ll+1ll) = 0;
+            }
+            
+        }
+    }
+
+    cout << "end update values from end" << endl;
 }
 
 void computeStatesValue(int oNumber, int xNumber){
     // TODO implement: the case no == nx. do not need to use reverse
-    // 00: lose
-    // 01: unknown(draw)
+    // 00: unknown(draw)
+    // 01: lose
     // 10: win
     // 11: ??
 
@@ -223,13 +292,33 @@ void computeStatesValue(int oNumber, int xNumber){
         // TODO implement
     }
 
-    // compute values until no update
+    // at first find next lose states and update this values to win
+    // find the states which end of the game, if it is lose update previous state to win
+    updateValuesFromEnd(&values, oNumber, xNumber, &valuesReverse, &nextValues);
+    cout << "!!!" << endl;
+    updateValuesFromEnd(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues);
+    // for(int i=0;i<values.size()/2;i++){
+    //     ll state = generateState(i, oNumber, xNumber);
+    //     printState(state);
+    //     cout << values.at(i*2) << values.at(i*2+1) << endl;
+    // }
+    return ;
+
+    // calculate values until no update
+    cout << "update " << endl;
     bool updated = true;
     while (updated){
         updated = false;
         // check all states
         updated = updateValues(&values, oNumber, xNumber, &valuesReverse, &nextValues);
-        updated = updateValues(&valuesReverse, oNumber, xNumber, &values, &nextReverseValues) || updated;
+        updated = updateValues(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues) || updated;
+    }
+    cout << "end update" << endl;
+    // TODO save resutl to strage
+    for(int i=0;i<values.size()/2;i++){
+        ll state = generateState(i, oNumber, xNumber);
+        printState(state);
+        cout << values.at(i*2) << values.at(i*2+1) << endl;
     }
 
 }
