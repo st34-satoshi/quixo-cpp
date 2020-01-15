@@ -227,6 +227,7 @@ void computeAllStatesValue(){
     for(int total=combinationSize; total>=0 ;total--){
         cout << "totol = " << total << endl;
         for(int oNumber=0;oNumber<=total/2;oNumber++){
+            cout << "o number = " << oNumber << endl;
             int xNumber = total - oNumber;
             computeStatesValue(oNumber, xNumber);
             // cout << oNumber << ", " << xNumber << endl;
@@ -234,13 +235,11 @@ void computeAllStatesValue(){
     }
 }
 
-// int main(){
-//     cout << "hello" << endl;
-//     for(int i=0;i<10;i++){
-//         // bitset<i> hoge;
-//         cout << i << endl;
-//     }
-//     const int t = 10;
-//     bitset<t> tset;
-//     return 0;
-// }
+int main(){
+    clock_t start = clock();
+    init();
+    computeAllStatesValue();
+    clock_t end = clock();
+    cout << "end : " << (double)(end - start)/ CLOCKS_PER_SEC << " sec" << endl;
+    return 0;
+}

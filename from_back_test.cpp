@@ -156,20 +156,20 @@ void testMoveRight(){
     }
 }
 
-int main(int argc, char* argv[]){
-    cout << "start test !!" << endl;
-    init();
-    // testCombinations();
-    // testGenerateState();
-    // testVectorSize();
-    // testCreatePreviousState();
-    // testBool();
-    // testComputeStatesValue();
-    // testBinaryFileWrite();
-    // testBinaryFileRead();
-    computeAllStatesValue();
-    // debug();
-    // testMoveRight();
-    cout << "end of test !!" << endl;
-    return 0;
-}
+// int main(int argc, char* argv[]){
+//     cout << "start test !!" << endl;
+//     init();
+//     // testCombinations();
+//     // testGenerateState();
+//     // testVectorSize();
+//     // testCreatePreviousState();
+//     // testBool();
+//     // testComputeStatesValue();
+//     // testBinaryFileWrite();
+//     // testBinaryFileRead();
+//     computeAllStatesValue();
+//     // debug();
+//     // testMoveRight();
+//     cout << "end of test !!" << endl;
+//     return 0;
+// }

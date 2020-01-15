@@ -3,11 +3,12 @@
 #include <bitset>
 #include <fstream>
 #include <sstream>
+#include <time.h>
 
 using namespace std;
 typedef long long ll;
 
-const int boardSize = 3;
+const int boardSize = 4;
 const int combinationSize = boardSize * boardSize;
 
 vector< vector<ll>> combinations;  // nCr, (n<boardSize^2)
