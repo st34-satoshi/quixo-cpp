@@ -282,17 +282,20 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
                     // previous position is 0<j<boardsize-1
                     for (int k=1;k<boardSize-1;k++){
                         // previous action is k to left
-                        newRow = moveRight(movingRow, boardSize-1, k, previousMark);
-                        newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                        if(isWin(newState)==0){
-                            previousStates.push_back(newState);
+                        if ( j == boardSize - 1){
+                            newRow = moveRight(movingRow, boardSize-1, k, previousMark);
+                            newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                            if(isWin(newState)==0){
+                                previousStates.push_back(newState);
+                            }
                         }
-
-                        // previous action is k to right
-                        newRow = moveLeft(movingRow, 0, k, previousMark);
-                        newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                        if(isWin(newState)==0){
-                            previousStates.push_back(newState);
+                        if ( j == 0){
+                            // previous action is k to right
+                            newRow = moveLeft(movingRow, 0, k, previousMark);
+                            newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                            if(isWin(newState)==0){
+                                previousStates.push_back(newState);
+                            }
                         }
                     }
                 }
@@ -419,10 +422,13 @@ ll generateIndexNumber(ll stateNumber){
             if (xNumber > 0){
                 indexNumber += getPatterns(i, oNumber, xNumber-1);
             }
-
         }
-        
     }
+    // for debug
+    if (stateNumber == generateState(indexNumber, oNumber, xNumber)){
+        cout << "Error: generate state " << indexNumber << ", " << stateNumber << endl; 
+    }
+
     return indexNumber;
 }
 
