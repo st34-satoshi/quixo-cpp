@@ -167,8 +167,8 @@ int main(int argc, char* argv[]){
     // testComputeStatesValue();
     // testBinaryFileWrite();
     // testBinaryFileRead();
-    // computeAllStatesValue();
-    debug();
+    computeAllStatesValue();
+    // debug();
     // testMoveRight();
     cout << "end of test !!" << endl;
     return 0;

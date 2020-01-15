@@ -424,10 +424,6 @@ ll generateIndexNumber(ll stateNumber){
             }
         }
     }
-    // for debug
-    if (stateNumber == generateState(indexNumber, oNumber, xNumber)){
-        cout << "Error: generate state " << indexNumber << ", " << stateNumber << endl; 
-    }
 
     return indexNumber;
 }
