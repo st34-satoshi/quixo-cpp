@@ -310,16 +310,14 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
 }
 
 void computeStatesValue(int oNumber, int xNumber){
-    // TODO implement: the case no == nx. do not need to use reverse
+    // TODO implement: the case no == nx. do not need to use reverse???
     // 00: unknown(draw)
     // 01: lose
     // 10: win
     // 11: ??
 
-    // TODO implement:
     // oNumber != xNumber
     // initialize this state value
-    // int eNumber = combinationSize - (oNumber + xNumber);
     // we need to compute reverse states at the same time. 
     vector<bool> values(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
     vector<bool> valuesReverse(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber] * 2);
@@ -329,8 +327,8 @@ void computeStatesValue(int oNumber, int xNumber){
     vector<bool> nextReverseValues; // next states values of valuesReverse
     // TODO implement
     if (oNumber + xNumber < combinationSize){
-        vector<bool> nv(combinations[combinationSize][xNumber+1] * combinations[(combinationSize-xNumber-1)][oNumber] * 2);
-        readStatesValue(&nv, xNumber+1, oNumber);
+        vector<bool> nv(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber+1] * 2);
+        readStatesValue(&nv, xNumber, oNumber+1);
         nextValues = nv;
         vector<bool> nrv(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber+1] * 2);
         readStatesValue(&nrv, oNumber, xNumber+1);
@@ -353,6 +351,17 @@ void computeStatesValue(int oNumber, int xNumber){
     // save resutl to strage
     writeStatesValue(&values, oNumber, xNumber);
     writeStatesValue(&valuesReverse, xNumber, oNumber);
+}
+
+void computeAllStatesValue(){
+    // compute from end(o+x=combinationSize)
+    for(int total=combinationSize;total>=0;total--){
+        for(int oNumber=0;oNumber<=total/2;oNumber++){
+            int xNumber = total - oNumber;
+            computeStatesValue(oNumber, xNumber);
+            cout << oNumber << ", " << xNumber << endl;
+        }
+    }
 }
 
 // int main(){

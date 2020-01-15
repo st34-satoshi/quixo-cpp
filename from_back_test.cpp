@@ -118,6 +118,10 @@ void testBinaryFileRead(){
 
 }
 
+void testComputeAllStatesValue(){
+    computeAllStatesValue();
+}
+
 int main(int argc, char* argv[]){
     cout << "start test !!" << endl;
     init();
@@ -126,9 +130,10 @@ int main(int argc, char* argv[]){
     // testVectorSize();
     // testCreatePreviousState();
     // testBool();
-    testComputeStatesValue();
+    // testComputeStatesValue();
     // testBinaryFileWrite();
     // testBinaryFileRead();
+    computeAllStatesValue();
     cout << "end of test !!" << endl;
     return 0;
 }
