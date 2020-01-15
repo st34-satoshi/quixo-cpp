@@ -214,12 +214,13 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
 void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAdd){
     cout << "start update values from end" << endl;
     // find the states which end of the game, and change previous states (to win)
+    // oNumber is for values
     for (ll i=0ll;i<nextStatesValuesSame->size()/2ll;i++){
         if (nextStatesValuesSame->at(i*2ll) || nextStatesValuesSame->at(i*2ll+1ll)){
             // lose or win --> skip. this precious states already updated
             continue;
         }
-        ll stateNumber = generateState(i, oNumber, xNumber);
+        ll stateNumber = generateState(i, xNumber, oNumber);
         // if (stateNumber ==0b101001100101011001){
         //     cout << "strange result" << endl;
         // }
@@ -263,7 +264,7 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
             if (stateNumber ==0b101001100101011001){
                 cout << "strange result" << endl;
             }
-            // nextStatesValuesSame->at(i*2ll) = 1; // 00 --> 10 (draw --> win)
+            nextStatesValuesSame->at(i*2ll) = 1; // 00 --> 10 (draw --> win)
         }
     }
     // // find next lose staet update this state to win
@@ -316,11 +317,11 @@ void computeStatesValue(int oNumber, int xNumber){
     // find the states which end of the game, if it is lose update previous state to win
     // updateValuesFromEnd(&values, oNumber, xNumber, &valuesReverse, &nextValues);
     updateValuesFromEnd(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues);
-    // for(int i=0;i<values.size()/2;i++){
-    //     ll state = generateState(i, oNumber, xNumber);
-    //     printState(state);
-    //     cout << values.at(i*2) << values.at(i*2+1) << endl;
-    // }
+    for(ll i=0;i<values.size()/2ll;i++){
+        ll state = generateState(i, oNumber, xNumber);
+        printState(state);
+        cout << values.at(i*2ll) << values.at(i*2ll+1ll) << endl;
+    }
     return ;
 
     // calculate values until no update
