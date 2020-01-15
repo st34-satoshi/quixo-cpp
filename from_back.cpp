@@ -147,7 +147,7 @@ string fileName(int oNumber, int xNumber){ostringstream osO, osX;
     return "results/testo"+osO.str()+"x"+osX.str()+".bin";
 }
 
-void writeStatesValues(vector<bool> *values, int oNumber, int xNumber){
+void writeStatesValue(vector<bool> *values, int oNumber, int xNumber){
     // TODO if the file already exist, do not overwrite
     ofstream fout(fileName(oNumber, xNumber), ios::out | ios::binary);
     if(!fout.is_open()){
@@ -160,7 +160,7 @@ void writeStatesValues(vector<bool> *values, int oNumber, int xNumber){
     fout.close();
 }
 
-void readStatesValues(vector<bool> *values, int oNumber, int xNumber){
+void readStatesValue(vector<bool> *values, int oNumber, int xNumber){
     ifstream fin(fileName(oNumber, xNumber), ios::in | ios::binary);
     if(!fin.is_open()){
         cout << "cannot open file" << endl;
@@ -329,9 +329,12 @@ void computeStatesValue(int oNumber, int xNumber){
     vector<bool> nextReverseValues; // next states values of valuesReverse
     // TODO implement
     if (oNumber + xNumber < combinationSize){
-        // read next state values. o+1 and x+1
-        // compute values from next state values
-        // TODO implement
+        vector<bool> nv(combinations[combinationSize][xNumber+1] * combinations[(combinationSize-xNumber-1)][oNumber] * 2);
+        readStatesValue(&nv, xNumber+1, oNumber);
+        nextValues = nv;
+        vector<bool> nrv(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber+1] * 2);
+        readStatesValue(&nrv, oNumber, xNumber+1);
+        nextReverseValues = nrv;
     }
 
     // at first find next lose states and update this values to win
@@ -348,8 +351,8 @@ void computeStatesValue(int oNumber, int xNumber){
         updated = updateValues(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues) || updated;
     }
     // save resutl to strage
-    writeStatesValues(&values, oNumber, xNumber);
-    writeStatesValues(&valuesReverse, xNumber, oNumber);
+    writeStatesValue(&values, oNumber, xNumber);
+    writeStatesValue(&valuesReverse, xNumber, oNumber);
 }
 
 // int main(){
