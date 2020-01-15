@@ -12,37 +12,39 @@ vector<ll> xWinMasks; // check row, column and diagonal line
 vector<ll> oWinMasks;
 vector<ll> eWinMasks;
 
-ll moveLeft(ll rowState, int i, ll addMark){
+ll moveLeft(ll rowState, int fromI, int toI, ll addMark){
     // move the piece(index) to left
     // rowState is one row state
     // index 0 is right
     ll newRow = 0ll;
     // add cell from right
-    for(int j=0;j<boardSize-1;j++){
-        if (j<i){
+    for(int j=0;j<=boardSize-1;j++){
+        if (j==toI){
+            newRow += addMark << toI * 2;
+        }else if (j<fromI || j>toI){
             newRow += cellNumbers[0][j] & rowState; // same as base row state
         }else{
             newRow += (cellNumbers[0][j+1] & rowState) >> 2; // 1 bit shift to right
         }
     }
-    newRow += addMark << (boardSize-1)*2; // the left is x (2). turn is always x(because the turn already changed)
     return newRow;
 }
 
-ll moveRight(ll rowState, int i, ll addMark){
-    // move the piece(index) to right
+ll moveRight(ll rowState, int fromI, int toI, ll addMark){
+    // move the piece(index) from 'fromI' to 'toI'
     // rowState is one row state
     // index 0 is right
     ll newRow = 0;
     // add cell from left
-    for(int j=boardSize-1;j>0;j--){
-        if (j>i){
+    for(int j=boardSize-1;j>=0;j--){
+        if (j==toI){
+            newRow += addMark << toI * 2;
+        }else if (j>fromI || j<toI){
             newRow += cellNumbers[0][j] & rowState; // same as base row state
         }else{
             newRow += (cellNumbers[0][j-1] & rowState) << 2; // 1 bit shift to left
         }
     }
-    newRow += addMark; // the right is x.
     return newRow;
 }
 
@@ -214,7 +216,7 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
                 if(j!=boardSize-1){
                     // move to left
                     movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
-                    newRow = moveLeft(movingRow, j, 2ll);
+                    newRow = moveLeft(movingRow, j, boardSize-1, 2ll);
                     newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
                     newState = symmetricState(newState);  // select minimum state in symmetric states.
                     // add to nextStates
@@ -224,7 +226,7 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
                 if(j!=0){
                     // move to right
                     movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
-                    newRow = moveRight(movingRow, j, 2ll);
+                    newRow = moveRight(movingRow, j, 0, 2ll);
                     newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
                     newState = symmetricState(newState);  // select minimum state in symmetric states.
                     // add to nextStates
@@ -262,7 +264,7 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
                 }
                 if(j == boardSize-1){
                     // previous position is right(small) (without i==0 and i== boardSize-1)
-                    newRow = moveRight(movingRow, j, previousMark);
+                    newRow = moveRight(movingRow, j, 0, previousMark);
                     newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
                     // newSta RightymmetricState(newState);  // select minimum state in symmetric states.
                     // add to previousStates
@@ -270,36 +272,35 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
                     if(isWin(newState)==0){
                         previousStates.push_back(newState);
                     }
-                    // previousStates.push_back(newState);
                     // TODO: avoid the newStaet which is already in nextStates. and the state at the end of the game
                     
                 }
                 if(j == 0){
                     // previous position is left
-                    newRow = moveLeft(movingRow, j, previousMark);
+                    newRow = moveLeft(movingRow, j, boardSize-1, previousMark);
                     newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
                     if(isWin(newState)==0){
                         previousStates.push_back(newState);
                     }
                 }
-                // if (i == 0 || i == boardSize-1){
-                //     // previous position is 0<j<boardsize-1
-                //     for (int k=1;k<boardSize-1;k++){
-                //         // previous action is k to right
-                //         newRow = moveRight(movingRow, k, previousMark);
-                //         newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                //         if(isWin(newState)==0){
-                //             previousStates.push_back(newState);
-                //         }
+                if (i == 0 || i == boardSize-1){
+                    // previous position is 0<j<boardsize-1
+                    for (int k=1;k<boardSize-1;k++){
+                        // previous action is k to left
+                        newRow = moveRight(movingRow, boardSize-1, k, previousMark);
+                        newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                        if(isWin(newState)==0){
+                            previousStates.push_back(newState);
+                        }
 
-                //         // previous action is k to left
-                //         newRow = moveLeft(movingRow, k, previousMark);
-                //         newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                //         if(isWin(newState)==0){
-                //             previousStates.push_back(newState);
-                //         }
-                //     }
-                // }
+                        // previous action is k to right
+                        newRow = moveLeft(movingRow, 0, k, previousMark);
+                        newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                        if(isWin(newState)==0){
+                            previousStates.push_back(newState);
+                        }
+                    }
+                }
             }
         }
     }
