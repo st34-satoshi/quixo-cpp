@@ -379,9 +379,41 @@ void initState(){
 
 }
 
+// TODO: if possible, create a better algorithm to change state <--> index
+ll generateMark(int spaceNumber, ll *indexNumber, int oNumber, int xNumber){
+    // return mark and reduce number
+    // 1=o, 2=x, 0=no mark
+    // at the end
+    if (spaceNumber == oNumber){
+        return 1ll;
+    }
+    if (spaceNumber == xNumber){
+        return 2ll;
+    }
+    if (oNumber == 0 && xNumber== 0){
+        return 0ll;
+    }
+    // not at the end
+    if (oNumber > 0){
+        ll patternsSelectedO = getPatterns(spaceNumber-1, oNumber-1, xNumber);
+        if (*indexNumber < patternsSelectedO){
+            return 1ll;
+        }
+        *indexNumber -= patternsSelectedO;
+    }
+    if (xNumber > 0){
+        ll patternsSelectedX = getPatterns(spaceNumber-1, oNumber, xNumber-1);
+        if (*indexNumber < patternsSelectedX){
+            return 2ll;
+        }
+        *indexNumber -= patternsSelectedX;
+    }
+    return 0ll;
+}
+
 ll generateState(ll indexNumber, int oNumber, int xNumber){
     // change to state from indexNumber
-    // it is possible to represent state using indexNumber but it is difficult to find symmetric states using indexNumber.
+    // it is possible to represent state using indexNumber but it is difficult to find symmetric states using indexNumber. todo create a better algorithm
     ll remainingIndexNumber = indexNumber;
     int remainingONumber = oNumber;
     int remainingXNumber = xNumber;
