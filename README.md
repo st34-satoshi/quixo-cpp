@@ -13,3 +13,9 @@ windows may need to modify the fileName function in state.cpp (line 435).
 - `./a.out`
 
 results are saved in results directory.
+
+### read results
+output all states and and values.
+
+- `c++ -std=c++17 -Wall -O3 convertResult.cpp  `
+- `./a.out`
