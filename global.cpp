@@ -7,6 +7,7 @@
 
 using namespace std;
 typedef long long ll;
+typedef unsigned long long ull;
 
 const int boardSize = 4;
 const int combinationSize = boardSize * boardSize;

@@ -20,7 +20,7 @@ is
 you can change size by boardSize.
 
 Run
-c++ -std=c++17 -O3 from_back.cpp 
+c++ -std=c++17 -Wall -O3 from_back.cpp 
 ./a.out
 */
 
@@ -69,7 +69,7 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStat
 bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAdd ){
     // cout << "start update values" << endl;
     bool updated = false;
-    for (ll i=0ll;i<values->size()/2ll;i++){
+    for (ull i=0ll;i<values->size()/2ll;i++){
         if (values->at(i*2ll) || values->at(i*2ll+1ll)){
             // lose or win --> skip
             continue;
@@ -104,7 +104,7 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
     // find the states which end of the game, and change previous states (to win)
     // oNumber is for values
 
-    for (ll i=0ll;i<nextStatesValuesSame->size()/2ll;i++){
+    for (ull i=0ll;i<nextStatesValuesSame->size()/2ll;i++){
         if (nextStatesValuesSame->at(i*2ll) || nextStatesValuesSame->at(i*2ll+1ll)){
             // lose or win --> skip. this precious states already updated
             continue;
@@ -150,7 +150,7 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
     // cout << "start from next state end" << endl;
 
     // find next lose state update this state to win
-    for (ll i=0ll;i<nextStatesValuesAdd->size()/2ll;i++){
+    for (ull i=0ll;i<nextStatesValuesAdd->size()/2ll;i++){
         
         if (!nextStatesValuesAdd->at(i*2ll+1ll)){ // lose = 01
             // not lose --> skip
