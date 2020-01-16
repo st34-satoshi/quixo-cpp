@@ -30,7 +30,6 @@ void createCombinations(){
 }
 
 ll getPatterns(int spaceNumber, int oNumber, int xNumber){
-    // cout << "caculate patterns " << spaceNumber << ", " << oNumber << ", " << xNumber << endl;
     return combinations.at(spaceNumber).at(oNumber) * combinations.at(spaceNumber-oNumber).at(xNumber);
 }
 

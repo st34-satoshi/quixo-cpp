@@ -264,11 +264,10 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
                     // newSta RightymmetricState(newState);  // select minimum state in symmetric states.
                     // add to previousStates
                     // avoid the previous state which is at the end of the game
+                    // TODO: avoid the newStaet which is already in nextStates. and the state at the end of the game
                     if(isWin(newState)==0){
                         previousStates.push_back(newState);
                     }
-                    // TODO: avoid the newStaet which is already in nextStates. and the state at the end of the game
-                    
                 }
                 if(j == 0){
                     // previous position is left
