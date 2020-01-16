@@ -432,7 +432,7 @@ string fileName(int oNumber, int xNumber){
     ostringstream osO, osX;
     osO << oNumber;
     osX << xNumber;
-    return "results/testo"+osO.str()+"x"+osX.str()+".bin";
+    return "results/statesValueo"+osO.str()+"x"+osX.str()+".bin";
 }
 
 void writeStatesValue(vector<bool> *values, int oNumber, int xNumber){
