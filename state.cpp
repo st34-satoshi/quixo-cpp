@@ -162,7 +162,7 @@ int isWin(ll state){
     // else if there is line of o, win
     bool win = false;
     ll mask;
-    for(ll i=0;i<eWinMasks.size();i++){
+    for(ull i=0;i<eWinMasks.size();i++){
         mask = state & eWinMasks.at(i);
         if (mask == xWinMasks.at(i)){
             return -1;
