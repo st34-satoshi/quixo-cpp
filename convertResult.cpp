@@ -3,7 +3,7 @@
 void convertResultsTOXO(){
     int countState = 0;
     for(int total=combinationSize; total>=0 ;total--){
-        cout << "totol = " << total << endl;
+        cout << "total = " << total << endl;
         for(int oNumber=0;oNumber<=total;oNumber++){
             int xNumber = total - oNumber;
             vector<bool> values(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
