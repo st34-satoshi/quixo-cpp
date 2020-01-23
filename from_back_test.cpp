@@ -153,18 +153,17 @@ void testMoveRight(){
 }
 
 void testWriteReadStates(){
-    // TODO make test. same states can read!
     // states is vector<bool>
-    vector<bool> states(100);
+    vector<bool> states(1680);
     // create states randomly?
     for (int i=0;i<states.size();i++){
-        if(i%3==0){
+        if(i%4==0){
             states[i] = 1;
         }
     }
-    writeStatesValue(&states, 0, 0);
-    vector<bool> check(100);
-    readStatesValue(&check, 0, 0);
+    writeStatesValue(&states, 3, 3);
+    vector<bool> check(1680);
+    readStatesValue(&check, 3, 3);
     int errorCount = 0;
     for (int i=0;i<states.size();i++){
         if (states[i] != check[i]){
@@ -173,6 +172,14 @@ void testWriteReadStates(){
         }
     }
     cout << "OK " << errorCount << endl;
+    // for (bool b : states){
+    //     cout << b;
+    // }
+    // cout << endl;
+    // for (bool b : check){
+    //     cout << b;
+    // }
+    // cout << endl;
 }
 
 int main(int argc, char* argv[]){

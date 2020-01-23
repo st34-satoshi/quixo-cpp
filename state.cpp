@@ -468,17 +468,25 @@ string fileName(int oNumber, int xNumber){
 
 void writeStatesValue(vector<bool> *values, int oNumber, int xNumber){
     // TODO if the file already exist, do not overwrite
-    // TODO refactor, now it save 1 byte for 1 bit. change to 1 byte for 1 byte
-    // TODO 1. make test for write states and read states. of course able to read the same states
-    // TODO 2. change the way to write and read
-    // TODO 3. check the test pass. 
     ofstream fout(fileName(oNumber, xNumber), ios::out | ios::binary);
     if(!fout.is_open()){
         cout << "cannot open file" << endl;
         return;
     }
+    int bitCounter = 0;
+    unsigned char c = 0;
     for(auto t: *values){
-        fout.put(t);
+        c = c << 1;
+        c += t;
+        bitCounter++;
+        if (bitCounter == 8){
+            fout.put(c);
+            c = 0;
+            bitCounter = 0;
+        }
+    }
+    if (bitCounter != 0){
+        fout.put(c);
     }
     fout.close();
 }
@@ -489,10 +497,25 @@ void readStatesValue(vector<bool> *values, int oNumber, int xNumber){
         cout << "cannot open file" << endl;
         return;
     }
-    char data;
+    unsigned char data;
+    ll number = combinations[combinationSize][oNumber+xNumber]*combinations[oNumber+xNumber][oNumber];
     ll i = 0ll;
-    while (fin.get(data)){
-        values->at(i++) = data;
+    for (;i<number/8;i++){
+        data = fin.get();
+        ll mask = 1 << 7;
+        for(ll j=0;j<8;j++){
+            values->at(i*8+j) = data & mask;
+            mask = mask >> 1;
+        }
+    }
+    ll r = number % 8;
+    if (r != 0){
+        data = fin.get();
+        ll mask = 1 << r;
+        for(ll j=0;j<r;j++){
+            values->at(i*8+j) = data & mask;
+            mask = mask >> 1;
+        }
     }
     fin.close();
 }
