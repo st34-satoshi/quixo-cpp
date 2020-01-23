@@ -180,14 +180,6 @@ void computeStatesValue(int oNumber, int xNumber){
     readStatesValue(&nextValues, xNumber, oNumber+1);
     vector<bool> nextReverseValues(getCombination(combinationSize, oNumber)*getCombination(combinationSize-oNumber, xNumber+1) * 2); // next states values of valuesReverse
     readStatesValue(&nextReverseValues, oNumber, xNumber+1);
-    // if (oNumber + xNumber < combinationSize){
-    //     vector<bool> nv(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber+1] * 2);
-    //     readStatesValue(&nv, xNumber, oNumber+1);
-    //     nextValues = nv;
-    //     vector<bool> nrv(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber+1] * 2);
-    //     readStatesValue(&nrv, oNumber, xNumber+1);
-    //     nextReverseValues = nrv;
-    // }
 
     // at first find next lose states and update this values to win
     // find the states which end of the game, if it is lose update previous state to win
