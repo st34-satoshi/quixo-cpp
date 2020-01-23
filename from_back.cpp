@@ -167,6 +167,7 @@ void computeStatesValue(int oNumber, int xNumber){
     // 01: lose
     // 10: win
     // 11: ??
+    // you need to check only first bit to know the state is win (it is used to check the previous state is lose?) 
 
     // oNumber != xNumber
     // initialize this state value
@@ -216,11 +217,11 @@ void computeAllStatesValue(){
     }
 }
 
-int main(){
-    clock_t start = clock();
-    init();
-    computeAllStatesValue();
-    clock_t end = clock();
-    cout << "end : " << (double)(end - start)/ CLOCKS_PER_SEC << " sec" << endl;
-    return 0;
-}
+// int main(){
+//     clock_t start = clock();
+//     init();
+//     computeAllStatesValue();
+//     clock_t end = clock();
+//     cout << "end : " << (double)(end - start)/ CLOCKS_PER_SEC << " sec" << endl;
+//     return 0;
+// }

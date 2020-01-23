@@ -130,10 +130,6 @@ void testComputeAllStatesValue(){
     computeAllStatesValue();
 }
 
-void debug(){
-    computeStatesValue(3, 5);
-}
-
 // void testMoveLeft(){
 //     cout << "start move left test" << endl;
 //     int r;
@@ -156,20 +152,44 @@ void testMoveRight(){
     }
 }
 
-// int main(int argc, char* argv[]){
-//     cout << "start test !!" << endl;
-//     init();
-//     // testCombinations();
-//     // testGenerateState();
-//     // testVectorSize();
-//     // testCreatePreviousState();
-//     // testBool();
-//     // testComputeStatesValue();
-//     // testBinaryFileWrite();
-//     // testBinaryFileRead();
-//     computeAllStatesValue();
-//     // debug();
-//     // testMoveRight();
-//     cout << "end of test !!" << endl;
-//     return 0;
-// }
+void testWriteReadStates(){
+    // TODO make test. same states can read!
+    // states is vector<bool>
+    vector<bool> states(100);
+    // create states randomly?
+    for (int i=0;i<states.size();i++){
+        if(i%3==0){
+            states[i] = 1;
+        }
+    }
+    writeStatesValue(&states, 0, 0);
+    vector<bool> check(100);
+    readStatesValue(&check, 0, 0);
+    int errorCount = 0;
+    for (int i=0;i<states.size();i++){
+        if (states[i] != check[i]){
+            cout << "Error: not same value " << i << states[i] << check[i] << endl; 
+            errorCount++;
+        }
+    }
+    cout << "OK " << errorCount << endl;
+}
+
+int main(int argc, char* argv[]){
+    cout << "start test !!" << endl;
+    init();
+    // testCombinations();
+    // testGenerateState();
+    // testVectorSize();
+    // testCreatePreviousState();
+    // testBool();
+    // testComputeStatesValue();
+    // testBinaryFileWrite();
+    // testBinaryFileRead();
+    // computeAllStatesValue();
+    // testMoveRight();
+    testWriteReadStates();
+
+    cout << "end of test !!" << endl;
+    return 0;
+}

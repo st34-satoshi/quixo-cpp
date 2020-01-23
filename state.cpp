@@ -468,6 +468,10 @@ string fileName(int oNumber, int xNumber){
 
 void writeStatesValue(vector<bool> *values, int oNumber, int xNumber){
     // TODO if the file already exist, do not overwrite
+    // TODO refactor, now it save 1 byte for 1 bit. change to 1 byte for 1 byte
+    // TODO 1. make test for write states and read states. of course able to read the same states
+    // TODO 2. change the way to write and read
+    // TODO 3. check the test pass. 
     ofstream fout(fileName(oNumber, xNumber), ios::out | ios::binary);
     if(!fout.is_open()){
         cout << "cannot open file" << endl;
