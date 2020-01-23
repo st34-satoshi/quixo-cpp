@@ -32,3 +32,12 @@ void createCombinations(){
 ll getPatterns(int spaceNumber, int oNumber, int xNumber){
     return combinations.at(spaceNumber).at(oNumber) * combinations.at(spaceNumber-oNumber).at(xNumber);
 }
+
+ll getCombination(int x, int y){
+    // return xCy
+    // this function is called when x and y sometimes invalid value (ex. <0, >combinationSize)
+    if (x < 0 || x > combinationSize || y < 0 || y > combinationSize){
+        return 0ll;
+    }
+    return combinations[x][y];
+}

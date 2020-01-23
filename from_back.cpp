@@ -176,19 +176,22 @@ void computeStatesValue(int oNumber, int xNumber){
     vector<bool> valuesReverse(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber] * 2);
     
     // read next state value
-    vector<bool> nextValues;  // next states values of values
-    vector<bool> nextReverseValues; // next states values of valuesReverse
-    if (oNumber + xNumber < combinationSize){
-        vector<bool> nv(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber+1] * 2);
-        readStatesValue(&nv, xNumber, oNumber+1);
-        nextValues = nv;
-        vector<bool> nrv(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber+1] * 2);
-        readStatesValue(&nrv, oNumber, xNumber+1);
-        nextReverseValues = nrv;
-    }
+    vector<bool> nextValues(getCombination(combinationSize, xNumber)*getCombination(combinationSize-xNumber, oNumber+1) * 2);  // next states values of values
+    readStatesValue(&nextValues, xNumber, oNumber+1);
+    vector<bool> nextReverseValues(getCombination(combinationSize, oNumber)*getCombination(combinationSize-oNumber, xNumber+1) * 2); // next states values of valuesReverse
+    readStatesValue(&nextReverseValues, oNumber, xNumber+1);
+    // if (oNumber + xNumber < combinationSize){
+    //     vector<bool> nv(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber+1] * 2);
+    //     readStatesValue(&nv, xNumber, oNumber+1);
+    //     nextValues = nv;
+    //     vector<bool> nrv(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber+1] * 2);
+    //     readStatesValue(&nrv, oNumber, xNumber+1);
+    //     nextReverseValues = nrv;
+    // }
 
     // at first find next lose states and update this values to win
     // find the states which end of the game, if it is lose update previous state to win
+    cout << "staert search" << nextValues.size() << "," << nextReverseValues.size() << endl;
     updateValuesFromEnd(&values, oNumber, xNumber, &valuesReverse, &nextValues);
     updateValuesFromEnd(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues);
 
@@ -217,11 +220,11 @@ void computeAllStatesValue(){
     }
 }
 
-// int main(){
-//     clock_t start = clock();
-//     init();
-//     computeAllStatesValue();
-//     clock_t end = clock();
-//     cout << "end : " << (double)(end - start)/ CLOCKS_PER_SEC << " sec" << endl;
-//     return 0;
-// }
+int main(){
+    clock_t start = clock();
+    init();
+    computeAllStatesValue();
+    clock_t end = clock();
+    cout << "end : " << (double)(end - start)/ CLOCKS_PER_SEC << " sec" << endl;
+    return 0;
+}
