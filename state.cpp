@@ -498,7 +498,7 @@ void readStatesValue(vector<bool> *values, int oNumber, int xNumber){
         return;
     }
     unsigned char data;
-    ll number = combinations[combinationSize][oNumber+xNumber]*combinations[oNumber+xNumber][oNumber];
+    ll number = combinations[combinationSize][oNumber]*combinations[combinationSize-oNumber][xNumber]*2;
     ll i = 0ll;
     for (;i<number/8;i++){
         data = fin.get();
