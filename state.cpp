@@ -511,7 +511,7 @@ void readStatesValue(vector<bool> *values, int oNumber, int xNumber){
     ll r = number % 8;
     if (r != 0){
         data = fin.get();
-        ll mask = 1 << r;
+        ll mask = 1 << (r - 1);
         for(ll j=0;j<r;j++){
             values->at(i*8+j) = data & mask;
             mask = mask >> 1;

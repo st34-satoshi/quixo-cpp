@@ -154,16 +154,17 @@ void testMoveRight(){
 
 void testWriteReadStates(){
     // states is vector<bool>
-    vector<bool> states(1680);
+    int n = 1260;
+    vector<bool> states(n);
     // create states randomly?
     for (int i=0;i<states.size();i++){
-        if(i%4==0){
+        if(i%5==0){
             states[i] = 1;
         }
     }
-    writeStatesValue(&states, 3, 3);
-    vector<bool> check(1680);
-    readStatesValue(&check, 3, 3);
+    writeStatesValue(&states, 4, 3);
+    vector<bool> check(n);
+    readStatesValue(&check, 4, 3);
     int errorCount = 0;
     for (int i=0;i<states.size();i++){
         if (states[i] != check[i]){
