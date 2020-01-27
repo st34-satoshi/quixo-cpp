@@ -119,53 +119,9 @@ ll getCellNumber(int row, int column, ll state){
 //     return cellNumber >> (row*boardSize + column)*2;
 // }
 
-// ll swapPlayer(ll state){
-//     ll newState = 0ll;
-//     int n;
-//     for(int i=boardSize-1;i>=0;i--){
-//         for(int j=boardSize-1;j>=0;j--){
-//             newState = newState << 2;
-//             n = getShiftedCellNumber(i, j, state);
-//             // swap 1 and 2 (o and x)
-//             if (n == 1){
-//                 newState += 2ll;
-//             }else if (n == 2){
-//                 newState += 1ll;
-//             }
-//         }
-//     }
-//     return newState;
-// }
-
-// ll reverseState(ll state){
-//     // return reverse (mirror) state
-//     ll newState = 0ll;
-//     for(int i=boardSize-1;i>=0;i--){
-//         for(int j=boardSize-1;j>=0;j--){
-//             newState = newState << 2;
-//             newState += ll(getShiftedCellNumber(i, boardSize - j - 1, state));
-//         }
-//     }
-//     return newState;
-// }
-
-// ll rotatedState(ll state){
-//     // {1, 2, 3,
-//     //  4, 5, 6
-//     //  7, 8, 9}
-//     // to
-//     // {3, 6, 9,
-//     //  2, 5, 8
-//     //  1, 4, 7}
-//     ll newState = 0;
-//     for(int i=boardSize-1;i>=0;i--){
-//         for(int j=boardSize-1;j>=0;j--){
-//             newState = newState << 2;
-//             newState += ll(getShiftedCellNumber(j, boardSize - i - 1, state));
-//         }
-//     }
-//     return newState;
-// }
+ll swapPlayer(ll state){
+    return state << stateLengthHalf || state >> stateLengthHalf;
+}
 
 void printState(ll state){
     cout << "print state" << endl;
