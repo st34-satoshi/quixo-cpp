@@ -101,10 +101,6 @@ ll moveRight(ll rowState, int fromI, int toI, ll addMark){
     return newRow;
 }
 
-// ll getRightMark(ll state){
-//     return state & 3ll;
-// }
-
 ll getCellNumber(int row, int column, ll state){
     if (cellMasksO[row][column] & state){
         return 1ll;
@@ -113,11 +109,6 @@ ll getCellNumber(int row, int column, ll state){
     }
     return 0ll;
 }
-
-// ll getShiftedCellNumber(int row, int column, ll state){
-//     ll cellNumber = getCellNumber(row, column, state);
-//     return cellNumber >> (row*boardSize + column)*2;
-// }
 
 ll swapPlayer(ll state){
     return state << stateLengthHalf || state >> stateLengthHalf;
@@ -297,38 +288,6 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
 }
 
 // TODO: if possible, create a better algorithm to change state <--> index
-ll generateMark(int spaceNumber, ll *indexNumber, int oNumber, int xNumber){
-    // TODO:
-    // return mark and reduce number
-    // 1=o, 2=x, 0=no mark
-    // at the end
-    if (spaceNumber == oNumber){
-        return 1ll;
-    }
-    if (spaceNumber == xNumber){
-        return 2ll;
-    }
-    if (oNumber == 0 && xNumber== 0){
-        return 0ll;
-    }
-    // not at the end
-    if (oNumber > 0){
-        ll patternsSelectedO = getPatterns(spaceNumber-1, oNumber-1, xNumber);
-        if (*indexNumber < patternsSelectedO){
-            return 1ll;
-        }
-        *indexNumber -= patternsSelectedO;
-    }
-    if (xNumber > 0){
-        ll patternsSelectedX = getPatterns(spaceNumber-1, oNumber, xNumber-1);
-        if (*indexNumber < patternsSelectedX){
-            return 2ll;
-        }
-        *indexNumber -= patternsSelectedX;
-    }
-    return 0ll;
-}
-
 ll generateState(ll indexNumber, int oNumber, int xNumber){
     // TODO:
     // change to state from indexNumber
