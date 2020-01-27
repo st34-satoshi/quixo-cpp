@@ -9,8 +9,11 @@ using namespace std;
 typedef long long ll;
 typedef unsigned long long ull;
 
-const int boardSize = 3;
+const int boardSize = 3; // TODO remove
+const int boardWidth = 3;
+const int boardHeight = 3;
 const int combinationSize = boardSize * boardSize;
+const int stateLengthHalf = 32; // long long is 64 bit
 
 vector< vector<ll>> combinations;  // nCr, (n<boardSize^2)
 
