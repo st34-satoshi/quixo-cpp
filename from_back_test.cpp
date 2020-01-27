@@ -1,5 +1,4 @@
 #include "from_back.cpp"
-using namespace std;
 
 void testCombinations(){
     cout << "test combinations" << endl;
@@ -185,6 +184,24 @@ void testWriteReadStates(){
     // cout << endl;
 }
 
+void testInitialize(){
+    cout << "cell masks" << endl;
+    for(auto i : cellMasksO){
+        for (auto j : i){
+            cout << "i" << ",";
+        }
+        cout << endl;
+    }
+    cout << endl;
+    for(auto i : cellMasksX){
+        for (auto j : i){
+            cout << "i" << ",";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
 int main(int argc, char* argv[]){
     cout << "start test !!" << endl;
     init();
@@ -198,7 +215,8 @@ int main(int argc, char* argv[]){
     // testBinaryFileRead();
     // computeAllStatesValue();
     // testMoveRight();
-    testWriteReadStates();
+    // testWriteReadStates();
+    testInitialize();
 
     cout << "end of test !!" << endl;
     return 0;
