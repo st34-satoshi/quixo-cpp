@@ -1,7 +1,8 @@
-#include "state.cpp"
+#include "state-ox-different.cpp"
 
 void convertResultsTOXO(){
     int countState = 0;
+    unsigned int win=0, draw=0, loss=0;
     for(int total=combinationSize; total>=0 ;total--){
         cout << "total = " << total << endl;
         for(int oNumber=0;oNumber<=total;oNumber++){
@@ -14,10 +15,16 @@ void convertResultsTOXO(){
                 cout << "value = " << values.at(i*2) << values.at(i*2+1) << endl;
                 printState(s);
                 countState++;
+                if (values.at(i*2)) win++;
+                else if (values.at(i*2+1)) loss++;
+                else draw++;
             }
         }
     }
     cout << "total states = " << countState << endl;
+    cout << "win states = " << win << endl;
+    cout << "loss states = " << loss << endl;
+    cout << "draw states = " << draw << endl;
 }
 
 int main(int argc, char *argv[]){

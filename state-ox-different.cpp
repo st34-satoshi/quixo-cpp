@@ -194,12 +194,12 @@ int isWin(ll state){
     // if there is line of x, lose
     // else if there is line of o, win
     for(auto m : xWinMasks){
-        if (m == state & m){
+        if (m == (state & m)){
             return -1;
         }
     }
     for(auto m : oWinMasks){
-        if (m == state & m){
+        if (m == (state & m)){
             return 1;
         }
     }

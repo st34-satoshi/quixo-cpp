@@ -188,14 +188,14 @@ void testInitialize(){
     cout << "cell masks" << endl;
     for(auto i : cellMasksO){
         for (auto j : i){
-            cout << "i" << ",";
+            cout << bitset<64>(j) << ",";
         }
         cout << endl;
     }
     cout << endl;
     for(auto i : cellMasksX){
         for (auto j : i){
-            cout << "i" << ",";
+            cout << bitset<10>(j) << ",";
         }
         cout << endl;
     }

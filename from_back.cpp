@@ -197,11 +197,11 @@ void computeAllStatesValue(){
     }
 }
 
-int main(){
-    clock_t start = clock();
-    init();
-    computeAllStatesValue();
-    clock_t end = clock();
-    cout << "end : " << (double)(end - start)/ CLOCKS_PER_SEC << " sec" << endl;
-    return 0;
-}
+// int main(){
+//     clock_t start = clock();
+//     init();
+//     computeAllStatesValue();
+//     clock_t end = clock();
+//     cout << "end : " << (double)(end - start)/ CLOCKS_PER_SEC << " sec" << endl;
+//     return 0;
+// }
