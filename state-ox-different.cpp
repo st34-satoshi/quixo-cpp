@@ -1,5 +1,6 @@
 #include "global.cpp"
 
+// TODO: remove not used functions and variables. create state example (only necessary class)
 // state is [space, for o, space, for x]
 vector< vector<ll> > cellMasksO;  // it is used to get a cell number.
 vector< vector<ll> > cellMasksX; 
@@ -167,25 +168,25 @@ ll getCellNumber(int row, int column, ll state){
 // }
 
 void printState(ll state){
-    // cout << "print state" << endl;
-    // cout << bitset<boardSize*boardSize*2>(state) << endl;
-    // int n;
-    // for(int i=0;i<boardSize;i++){
-    //     for(int j=0;j<boardSize;j++){
-    //         n = getShiftedCellNumber(i, j, state);
-    //         if(n==0){
-    //             cout << "-";
-    //         }else if (n==1){
-    //             cout << "o";
-    //         }else if (n==2){
-    //             cout << "x";
-    //         }else if (n==3){
-    //             cout << "e";
-    //         }
-    //     }
-    //     cout << endl;
-    // }
-    // cout << endl;
+    cout << "print state" << endl;
+    cout << bitset<stateLengthHalf*2>(state) << endl;
+    int n;
+    for(int i=0;i<boardSize;i++){
+        for(int j=0;j<boardSize;j++){
+            n = getCellNumber(i, j, state);
+            if(n==0){
+                cout << "-";
+            }else if (n==1){
+                cout << "o";
+            }else if (n==2){
+                cout << "x";
+            }else if (n==3){
+                cout << "e";
+            }
+        }
+        cout << endl;
+    }
+    cout << endl;
 }
 
 int isWin(ll state){
