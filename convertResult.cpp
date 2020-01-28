@@ -11,9 +11,9 @@ void convertResultsTOXO(){
             readStatesValue(&values, oNumber, xNumber);
             // TODO save to file
             for(ull i=0; i<values.size()/2ll;i++){
-                ll s = generateState(i, oNumber, xNumber);
-                cout << "value = " << values.at(i*2) << values.at(i*2+1) << endl;
-                printState(s);
+                // ll s = generateState(i, oNumber, xNumber);
+                // cout << "value = " << values.at(i*2) << values.at(i*2+1) << endl;
+                // printState(s);
                 countState++;
                 if (values.at(i*2)) win++;
                 else if (values.at(i*2+1)) loss++;
