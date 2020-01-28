@@ -519,3 +519,36 @@ void readStatesValue(vector<bool> *values, int oNumber, int xNumber){
     }
     fin.close();
 }
+
+ll generateStateOXDiff(ll s){
+    // TODO debug
+    ll o = 0ll;
+    ll x = 0ll;
+    ll n;
+    for(int i=0;i<combinationSize;i++){
+        n = (s >> i) & 1ll;
+        o = o << 1;
+        x = x << 1;
+        if (n==1ll){
+            x += 1ll;
+        }else if (n == 2ll){
+            o += 1ll;
+        }
+    }
+    return o << stateLengthHalf || x;
+}
+
+ll generateStateOXSame(ll s){
+    // TODO debug
+    ll o = s >> stateLengthHalf;
+    ll newS = 0ll;
+    for(int i=0;i<combinationSize;i++){
+        if((o >> i) & 1ll){
+            newS += 1ll;
+        }else if((s >> i) & 1LL){
+            newS += 2ll;
+        }
+        newS = newS << 1;
+    }
+    return newS;
+}
