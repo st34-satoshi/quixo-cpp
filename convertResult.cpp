@@ -1,4 +1,4 @@
-#include "state-ox-different.cpp"
+#include "state.cpp"
 
 void convertResultsTOXO(){
     int countState = 0;
