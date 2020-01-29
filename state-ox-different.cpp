@@ -123,10 +123,7 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
     // if chooseEmpty, increase o number. choose e. turn is o.
     // else, the number of o, x, e are same. choose o.  turn is o.
     // before creating states, swap turn
-    cout << "start creating next states" << endl;
     presentState = swapPlayer(presentState);
-    cout << bitset<64>(presentState) << endl;
-    printState(presentState);
     vector<ll> nextStates;
     // if this state is end of the game (there is line) no next states.
     if (isWin(presentState)!=0){
@@ -151,81 +148,34 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
             nextStates.push_back(newS);
         }
     }
-    cout << "end creating next states" << endl;
     return nextStates;
 }
 
 vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
-    // TODO: implement
-    vector<ll> hoge;
-    return hoge;
-    // // turn is o. last player is x
-    // // if fromEmpty, previous mark is -. 
-    // // else, previous mark is x
-    // // if the previous state is the end of the game avoid the state
-    // // before creating states, swap turn
-    // presentState = swapPlayer(presentState);
-    // ll previousMark = 1ll;
-    // if (fromEmpty){
-    //     previousMark = 0ll;
-    // }
-    // vector<ll> previousStates;
-    // ll movingRow, newRow, newState;
-    // // choose only switch row, then rotate and switch row again.
-    // // search present state and rotated state.
-    // for(ll state : {presentState, rotatedState(presentState)}){
-    //     for(int i=0;i<boardSize;i++){
-    //         movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
-    //         for(int j : {0, boardSize-1}){
-    //             if (getShiftedCellNumber(i, j, state)!=1ll){
-    //                 // need to choose o, but the cell is o.
-    //                 continue;
-    //             }
-    //             if(j == boardSize-1){
-    //                 // previous position is right(small) (without i==0 and i== boardSize-1)
-    //                 newRow = moveRight(movingRow, j, 0, previousMark);
-    //                 newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-    //                 // newSta RightymmetricState(newState);  // select minimum state in symmetric states.
-    //                 // add to previousStates
-    //                 // avoid the previous state which is at the end of the game
-    //                 // TODO: avoid the newStaet which is already in nextStates. and the state at the end of the game
-    //                 if(isWin(newState)==0){
-    //                     previousStates.push_back(newState);
-    //                 }
-    //             }
-    //             if(j == 0){
-    //                 // previous position is left
-    //                 newRow = moveLeft(movingRow, j, boardSize-1, previousMark);
-    //                 newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-    //                 if(isWin(newState)==0){
-    //                     previousStates.push_back(newState);
-    //                 }
-    //             }
-    //             if (i == 0 || i == boardSize-1){
-    //                 // previous position is 0<j<boardsize-1
-    //                 for (int k=1;k<boardSize-1;k++){
-    //                     // previous action is k to left
-    //                     if ( j == boardSize - 1){
-    //                         newRow = moveRight(movingRow, boardSize-1, k, previousMark);
-    //                         newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-    //                         if(isWin(newState)==0){
-    //                             previousStates.push_back(newState);
-    //                         }
-    //                     }
-    //                     if ( j == 0){
-    //                         // previous action is k to right
-    //                         newRow = moveLeft(movingRow, 0, k, previousMark);
-    //                         newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-    //                         if(isWin(newState)==0){
-    //                             previousStates.push_back(newState);
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-    // return previousStates;
+    // 
+    presentState = swapPlayer(presentState);
+    // TODO unsorted set
+    vector<ll> previousStates;
+    if(fromEmpty){
+        for(auto m : previousStatesToEmpty){
+            ll newS = m.newState(presentState);
+            if (newS == -1ll){
+                continue;
+            }
+            // TODO check the new s is already in the set.
+            previousStates.push_back(newS);
+        }
+    }else{
+        for(auto m : previousStatesToO){
+            ll newS = m.newState(presentState);
+            if (newS == -1ll){
+                continue;
+            }
+            // TODO check the new s is already in the set.
+            previousStates.push_back(newS);
+        }
+    }
+    return previousStates;
 }
 
 // TODO: if possible, create a better algorithm to change state <--> index

@@ -25,6 +25,13 @@ public:
         right = true;
         fromEmpty = true;
     }
+    Moving toPrevious(bool fromEmpty){
+        ll addP = 0ll;
+        if (!fromEmpty){
+            addP = movingPiece;
+        }
+        return Moving(addPiece << stateLengthHalf, movingMask, movingWidth, addP << stateLengthHalf, !right, false);
+    }
     ll newState(ll s){
         if (fromEmpty){
             if((s & movingPiece) || ((s >> stateLengthHalf) & movingPiece)){
@@ -55,8 +62,18 @@ public:
 
 array<Moving, 4*2 + (boardHeight-2)*3*2 + (boardWidth-2)*3*2> nextStatesFromEmpty;  // corner*4, + ...
 array<Moving, 4*2 + (boardHeight-2)*3*2 + (boardWidth-2)*3*2> nextStatesFromX;
-array<Moving, 4*(boardWidth+boardHeight-2 + (boardHeight-2)*2 + (boardWidth-2)*2)> previousStatesToEmpty; 
-array<Moving, 4*(boardWidth+boardHeight-2 + (boardHeight-2)*2 + (boardWidth-2)*2)> previousStatesToO;
+array<Moving, 4*(boardWidth+boardHeight-2) + (boardHeight-2)*2 + (boardWidth-2)*2> previousStatesToEmpty; 
+array<Moving, 4*(boardWidth+boardHeight-2) + (boardHeight-2)*2 + (boardWidth-2)*2> previousStatesToO;
+
+void initPreviousStates(){
+    // 
+    int i = 0;
+    for(auto m : nextStatesFromX){
+        previousStatesToEmpty[i] = m.toPrevious(true);
+        previousStatesToO[i] = m.toPrevious(false);
+        i++;
+    }
+}
 
 void initNextStates(array<array<ll, boardWidth>, boardHeight> xPiece){
     int i = 0;
@@ -153,7 +170,5 @@ void initMoving(){
         }
     }
     initNextStates(xPiece);
-   
-    // create previous state
-    // TODO:
+    initPreviousStates();
 }
