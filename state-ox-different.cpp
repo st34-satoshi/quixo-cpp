@@ -9,6 +9,50 @@ vector< vector<ll> > cellMasksX;
 vector<ll> xWinMasks; // check row, column and diagonal line
 vector<ll> oWinMasks;
 
+class MovingRight{
+private:
+    ll movingPiece;  // check the the piece exists?
+    ll movingMask;
+    ll movingWidth;
+    ll addPiece;
+public:
+    MovingRight(ll piece, ll mask, ll width, ll add){
+        movingPiece = piece;
+        movingMask = mask;
+        movingWidth = width;
+        addPiece = add;
+    }
+    ll newState(ll s){
+        if(s & movingPiece){
+            // cannot select the piece
+            return 0ll;
+        }
+        return (s & ~movingMask) || ((s & movingMask) >> movingWidth) || addPiece; 
+    }
+};
+
+class MovingLeft : MovingRight{
+private:
+    ll movingPiece;  // check the the piece exists?
+    ll movingMask;
+    ll movingWidth;
+    ll addPiece;
+public:
+    MovingLeft(ll piece, ll mask, ll width, ll add){
+        movingPiece = piece;
+        movingMask = mask;
+        movingWidth = width;
+        addPiece = add;
+    }
+    ll newState(ll s){
+        if(s & movingPiece){
+            // cannot select the piece
+            return 0ll;
+        }
+        return (s & ~movingMask) || ((s & movingMask) << movingWidth) || addPiece; 
+    }
+};
+
 void initWinMasksDiagonal(){
     ll winMask = 0ll;
     for(int i=0;i<boardWidth;i++){
@@ -62,43 +106,6 @@ void initState(){
         oWinMasks.push_back(winMask<<i<<stateLengthHalf);
         xWinMasks.push_back(winMask<<i);
     }
-}
-
-// ll moveLeft(ll rowState, int fromI, int toI, ll addMark){
-//     // move the piece(index) to left
-//     // rowState is one row state
-//     // index 0 is right
-//     ll newRow = 0ll;
-//     // add cell from right
-//     for(int j=0;j<=boardSize-1;j++){
-//         if (j==toI){
-//             newRow += addMark << toI * 2;
-//         }else if (j<fromI || j>toI){
-//             newRow += cellNumbers[0][j] & rowState; // same as base row state
-//         }else{
-//             newRow += (cellNumbers[0][j+1] & rowState) >> 2; // 1 bit shift to right
-//         }
-//     }
-//     return newRow;
-// }
-
-ll moveRight(ll rowState, int fromI, int toI, ll addMark){
-    // TODO:
-    // move the piece(index) from 'fromI' to 'toI'
-    // rowState is one row state
-    // index 0 is right
-    ll newRow = 0;
-    // // add cell from left
-    // for(int j=boardSize-1;j>=0;j--){
-    //     if (j==toI){
-    //         newRow += addMark << toI * 2;
-    //     }else if (j>fromI || j<toI){
-    //         newRow += cellNumbers[0][j] & rowState; // same as base row state
-    //     }else{
-    //         newRow += (cellNumbers[0][j-1] & rowState) << 2; // 1 bit shift to left
-    //     }
-    // }
-    return newRow;
 }
 
 ll getCellNumber(int row, int column, ll state){
