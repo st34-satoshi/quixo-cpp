@@ -25,7 +25,7 @@ c++ -std=c++17 -Wall -O3 from_back.cpp
 */
 
 
-#include "state.cpp"
+#include "state-ox-different.cpp"
 
 void init(){
     createCombinations();
@@ -74,18 +74,13 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
             updated = true;
             ll stateNumber = generateState(i, oNumber, xNumber);
             // update all symmetric states
-            for(auto stateN : symmetricAllStates(stateNumber)){
-                ll stateI = generateIndexNumber(stateN);
-                values->at(stateI*2ll+1ll) = 1; // 00 --> 01 (draw --> lose)
-            }
+            ll stateI = generateIndexNumber(stateNumber);
+            values->at(stateI*2ll+1ll) = 1; // 00 --> 01 (draw --> lose)
             // generate previous states, update to win
             for( auto stateN : createPreviousStates(stateNumber, false)){
-                for(auto s : symmetricAllStates(stateN)){
-                    ll stateI = generateIndexNumber(s);
-                    nextStatesValuesSame->at(stateI*2ll) = 1;
-                    nextStatesValuesSame->at(stateI*2ll+1ll) = 0;
-                }
-                
+                ll stateI = generateIndexNumber(stateN);
+                nextStatesValuesSame->at(stateI*2ll) = 1;
+                nextStatesValuesSame->at(stateI*2ll+1ll) = 0;
             }
         }
     }
@@ -105,38 +100,31 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
         int win = isWin(stateNumber); // win:1, lose:-1, draw:0
         if (win == -1){
             // update this state to lose and change previous states to win
-            // update all symmetric states
-            for(auto stateN : symmetricAllStates(stateNumber)){
-                ll stateI = generateIndexNumber(stateN);
-                if (nextStatesValuesSame->at(stateI*2ll)){ // this is for debug
-                    cout << "strange bug this state already decided" << endl;
-                    cout << nextStatesValuesSame->at(stateI*2ll) << nextStatesValuesSame->at(stateI*2ll+1ll) << endl;
-                    printState(stateN);
-                }
-                nextStatesValuesSame->at(stateI*2ll+1ll) = 1; // 00 --> 01 (draw --> lose)
+            ll stateI = generateIndexNumber(stateNumber);
+            if (nextStatesValuesSame->at(stateI*2ll)){ // this is for debug
+                cout << "strange bug this state already decided" << endl;
+                cout << nextStatesValuesSame->at(stateI*2ll) << nextStatesValuesSame->at(stateI*2ll+1ll) << endl;
+                printState(stateNumber);
             }
+            nextStatesValuesSame->at(stateI*2ll+1ll) = 1; // 00 --> 01 (draw --> lose)
+
             // generate previous states, update to win
             for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/false)){
-                for(auto s : symmetricAllStates(stateN)){
-                    ll stateI = generateIndexNumber(s);
-                    if (values->at(stateI*2ll+1ll)){
-                        cout << "Strange bug. this" << endl;
-                    }
-                    values->at(stateI*2ll) = 1;
+                ll stateI = generateIndexNumber(stateN);
+                if (values->at(stateI*2ll+1ll)){
+                    cout << "Strange bug. this" << endl;
                 }
+                values->at(stateI*2ll) = 1;
             }
         }else if (win == 1){
             if (nextStatesValuesSame->at(i*2ll+1ll)){
                 cout << "strange bug to win" << endl;
             }
-            // for symmetric states!!
-            for(auto state : symmetricAllStates(stateNumber)){
-                ll stateI = generateIndexNumber(state);
-                if (nextStatesValuesSame->at(stateI*2ll+1ll)){
-                    cout << "Strange bug. this state win but it is lose." << endl;
-                }
-                nextStatesValuesSame->at(stateI*2ll) = 1; // 00 --> 10 (draw --> win)
+            ll stateI = generateIndexNumber(stateNumber);
+            if (nextStatesValuesSame->at(stateI*2ll+1ll)){
+                cout << "Strange bug. this state win but it is lose." << endl;
             }
+            nextStatesValuesSame->at(stateI*2ll) = 1; // 00 --> 10 (draw --> win)
         }
     }
 
@@ -152,11 +140,8 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
         
         // generate previous states, update to win
         for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
-            for(auto s : symmetricAllStates(stateN)){
-                ll stateI = generateIndexNumber(s);
-                values->at(stateI*2ll) = 1;
-            }
-            
+            ll stateI = generateIndexNumber(stateN);
+            values->at(stateI*2ll) = 1;
         }
     }
 }
@@ -212,11 +197,11 @@ void computeAllStatesValue(){
     }
 }
 
-int main(){
-    clock_t start = clock();
-    init();
-    computeAllStatesValue();
-    clock_t end = clock();
-    cout << "end : " << (double)(end - start)/ CLOCKS_PER_SEC << " sec" << endl;
-    return 0;
-}
+// int main(){
+//     clock_t start = clock();
+//     init();
+//     computeAllStatesValue();
+//     clock_t end = clock();
+//     cout << "end : " << (double)(end - start)/ CLOCKS_PER_SEC << " sec" << endl;
+//     return 0;
+// }

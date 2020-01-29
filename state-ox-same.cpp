@@ -56,7 +56,7 @@ ll getShiftedCellNumber(int row, int column, ll state){
     return cellNumber >> (row*boardSize + column)*2;
 }
 
-ll swapPlayer(ll state){
+ll swapPlayerO(ll state){
     ll newState = 0ll;
     int n;
     for(int i=boardSize-1;i>=0;i--){
@@ -181,7 +181,7 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
     // if chooseEmpty, increase o number. choose e. turn is o.
     // else, the number of o, x, e are same. choose o.  turn is o.
     // before creating states, swap turn
-    presentState = swapPlayer(presentState);
+    presentState = swapPlayerO(presentState);
 
     vector<ll> nextStates;
     // if this state is end of the game (there is line) no next states.
@@ -240,7 +240,7 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
     // else, previous mark is x
     // if the previous state is the end of the game avoid the state
     // before creating states, swap turn
-    presentState = swapPlayer(presentState);
+    presentState = swapPlayerO(presentState);
     ll previousMark = 1ll;
     if (fromEmpty){
         previousMark = 0ll;
@@ -518,4 +518,37 @@ void readStatesValue(vector<bool> *values, int oNumber, int xNumber){
         }
     }
     fin.close();
+}
+
+ll generateStateOXDiff(ll s){
+    // TODO debug
+    ll o = 0ll;
+    ll x = 0ll;
+    ll n;
+    for(int i=0;i<combinationSize;i++){
+        n = (s >> i) & 1ll;
+        o = o << 1;
+        x = x << 1;
+        if (n==1ll){
+            x += 1ll;
+        }else if (n == 2ll){
+            o += 1ll;
+        }
+    }
+    return o << stateLengthHalf || x;
+}
+
+ll generateStateOXSame(ll s){
+    // TODO debug
+    ll o = s >> stateLengthHalf;
+    ll newS = 0ll;
+    for(int i=0;i<combinationSize;i++){
+        if((o >> i) & 1ll){
+            newS += 1ll;
+        }else if((s >> i) & 1LL){
+            newS += 2ll;
+        }
+        newS = newS << 1;
+    }
+    return newS;
 }
