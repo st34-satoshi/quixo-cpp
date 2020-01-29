@@ -14,10 +14,10 @@ void testInitMoving(){
 }
 
 void testCreateNextStates(){
-    ll s = 0b100;
+    ll s = 0b110'00000'00000'00000'00000'000'110'110'000;
     cout << "initial state" << endl;
     printState(s);
-    auto states = createNextStates(s, true);
+    auto states = createNextStates(s, false);
     int i = 0;
     for(auto t : states){
         cout << "hh" << endl;
