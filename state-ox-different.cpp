@@ -156,18 +156,17 @@ int isWin(ll state){
 
 vector<ll> createNextStates(ll presentState, bool chooseEmpty){
     // TODO: implement
-    vector<ll> hoge;
-    return hoge;
-    // // if chooseEmpty, increase o number. choose e. turn is o.
-    // // else, the number of o, x, e are same. choose o.  turn is o.
-    // // before creating states, swap turn
-    // presentState = swapPlayer(presentState);
+    // TODO return unsorted set!
+    // if chooseEmpty, increase o number. choose e. turn is o.
+    // else, the number of o, x, e are same. choose o.  turn is o.
+    // before creating states, swap turn
+    presentState = swapPlayer(presentState);
 
-    // vector<ll> nextStates;
-    // // if this state is end of the game (there is line) no next states.
-    // if (isWin(presentState)!=0){
-    //     return nextStates;
-    // }
+    vector<ll> nextStates;
+    // if this state is end of the game (there is line) no next states.
+    if (isWin(presentState)!=0){
+        return nextStates;
+    }
 
     // ll movingRow, newRow, newState;
     // // choose only switch row, then rotate and switch row again.
