@@ -1,48 +1,51 @@
 #include "global.cpp"
 
-// class Moving{
-// private:
-//     ll movingPiece;  // check the the piece exists?
-//     ll movingMask;
-//     int movingWidth;
-//     ll addPiece;
-//     bool right;
-//     bool fromEmpty;
-// public:
-//     Moving(ll piece, ll mask, int width, ll add, bool r, bool from){
-//         movingPiece = piece;
-//         movingMask = mask;
-//         movingWidth = width;
-//         addPiece = add;
-//         right = r;
-//         fromEmpty = from;
-//     }
-//     ll newState(ll s){
-//         if (fromEmpty){
-//             if(s & movingPiece){
-//                 // cannot select the piece
-//                 return 0ll;
-//             }
-//         }else{
-//             // from x
-//             if((s & movingPiece) == 0){
-//                 // cannot select the piece
-//                 return 0ll;
-//             }
-//         }
-//         if (right){
-//            return (s & ~movingMask) || (((s & movingMask) >> movingWidth) & movingMask) || addPiece;  
-//         }
-//         return (s & ~movingMask) || (((s & movingMask) << movingWidth) & movingMask) || addPiece; 
-//     }
-// };
-
 class Moving{
+private:
+    ll movingPiece;  // check the the piece exists?
+    ll movingMask;
+    int movingWidth;
+    ll addPiece;
+    bool right;
+    bool fromEmpty;
+public:
+    Moving(ll piece, ll mask, int width, ll add, bool r, bool from){
+        movingPiece = piece;
+        movingMask = mask;
+        movingWidth = width;
+        addPiece = add;
+        right = r;
+        fromEmpty = from;
+    }
+    Moving(){
+        movingPiece = 0ll;
+        movingMask = 0ll;
+        movingWidth = 0;
+        addPiece = 0ll;
+        right = true;
+        fromEmpty = true;
+    }
+    ll newState(ll s){
+        if (fromEmpty){
+            if(s & movingPiece){
+                // cannot select the piece
+                return 0ll;
+            }
+        }else{
+            // from x
+            if((s & movingPiece) == 0){
+                // cannot select the piece
+                return 0ll;
+            }
+        }
+        if (right){
+           return (s & ~movingMask) || (((s & movingMask) >> movingWidth) & movingMask) || addPiece;  
+        }
+        return (s & ~movingMask) || (((s & movingMask) << movingWidth) & movingMask) || addPiece; 
+    }
 };
 
-
-Moving nextStatesFromEmpty;
-// array<Moving, 4*2 + (boardHeight-2)*3*2 + (boardWidth-2)*3*2> nextStatesFromEmpty;  // corner*4, + ...
+array<Moving, 4*2 + (boardHeight-2)*3*2 + (boardWidth-2)*3*2> nextStatesFromEmpty;  // corner*4, + ...
 array<Moving, 4*2 + (boardHeight-2)*3*2 + (boardWidth-2)*3*2> nextStatesFromX;
 array<Moving, 4*(boardWidth+boardHeight-2 + (boardHeight-2)*2 + (boardWidth-2)*2)> previousStatesToEmpty; 
 array<Moving, 4*(boardWidth+boardHeight-2 + (boardHeight-2)*2 + (boardWidth-2)*2)> previousStatesToO; 
@@ -81,7 +84,7 @@ void initMoving(){
         if(c!=0){
             for(int row : {0, boardHeight-1}){
                 mask = ((1ll << c) - 1) << (row * boardWidth);
-                nextStatesFromEmpty[i] = Moving(xPiece[row][c], mask, 1, xPiece[row][boardWidth-1], true, true); 
+                nextStatesFromEmpty[i] = Moving(xPiece[row][c], mask, 1, xPiece[row][boardWidth-1], true, true);
                 nextStatesFromX[i] = Moving(xPiece[row][c], mask, 1, xPiece[row][boardWidth-1], true, false);
                 i++;
             }
@@ -102,8 +105,8 @@ void initMoving(){
         nextStatesFromX[i] = Moving(xPiece[j][0], rowMasks[j], 1, xPiece[j][boardWidth-1], true, false);
         i++;
         // move to left
-        nextStatesFromEmpty[i] = Moving(xPiece[j][boardWidth-1], rowMasks[row], 1, xPiece[j][0], false, true); 
-        nextStatesFromX[i] = Moving(xPiece[j][boardWidth-1], rowMasks[row], 1, xPiece[j][0], false, false);
+        nextStatesFromEmpty[i] = Moving(xPiece[j][boardWidth-1], rowMasks[j], 1, xPiece[j][0], false, true); 
+        nextStatesFromX[i] = Moving(xPiece[j][boardWidth-1], rowMasks[j], 1, xPiece[j][0], false, false);
         i++;
     }
     // move column
