@@ -4,6 +4,9 @@ using namespace std;
 
 void testInitMoving(){
     initMoving();
+    for(auto m : nextStatesFromEmpty){
+        m.printOut();
+    }
 }
 
 int main(){

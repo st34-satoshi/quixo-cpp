@@ -43,6 +43,14 @@ public:
         }
         return (s & ~movingMask) || (((s & movingMask) << movingWidth) & movingMask) || addPiece; 
     }
+    void printOut(){
+        cout << "print moving" << endl;
+        cout << "p = " << bitset<64>(movingPiece) << "" << endl;
+        cout << "mask = " << bitset<64>(movingMask) << "" << endl;
+        cout << "w = " << movingWidth << endl;
+        cout << "add = " << bitset<64>(addPiece) << endl;
+        cout << "r = " << right << " fromEmpty = " << fromEmpty << endl;
+    }
 };
 
 array<Moving, 4*2 + (boardHeight-2)*3*2 + (boardWidth-2)*3*2> nextStatesFromEmpty;  // corner*4, + ...
@@ -51,22 +59,7 @@ array<Moving, 4*(boardWidth+boardHeight-2 + (boardHeight-2)*2 + (boardWidth-2)*2
 array<Moving, 4*(boardWidth+boardHeight-2 + (boardHeight-2)*2 + (boardWidth-2)*2)> previousStatesToO; 
 
 void initMoving(){
-    // (0, 0) is row down
-    // create masks
-    array<ll, boardHeight> rowMasks;
-    array<ll, boardWidth> columnMasks;
-    ll eachMask; // o,x mask
-    for(int i=0;i<boardHeight;i++){
-        eachMask = ((1ll << boardWidth) - 1ll) << i*boardWidth; // 0000-0011111
-        rowMasks[i] = (eachMask << stateLengthHalf) & eachMask; // 0-01111100-0011111
-    }
-    for(int i=0;i<boardWidth;i++){
-        eachMask = 0ll; // 00001'00001'00001'00001'00001
-        for(int j=0;j<boardHeight;j++){
-            eachMask = (eachMask << boardWidth) + 1ll;
-        }
-        rowMasks[i] = (eachMask << stateLengthHalf) & eachMask;
-    }
+    // // (0, 0) is row down
 
     array<array<ll, boardWidth>, boardHeight> xPiece;
     for(int i=0;i<boardHeight;i++){
@@ -83,16 +76,18 @@ void initMoving(){
         // move to right
         if(c!=0){
             for(int row : {0, boardHeight-1}){
-                mask = ((1ll << c) - 1) << (row * boardWidth);
-                nextStatesFromEmpty[i] = Moving(xPiece[row][c], mask, 1, xPiece[row][boardWidth-1], true, true);
-                nextStatesFromX[i] = Moving(xPiece[row][c], mask, 1, xPiece[row][boardWidth-1], true, false);
+                mask = ((1ll << (c+1)) - 1) << (row * boardWidth);
+                mask = (mask << stateLengthHalf) | mask;
+                nextStatesFromEmpty[i] = Moving(xPiece[row][c], mask, 1, xPiece[row][0], true, true);
+                nextStatesFromX[i] = Moving(xPiece[row][c], mask, 1, xPiece[row][0], true, false);
                 i++;
             }
         }
         // move to left
         if(c!=boardWidth-1){
             for(int row : {0, boardHeight-1}){
-                mask = ((1ll << c) - 1) << (row * boardWidth); //todo
+                mask = ((1ll << (boardWidth - c)) - 1) << (c + row * boardWidth); //todo
+                mask = (mask << stateLengthHalf) | mask;
                 nextStatesFromEmpty[i] = Moving(xPiece[row][c], mask, 1, xPiece[row][boardWidth-1], false, true); 
                 nextStatesFromX[i] = Moving(xPiece[row][c], mask, 1, xPiece[row][boardWidth-1], false, false);
                 i++;
@@ -101,49 +96,58 @@ void initMoving(){
     }
     for(int j=1;j<boardHeight-1;j++){
         // move to right
-        nextStatesFromEmpty[i] = Moving(xPiece[j][0], rowMasks[j], 1, xPiece[j][boardWidth-1], true, true); 
-        nextStatesFromX[i] = Moving(xPiece[j][0], rowMasks[j], 1, xPiece[j][boardWidth-1], true, false);
+        mask = ((1ll << boardWidth) - 1ll) << (j*boardWidth);
+        mask = (mask << stateLengthHalf) | mask;
+        nextStatesFromEmpty[i] = Moving(xPiece[j][boardWidth-1], mask, 1, xPiece[j][0], true, true); 
+        nextStatesFromX[i] = Moving(xPiece[j][boardWidth-1], mask, 1, xPiece[j][0], true, false);
         i++;
         // move to left
-        nextStatesFromEmpty[i] = Moving(xPiece[j][boardWidth-1], rowMasks[j], 1, xPiece[j][0], false, true); 
-        nextStatesFromX[i] = Moving(xPiece[j][boardWidth-1], rowMasks[j], 1, xPiece[j][0], false, false);
+        nextStatesFromEmpty[i] = Moving(xPiece[j][0], mask, 1, xPiece[j][boardWidth-1], false, true); 
+        nextStatesFromX[i] = Moving(xPiece[j][0], mask, 1, xPiece[j][boardWidth-1], false, false);
         i++;
     }
     // move column
-    for(int c=0;c<boardHeight;c++){
+    for(int r=0;r<boardHeight;r++){
         // move to up
-        if(c!=boardHeight-1){
-            for(int r : {0, boardWidth-1}){
-                mask = (1ll << r) << (c*boardWidth);
-                for(int k=c;k<boardHeight-1;k++){
+        if(r!=boardHeight-1){
+            for(int c : {0, boardWidth-1}){
+                mask = (1ll << c) << (r*boardWidth);
+                for(int k=r;k<boardHeight-1;k++){
                     mask = (mask << boardWidth) | mask;
                 }
-                nextStatesFromEmpty[i] = Moving(xPiece[r][c], mask, boardWidth, xPiece[r][boardHeight-1], false, true); 
-                nextStatesFromX[i] = Moving(xPiece[r][c], mask, boardWidth, xPiece[r][boardHeight-1], false, false);
+                mask = (mask << stateLengthHalf) | mask;
+                nextStatesFromEmpty[i] = Moving(xPiece[r][c], mask, boardWidth, xPiece[boardHeight-1][c], false, true); 
+                nextStatesFromX[i] = Moving(xPiece[r][c], mask, boardWidth, xPiece[boardHeight-1][c], false, false);
                 i++;
             }   
         }
         // move to down
-        if(c!=0){
-            for(int r : {0, boardWidth-1}){
-                mask = (1ll << r);
-                for(int k=c;k<boardHeight-1;k++){
-                    mask += mask << boardWidth;
+        if(r!=0){
+            for(int c : {0, boardWidth-1}){
+                mask = (1ll << c);
+                for(int k=0;k<r;k++){
+                    mask = (mask << boardWidth) | mask;
                 }
-                nextStatesFromEmpty[i] = Moving(xPiece[r][c], columnMasks[c], boardWidth, xPiece[0][r], true, true); 
-                nextStatesFromX[i] = Moving(xPiece[r][c], columnMasks[c], boardWidth, xPiece[0][r], true, false);
+                mask = (mask << stateLengthHalf) | mask;
+                nextStatesFromEmpty[i] = Moving(xPiece[r][c], mask, boardWidth, xPiece[0][c], true, true); 
+                nextStatesFromX[i] = Moving(xPiece[r][c], mask, boardWidth, xPiece[0][c], true, false);
                 i++;
             }   
         }
     }
     for(int c=1;c<boardHeight-1;c++){
         // move to up
-        nextStatesFromEmpty[i] = Moving(xPiece[0][c], columnMasks[c], boardWidth, xPiece[boardHeight-1][c], false, true); 
-        nextStatesFromX[i] = Moving(xPiece[0][c], columnMasks[c], boardWidth, xPiece[boardHeight-1][c], false, false);
+        mask = 1ll << c;
+        for(int k=0;k<boardHeight-1;k++){
+            mask = mask | (mask << boardWidth);
+        }
+        mask = (mask << stateLengthHalf) | mask;
+        nextStatesFromEmpty[i] = Moving(xPiece[0][c], mask, boardWidth, xPiece[boardHeight-1][c], false, true); 
+        nextStatesFromX[i] = Moving(xPiece[0][c], mask, boardWidth, xPiece[boardHeight-1][c], false, false);
         i++;
         // move to down
-        nextStatesFromEmpty[i] = Moving(xPiece[boardHeight-1][c], columnMasks[c], boardWidth, xPiece[0][c], true, true); 
-        nextStatesFromX[i] = Moving(xPiece[boardHeight-1][c], columnMasks[c], boardWidth, xPiece[0][c], true, false);
+        nextStatesFromEmpty[i] = Moving(xPiece[boardHeight-1][c], mask, boardWidth, xPiece[0][c], true, true); 
+        nextStatesFromX[i] = Moving(xPiece[boardHeight-1][c], mask, boardWidth, xPiece[0][c], true, false);
         i++;
     }
 }
