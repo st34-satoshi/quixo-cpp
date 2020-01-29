@@ -27,21 +27,21 @@ public:
     }
     ll newState(ll s){
         if (fromEmpty){
-            if(s & movingPiece){
+            if((s & movingPiece) || ((s >> stateLengthHalf) & movingPiece)){
                 // cannot select the piece
-                return 0ll;
+                return -1ll;
             }
         }else{
             // from x
             if((s & movingPiece) == 0){
                 // cannot select the piece
-                return 0ll;
+                return -1ll;
             }
         }
         if (right){
-           return (s & ~movingMask) || (((s & movingMask) >> movingWidth) & movingMask) || addPiece;  
+           return (s & ~movingMask) | (((s & movingMask) << movingWidth) & movingMask) | addPiece;  
         }
-        return (s & ~movingMask) || (((s & movingMask) << movingWidth) & movingMask) || addPiece; 
+        return (s & ~movingMask) | (((s & movingMask) >> movingWidth) & movingMask) | addPiece; 
     }
     void printOut(){
         cout << "print moving" << endl;
@@ -56,21 +56,12 @@ public:
 array<Moving, 4*2 + (boardHeight-2)*3*2 + (boardWidth-2)*3*2> nextStatesFromEmpty;  // corner*4, + ...
 array<Moving, 4*2 + (boardHeight-2)*3*2 + (boardWidth-2)*3*2> nextStatesFromX;
 array<Moving, 4*(boardWidth+boardHeight-2 + (boardHeight-2)*2 + (boardWidth-2)*2)> previousStatesToEmpty; 
-array<Moving, 4*(boardWidth+boardHeight-2 + (boardHeight-2)*2 + (boardWidth-2)*2)> previousStatesToO; 
+array<Moving, 4*(boardWidth+boardHeight-2 + (boardHeight-2)*2 + (boardWidth-2)*2)> previousStatesToO;
 
-void initMoving(){
-    // // (0, 0) is row down
-
-    array<array<ll, boardWidth>, boardHeight> xPiece;
-    for(int i=0;i<boardHeight;i++){
-        for(int j=0;j<boardWidth;j++){
-            xPiece[i][j] = 1ll << (i*boardWidth + j);
-        }
-    }
-
+void initNextStates(array<array<ll, boardWidth>, boardHeight> xPiece){
     int i = 0;
-
-    ll mask;
+     ll mask;
+    // create next state
     // move row 
     for(int c=0;c<boardWidth;c++){
         // move to right
@@ -150,4 +141,19 @@ void initMoving(){
         nextStatesFromX[i] = Moving(xPiece[boardHeight-1][c], mask, boardWidth, xPiece[0][c], true, false);
         i++;
     }
+}
+
+void initMoving(){
+    // (0, 0) is row down
+
+    array<array<ll, boardWidth>, boardHeight> xPiece;
+    for(int i=0;i<boardHeight;i++){
+        for(int j=0;j<boardWidth;j++){
+            xPiece[i][j] = 1ll << (i*boardWidth + j);
+        }
+    }
+    initNextStates(xPiece);
+   
+    // create previous state
+    // TODO:
 }

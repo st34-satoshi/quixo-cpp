@@ -1,4 +1,4 @@
-#include "global.cpp"
+#include "moving.cpp"
 
 // TODO: remove not used functions and variables. create state example (only necessary class)
 // state is [space, for o, space, for x]
@@ -74,7 +74,7 @@ ll getCellNumber(int row, int column, ll state){
 }
 
 ll swapPlayer(ll state){
-    return state << stateLengthHalf || state >> stateLengthHalf;
+    return state << stateLengthHalf | state >> stateLengthHalf;
 }
 
 void printState(ll state){
@@ -123,57 +123,36 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
     // if chooseEmpty, increase o number. choose e. turn is o.
     // else, the number of o, x, e are same. choose o.  turn is o.
     // before creating states, swap turn
+    cout << "start creating next states" << endl;
     presentState = swapPlayer(presentState);
-
+    cout << bitset<64>(presentState) << endl;
+    printState(presentState);
     vector<ll> nextStates;
     // if this state is end of the game (there is line) no next states.
     if (isWin(presentState)!=0){
         return nextStates;
     }
-
-    // ll movingRow, newRow, newState;
-    // // choose only switch row, then rotate and switch row again.
-    // // search present state and rotated state.
-    // for(ll state : {presentState, rotatedState(presentState)}){
-    //     for(int i=0;i<boardSize;i++){
-    //         for(int j=0;j<boardSize;j++){
-    //             if(0<i && i<boardSize-1 && 0<j && j<boardSize-1){
-    //                 // not edge
-    //                 continue;
-    //             }
-    //             if (chooseEmpty && getShiftedCellNumber(i, j, state)!=0){
-    //                 // need to choose empty but the cell is not empty.
-    //                 continue;
-    //             }
-    //             if (!chooseEmpty && getShiftedCellNumber(i, j, state)!=2){
-    //                 // need to choose x but the cell is not x. turn is already changed.
-    //                 continue;
-    //             }
-    //             // TODO: refactor. move right and move left are similar. make it simple.
-    //             if(j!=boardSize-1){
-    //                 // move to left
-    //                 movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
-    //                 newRow = moveLeft(movingRow, j, boardSize-1, 2ll);
-    //                 newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-    //                 newState = symmetricState(newState);  // select minimum state in symmetric states.
-    //                 // add to nextStates
-    //                 // TODO: avoid the newStaet which is already in nextStates
-    //                 nextStates.push_back(newState);
-    //             }
-    //             if(j!=0){
-    //                 // move to right
-    //                 movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
-    //                 newRow = moveRight(movingRow, j, 0, 2ll);
-    //                 newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-    //                 newState = symmetricState(newState);  // select minimum state in symmetric states.
-    //                 // add to nextStates
-    //                 // TODO: avoid the newStaet which is already in nextStates
-    //                 nextStates.push_back(newState);
-    //             }
-    //         }
-    //     }
-    // }
-    // return nextStates;
+    if (chooseEmpty){
+        for(auto m : nextStatesFromEmpty){
+            ll newS = m.newState(presentState);
+            if (newS == -1ll){
+                continue;
+            }
+            // TODO check the new s is already in the set.
+            nextStates.push_back(newS);
+        }
+    }else{
+        for(auto m : nextStatesFromX){
+            ll newS = m.newState(presentState);
+            if (newS == -1ll){
+                continue;
+            }
+            // TODO check the new s is already in the set.
+            nextStates.push_back(newS);
+        }
+    }
+    cout << "end creating next states" << endl;
+    return nextStates;
 }
 
 vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
@@ -258,15 +237,15 @@ ll generateState(ll indexNumber, int oNumber, int xNumber){
     int remainingONumber = oNumber;
     int remainingXNumber = xNumber;
     ll newState = 0ll;
-    for(int i=combinationSize;i>0;i--){
-        ll mark = generateMark(i, &remainingIndexNumber, remainingONumber, remainingXNumber);
-        newState = (newState << 2) + mark;
-        if (mark == 1ll){
-            remainingONumber--;
-        }else if (mark == 2ll){
-            remainingXNumber--;
-        }
-    }
+    // for(int i=combinationSize;i>0;i--){
+    //     ll mark = generateMark(i, &remainingIndexNumber, remainingONumber, remainingXNumber);
+    //     newState = (newState << 2) + mark;
+    //     if (mark == 1ll){
+    //         remainingONumber--;
+    //     }else if (mark == 2ll){
+    //         remainingXNumber--;
+    //     }
+    // }
     return newState;
 }
 
