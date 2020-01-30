@@ -33,6 +33,7 @@ public:
         return Moving(addPiece << stateLengthHalf, movingMask, movingWidth, addP << stateLengthHalf, !right, false);
     }
     ll newState(ll s){
+        // check the selected piece is OK?
         if (fromEmpty){
             if((s & movingPiece) || ((s >> stateLengthHalf) & movingPiece)){
                 // cannot select the piece
