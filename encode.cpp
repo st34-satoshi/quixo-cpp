@@ -60,16 +60,32 @@ public:
         initState(selectedX, combinationSize-oNumber, xNumber, &indexX, -1, false);
     }
 
-    // ll generateState(ll index){
-    //     // TODO
-    // }
+    ll generateState(ll index){
+        ll oState = oStates[index / xPatternNumber];
+        ll xStateTmp = xStates[index % xPatternNumber];
+        ll xState = 0ll;
+        int xI = 0;
+        int created = 0;
+        for(int i=0;i<combinationSize;i++){
+            if(oState & (1ll << i)){
+                continue;
+            }
+            if(xStateTmp & (1ll << xI)){
+                xState += 1ll << i;
+                created++;
+            }
+            xI++;
+            if(created == xNumber){
+                break;
+            }
+        }
+        return (oState << stateLengthHalf) | xState;
+    }
 
     ll generateIndex(ll state){
         // at first create o index
         // then create x index
         // then o * nCr + x.   n=boardSize-oNumber, r means x number
-        // TODO
-        // ceate x
         ll x = 0ll;
         ll presentX = state & xMask;
         ll presentO = state >> stateLengthHalf;
@@ -120,6 +136,7 @@ int main(){
     ll s = 0b110'00000'00000'00000'00000'000'110'110'000;
     ll in = e.generateIndex(s);
     cout << in << endl;
+    cout << "s = " << bitset<64>(e.generateState(in)) << endl;
     cout << "end test " << endl;
 
     return 0;
