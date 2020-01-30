@@ -181,7 +181,7 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
     if(fromEmpty){
         for(auto m : previousStatesToEmpty){
             ll newS = m.newState(presentState);
-            if (newS == -1ll){
+            if (newS == -1ll || isWin(newS)!=0){
                 continue;
             }
             // TODO check the new s is already in the set.
@@ -190,7 +190,7 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
     }else{
         for(auto m : previousStatesToO){
             ll newS = m.newState(presentState);
-            if (newS == -1ll){
+            if (newS == -1ll || isWin(newS)!=0){
                 continue;
             }
             // TODO check the new s is already in the set.
