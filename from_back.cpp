@@ -35,10 +35,10 @@ void init(){
     initMoving();
 }
 
-bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAddO){
-    Encoder encT = Encoder(oNumber, xNumber);
-    Encoder encR = Encoder(xNumber, oNumber);
-    Encoder encN = Encoder(xNumber, oNumber+1);
+bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAddO, Encoder encT, Encoder encR, Encoder encN){
+    // Encoder encT = Encoder(oNumber, xNumber);
+    // Encoder encR = Encoder(xNumber, oNumber);
+    // Encoder encN = Encoder(xNumber, oNumber+1);
     // if all next states are win this state is lose
     ll thisState = encT.generateState(indexState);
     // next states are reverse of o and x.
@@ -73,13 +73,14 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
     Encoder encT = Encoder(oNumber, xNumber);
     Encoder encR = Encoder(xNumber, oNumber);
     Encoder encN = Encoder(xNumber, oNumber+1);
+    cout << "created encoder" << endl;
     bool updated = false;
     for (ull i=0ll;i<values->size()/2ll;i++){
         if (values->at(i*2ll) || values->at(i*2ll+1ll)){
             // lose or win --> skip
             continue;
         }
-        if (isLoseState(i, oNumber, xNumber, nextStatesValuesSame, nextStatesValuesAdd)){
+        if (isLoseState(i, oNumber, xNumber, nextStatesValuesSame, nextStatesValuesAdd, encT, encR, encN)){
             // update this state to lose and change previous states to win
             updated = true;
             ll stateNumber = encT.generateState(i);
@@ -193,6 +194,7 @@ void computeStatesValue(int oNumber, int xNumber){
     vector<bool> values(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
     vector<bool> valuesReverse(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber] * 2);
     
+    cout << "read values from file" << endl;
     // read next state value
     vector<bool> nextValues(getCombination(combinationSize, xNumber)*getCombination(combinationSize-xNumber, oNumber+1) * 2);  // next states values of values
     readStatesValue(&nextValues, xNumber, oNumber+1);
@@ -202,19 +204,23 @@ void computeStatesValue(int oNumber, int xNumber){
     // at first find next lose states and update this values to win
     // find the states which end of the game, if it is lose update previous state to win
     // cout << "staert search" << nextValues.size() << "," << nextReverseValues.size() << endl;
-    // cout << "o, x = " << oNumber << ", " << xNumber << endl; 
+    cout << "update from end" << endl; 
     updateValuesFromEnd(&values, oNumber, xNumber, &valuesReverse, &nextValues);
     updateValuesFromEnd(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues);
 
+    cout << "update loop" << endl;
     // compute values until no update
     bool updated = true;
+    int c = 0;
     while (updated){
+        cout << "loop count = " << c++ << endl;
         updated = false;
         // check all states
         // cout << "start update values" << endl;
         updated = updateValues(&values, oNumber, xNumber, &valuesReverse, &nextValues);
         updated = updateValues(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues) || updated;
     }
+    cout << "save to file" << endl;
     // save resutl to strage
     writeStatesValue(&values, oNumber, xNumber);
     writeStatesValue(&valuesReverse, xNumber, oNumber);

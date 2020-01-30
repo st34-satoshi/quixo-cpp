@@ -11,9 +11,9 @@ using namespace std;
 typedef long long ll;
 typedef unsigned long long ull;
 
-const int boardSize = 3; // TODO remove
-const int boardWidth = 3;
-const int boardHeight = 3;
+const int boardSize = 4; // TODO remove
+const int boardWidth = 4;
+const int boardHeight = 4;
 const int combinationSize = boardWidth * boardHeight;
 const int stateLengthHalf = 32; // long long is 64 bit
 

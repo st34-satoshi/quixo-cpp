@@ -13,7 +13,7 @@ void checkStateError(ll state, int oNumber, int xNumber){
     // this is only for debug
     int x = 0;
     int o = 0;
-    for(int i=0;i<9;i++){
+    for(int i=0;i<20;i++){
         if(state & (1ll << i)){
             x++;
         }
@@ -23,6 +23,7 @@ void checkStateError(ll state, int oNumber, int xNumber){
     }
     if(oNumber != o){
         cout << "Error: o number is not same, " << oNumber << ", " << o << endl;
+        cout << bitset<64>(state) << endl;
         exit(0);
     }
     if(xNumber != x){
