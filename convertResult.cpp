@@ -1,4 +1,5 @@
 #include "state-ox-different.cpp"
+#include "encode.cpp"
 
 void convertResultsTOXO(){
     int countState = 0;
@@ -9,9 +10,10 @@ void convertResultsTOXO(){
             int xNumber = total - oNumber;
             vector<bool> values(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
             readStatesValue(&values, oNumber, xNumber);
+            Encoder enc = Encoder(oNumber, xNumber);
             // TODO save to file
             for(ull i=0; i<values.size()/2ll;i++){
-                ll s = generateState(i, oNumber, xNumber);
+                ll s = enc.generateState(i);
                 cout << "value = " << values.at(i*2) << values.at(i*2+1) << endl;
                 printState(s);
                 countState++;

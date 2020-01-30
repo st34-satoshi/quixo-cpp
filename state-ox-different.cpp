@@ -9,6 +9,28 @@ vector< vector<ll> > cellMasksX;
 vector<ll> xWinMasks; // check row, column and diagonal line
 vector<ll> oWinMasks;
 
+void checkStateError(ll state, int oNumber, int xNumber){
+    // this is only for debug
+    int x = 0;
+    int o = 0;
+    for(int i=0;i<9;i++){
+        if(state & (1ll << i)){
+            x++;
+        }
+        if(state & (1ll << (i + stateLengthHalf))){
+            o++;
+        }
+    }
+    if(oNumber != o){
+        cout << "Error: o number is not same, " << oNumber << ", " << o << endl;
+        exit(0);
+    }
+    if(xNumber != x){
+        cout << "Error: x number is not same, " << xNumber << ", " << x << endl;
+        exit(0);
+    }
+}
+
 void initWinMasksDiagonal(){
     // it is called from initState
     ll winMask = 0ll;
