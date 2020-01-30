@@ -10,6 +10,7 @@ vector<ll> xWinMasks; // check row, column and diagonal line
 vector<ll> oWinMasks;
 
 void initWinMasksDiagonal(){
+    // it is called from initState
     ll winMask = 0ll;
     for(int i=0;i<boardWidth;i++){
         winMask += 1ll << (i*boardWidth+i);
@@ -152,7 +153,6 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
 }
 
 vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
-    // 
     presentState = swapPlayer(presentState);
     // TODO unsorted set
     vector<ll> previousStates;
@@ -176,57 +176,6 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
         }
     }
     return previousStates;
-}
-
-// TODO: if possible, create a better algorithm to change state <--> index
-ll generateState(ll indexNumber, int oNumber, int xNumber){
-    // TODO:
-    // change to state from indexNumber
-    // it is possible to represent state using indexNumber but it is difficult to find symmetric states using indexNumber. todo create a better algorithm
-    ll remainingIndexNumber = indexNumber;
-    int remainingONumber = oNumber;
-    int remainingXNumber = xNumber;
-    ll newState = 0ll;
-    // for(int i=combinationSize;i>0;i--){
-    //     ll mark = generateMark(i, &remainingIndexNumber, remainingONumber, remainingXNumber);
-    //     newState = (newState << 2) + mark;
-    //     if (mark == 1ll){
-    //         remainingONumber--;
-    //     }else if (mark == 2ll){
-    //         remainingXNumber--;
-    //     }
-    // }
-    return newState;
-}
-
-ll generateIndexNumber(ll stateNumber){
-    // TODO:
-    ll indexNumber = 0;
-    // int oNumber = 0;
-    // int xNumber = 0;
-    // ll mark;
-    // for(int i=0;i<combinationSize;i++){
-    //     mark = getRightMark(stateNumber);
-    //     stateNumber = stateNumber >> 2;
-    //     if(mark == 1ll){
-    //         oNumber++;
-    //     }else if (mark == 2ll){
-    //         xNumber++;
-    //         // not o. if it is possible to select o, add the number of patterns of next states.
-    //         if (oNumber > 0){
-    //             indexNumber += getPatterns(i, oNumber-1, xNumber);
-    //         }
-    //     }else if (mark == 0ll){
-    //         if (oNumber > 0){
-    //             indexNumber += getPatterns(i, oNumber-1, xNumber);
-    //         }
-    //         if (xNumber > 0){
-    //             indexNumber += getPatterns(i, oNumber, xNumber-1);
-    //         }
-    //     }
-    // }
-
-    return indexNumber;
 }
 
 string fileName(int oNumber, int xNumber){
