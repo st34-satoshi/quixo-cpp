@@ -32,6 +32,7 @@ c++ -std=c++17 -Wall -O3 from_back.cpp
 void init(){
     createCombinations();
     initState();
+    initMoving();
 }
 
 bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAddO){
@@ -43,6 +44,8 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStat
     // next states are reverse of o and x.
     auto nextStatesReverse = createNextStates(thisState, /*chooseEmpty*/false);
     for (auto state : nextStatesReverse){
+        // cout << "46  //////" << endl;
+        // checkStateError(state, xNumber, oNumber);
         ll indexNextState = encR.generateIndex(state);
         if(!nextStatesValuesSame->at(indexNextState*2)){
             // not win (lose or draw)
@@ -53,6 +56,8 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStat
     // next states are nextState the number of o increase
     auto nextStatesAddO = createNextStates(thisState, true);
     for (auto state : nextStatesAddO){
+        // cout << "58  //////" << endl;
+        // checkStateError(state, xNumber, oNumber+1);
         ll indexNextState = encN.generateIndex(state);
         if(!nextStatesValuesAddO->at(indexNextState*2)){
             // not win (lose or draw)
@@ -84,6 +89,10 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
             values->at(stateI*2ll+1ll) = 1; // 00 --> 01 (draw --> lose)
             // generate previous states, update to win
             for( auto stateN : createPreviousStates(stateNumber, false)){
+                // cout << "91  //////" << endl;
+                // printState(stateNumber);
+                // printState(stateN);
+                // checkStateError(stateN, xNumber, oNumber);
                 ll stateI = encR.generateIndex(stateN);
                 nextStatesValuesSame->at(stateI*2ll) = 1;
                 nextStatesValuesSame->at(stateI*2ll+1ll) = 0;
@@ -108,9 +117,12 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
             continue;
         }
         ll stateNumber = encR.generateState(i);
+        checkStateError(stateNumber, xNumber, oNumber);
         int win = isWin(stateNumber); // win:1, lose:-1, draw:0
         if (win == -1){
             // update this state to lose and change previous states to win
+            // cout << "121  //////" << endl;
+            // checkStateError(stateNumber, xNumber, oNumber);
             ll stateI = encR.generateIndex(stateNumber);
             if (nextStatesValuesSame->at(stateI*2ll)){ // this is for debug
                 cout << "strange bug this state already decided" << endl;
@@ -121,6 +133,8 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
 
             // generate previous states, update to win
             for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/false)){
+                // cout << "133  //////" << endl;
+                // checkStateError(stateN, oNumber, xNumber);
                 ll stateI = encT.generateIndex(stateN);
                 if (values->at(stateI*2ll+1ll)){
                     cout << "Strange bug. this" << endl;
@@ -131,6 +145,8 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
             if (nextStatesValuesSame->at(i*2ll+1ll)){
                 cout << "strange bug to win" << endl;
             }
+            // cout << "145  //////" << endl;
+            // checkStateError(stateNumber, xNumber, oNumber);
             ll stateI = encR.generateIndex(stateNumber);
             if (nextStatesValuesSame->at(stateI*2ll+1ll)){
                 cout << "Strange bug. this state win but it is lose." << endl;
@@ -148,9 +164,14 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
         }
         
         ll stateNumber = encN.generateState(i);
+        checkStateError(stateNumber, xNumber, oNumber+1);
         
         // generate previous states, update to win
-        for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
+        for( auto stateN : createPreviousStates(stateNumber, true)){
+            // cout << "168  //////" << endl;
+            // printState(stateNumber);
+            // printState(stateN);
+            // checkStateError(stateN, oNumber, xNumber);
             ll stateI = encT.generateIndex(stateN);
             values->at(stateI*2ll) = 1;
         }
@@ -158,7 +179,7 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
 }
 
 void computeStatesValue(int oNumber, int xNumber){
-    cout << "start computing" << endl;
+    // cout << "start computing" << endl;
     // TODO implement: the case no == nx. do not need to use reverse???
     // 00: unknown(draw)
     // 01: lose
@@ -178,22 +199,19 @@ void computeStatesValue(int oNumber, int xNumber){
     vector<bool> nextReverseValues(getCombination(combinationSize, oNumber)*getCombination(combinationSize-oNumber, xNumber+1) * 2); // next states values of valuesReverse
     readStatesValue(&nextReverseValues, oNumber, xNumber+1);
 
-    cout << "end read " << endl;
     // at first find next lose states and update this values to win
     // find the states which end of the game, if it is lose update previous state to win
-    cout << "staert search" << nextValues.size() << "," << nextReverseValues.size() << endl;
-    cout << "o, x = " << oNumber << ", " << xNumber << endl; 
+    // cout << "staert search" << nextValues.size() << "," << nextReverseValues.size() << endl;
+    // cout << "o, x = " << oNumber << ", " << xNumber << endl; 
     updateValuesFromEnd(&values, oNumber, xNumber, &valuesReverse, &nextValues);
-    cout << "reverse" << endl;
     updateValuesFromEnd(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues);
-    cout << "finish update from end" << endl;
 
     // compute values until no update
     bool updated = true;
     while (updated){
         updated = false;
         // check all states
-        cout << "start update values" << endl;
+        // cout << "start update values" << endl;
         updated = updateValues(&values, oNumber, xNumber, &valuesReverse, &nextValues);
         updated = updateValues(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues) || updated;
     }
