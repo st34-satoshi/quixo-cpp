@@ -32,25 +32,33 @@ private:
             initState(selected, selectedSize, remain-1, ind, i, o);
             selected[i] = false;
         }
-
     }
 public:
     Encoder(int oNumber, int xNumber){
         // initialize
         xMask = (1LL << combinationSize) - 1ll;
-        // oStates.resize(combinations[combinationSize][oNumber]);
-        // xStates.resize(combinations[combinationSize-oNumber][xNumber]);
-        // array<bool, combinationSize> selectedO;
         bool selectedO[combinationSize];
         for(int i=0;i<combinationSize;i++){
             selectedO[i] = false;
         }
         int indexO = 0;
         initState(selectedO, combinationSize, oNumber, &indexO, -1, true);
+        bool selectedX[combinationSize-oNumber];
+        for(int i=0;i<combinationSize-oNumber;i++){
+            selectedO[i] = false;
+        }
+        int indexX = 0;
+        initState(selectedX, combinationSize-oNumber, xNumber, &indexX, -1, false);
     }
     void printOut(){
         cout << "o states" << endl;
         for(auto p : oStates){
+            cout << "i, s = " << p.first << ", " << p.second << endl;
+            cout << bitset<9>(p.second) << endl;
+        }
+        cout << endl;
+        cout << "x states" << endl;
+        for(auto p : xStates){
             cout << "i, s = " << p.first << ", " << p.second << endl;
             cout << bitset<9>(p.second) << endl;
         }
