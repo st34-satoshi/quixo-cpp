@@ -181,11 +181,6 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
             // update all symmetric states
             for(auto stateN : symmetricAllStates(stateNumber)){
                 ll stateI = generateIndexNumber(stateN);
-                if(!isNotDraw(nextStatesValuesSame, stateI)){
-                    cout << "strange bug this state already decided" << endl;
-                    cout << nextStatesValuesSame->at(stateI*2ll) << nextStatesValuesSame->at(stateI*2ll+1ll) << endl;
-                    printState(stateN);
-                }
                 updateToLoss(nextStatesValuesSame, stateI);
             }
             // generate previous states, update to win
@@ -199,15 +194,14 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
             // for symmetric states!!
             for(auto state : symmetricAllStates(stateNumber)){
                 ll stateI = generateIndexNumber(state);
-                nextStatesValuesSame->at(stateI*2ll) = 1; // 00 --> 10 (draw --> win)
+                updateToWin(nextStatesValuesSame, stateI);
             }
         }
     }
 
     // find next lose state update this state to win
     for (ull i=0ll;i<nextStatesValuesAdd->size()/2ll;i++){
-        
-        if (!nextStatesValuesAdd->at(i*2ll+1ll)){ // lose = 01
+        if(!isLoss(nextStatesValuesAdd, i)){
             // not lose --> skip
             continue;
         }
@@ -218,9 +212,8 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
         for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
             for(auto s : symmetricAllStates(stateN)){
                 ll stateI = generateIndexNumber(s);
-                values->at(stateI*2ll) = 1;
+                updateToWin(values, stateI);
             }
-            
         }
     }
 }
