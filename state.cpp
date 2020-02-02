@@ -1,11 +1,64 @@
 #include "global.cpp"
 
+// TODO remove them??
 vector< vector<ll> > cellNumbers;  // it is used to get a cell number.
 vector<ll> rowNumbers;  // it is used to get a row numbers.
 // use to check win
 vector<ll> xWinMasks; // check row, column and diagonal line
 vector<ll> oWinMasks;
 vector<ll> eWinMasks;
+
+// they are used to create next states and previous states
+// C is check mask (the moving piece exist?) turn is always o!!
+// (((s & A) >> 1) & A) | (S & ~A) | B
+
+// to opposite.  ex) left to right, top to bottom
+// [t][i][j]: i is the position, j=0 is C, j=1 is A, j=2 is B, t=0 is next, t=1 is previous
+array<array<array<ll, 3>, boardSize-2>, 2> MoveOppToRight;
+array<array<array<ll, 3>, boardSize-2>, 2> MoveOppToLeft;
+array<array<array<ll, 3>, boardSize-2>, 2> MoveOppToTop;
+array<array<array<ll, 3>, boardSize-2>, 2> MoveOppToBottom;
+
+void initMovingMasks(){
+    ll A, C;
+    // o is 1, x is 2. turn is always o. but creating states turn is swapped!
+    // next = choose x, previous = choose o. (because the turn is swapped)
+    // to Opp
+    // to Right and Left
+    for(int i=0;i<boardSize-2;i++){
+        C = 1ll << (i+1)*boardSize*2;
+        MoveOppToLeft[0][i][0] = C;
+        MoveOppToLeft[1][i][0] = (C << 1);
+        MoveOppToRight[0][i][0] = (C << (boardSize-1)*2);
+        MoveOppToRight[1][i][0] = ((C << ((boardSize-1)*2)) << 1);
+        A = ((1 << (2*boardSize)) - 1) << ((i+1)*boardSize*2);
+        for (int j=0;j<2;j++){
+            MoveOppToLeft[j][i][1] = A;
+            MoveOppToRight[j][i][1] = A;
+            MoveOppToLeft[j][i][2] = MoveOppToRight[j][i][0]; // B
+            MoveOppToRight[j][i][2] = MoveOppToLeft[j][i][0];
+        }
+    }
+     // to Top and Bottom
+    for(int i=0;i<boardSize-2;i++){
+        C = 1ll << (i+1)*2;
+        MoveOppToTop[0][i][0] = C;
+        MoveOppToTop[1][i][0] = (C << 1);
+        MoveOppToBottom[0][i][0] = (C << (boardSize*(boardSize-1)*2));
+        MoveOppToBottom[1][i][0] = ((C << (boardSize*(boardSize-1)*2)) << 1);
+        A = 0ll;
+        for (int j=0;j<boardSize;j++){
+            A = (A << (boardSize*2)) + 1ll;
+        }
+        A = (A << ((i+1)*boardSize*2));
+        for (int j=0;j<2;j++){
+            MoveOppToTop[j][i][1] = A;
+            MoveOppToBottom[j][i][1] = A;
+            MoveOppToTop[j][i][2] = MoveOppToBottom[j][i][0]; // B
+            MoveOppToBottom[j][i][2] = MoveOppToTop[j][i][0];
+        }
+    }
+}
 
 ll moveLeft(ll rowState, int fromI, int toI, ll addMark){
     // move the piece(index) to left
@@ -362,6 +415,10 @@ void initState(){
     }
 
 }
+
+/*
+ *  encoding
+*/
 
 // TODO: if possible, create a better algorithm to change state <--> index
 ll generateMark(int spaceNumber, ll *indexNumber, int oNumber, int xNumber){

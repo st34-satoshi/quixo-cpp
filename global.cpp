@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <time.h>
+#include <array>
 
 using namespace std;
 typedef long long ll;
