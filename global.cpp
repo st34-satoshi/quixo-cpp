@@ -14,6 +14,9 @@ const int boardSize = 4;
 const int combinationSize = boardSize * boardSize;
 
 vector< vector<ll>> combinations;  // nCr, (n<boardSize^2)
+const ll oMark = 1ll;
+const ll xMark = 2ll;
+const ll bMark = 3ll;
 
 void createCombinations(){
     int combSize = combinationSize+ 1;

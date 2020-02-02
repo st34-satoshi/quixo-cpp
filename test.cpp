@@ -27,12 +27,16 @@ void testIsWin(){
 
 void testInitMovingMask(){
     initMovingMasks();
-    for(int i=0;i<2;i++){
-        cout << "i " << i << endl;
-        for(int j=0;j<boardSize-2;j++){
-            cout << "j " << j << endl;
-            for(int k=0;k<3;k++){
-                cout << k << ": "<< bitset<32>(MoveOppToRight[i][j][k]);
+    for(int l=0;l<2;l++){
+        cout << "l " << l << endl;
+        for(int s=0;s<2;s++){
+            cout << "s " << s << endl;
+            for(int i=0;i<boardSize-2;i++){
+                cout << "i " << i << endl;
+                for(int j=0;j<4;j++){
+                    cout << j << ": "<< bitset<32>(MovePreviousEdgeLeftShift[l][s][i][j]) << ", ";
+                }
+                cout << endl;
             }
             cout << endl;
         }

@@ -13,51 +13,98 @@ vector<ll> eWinMasks;
 // (((s & A) >> 1) & A) | (S & ~A) | B
 
 // to opposite.  ex) left to right, top to bottom
-// [t][i][j]: i is the position, j=0 is C, j=1 is A, j=2 is B, t=0 is next, t=1 is previous
-array<array<array<ll, 3>, boardSize-2>, 2> MoveOppToRight;
-array<array<array<ll, 3>, boardSize-2>, 2> MoveOppToLeft;
-array<array<array<ll, 3>, boardSize-2>, 2> MoveOppToTop;
-array<array<array<ll, 3>, boardSize-2>, 2> MoveOppToBottom;
+// [i][j]: i is the position, j=0 is C, j=1 is A, j=2 is B, j=3 is shift length
+// array<array<ll, 5>, (boardSize-2)*2> MoveOppRightShiftNext;
+// array<array<ll, 5>, (boardSize-2)*2> MoveOppLeftShiftNext;
+array<array<ll, 4>, (boardSize-2)*2> MovePreviousOppRightShift;
+array<array<ll, 4>, (boardSize-2)*2> MovePreviousOppLeftShift;
+
+// move edge ex) top edge to right
+// [l][s][i][j], l is the shift length, s=0 is bottom/right, s=1 is top/left, i is the position, j=0 is C, j=1 is A, j=2 is B, j=4 is the shift length
+array<array<array<array<ll, 4>, boardSize-2>, 2>, 2> MovePreviousEdgeRightShift;
+array<array<array<array<ll, 4>, boardSize-2>, 2>, 2> MovePreviousEdgeLeftShift;
 
 void initMovingMasks(){
-    ll A, C;
+    ll A;
     // o is 1, x is 2. turn is always o. but creating states turn is swapped!
     // next = choose x, previous = choose o. (because the turn is swapped)
-    // to Opp
-    // to Right and Left
+
+    // Move Previous Opposite
     for(int i=0;i<boardSize-2;i++){
-        C = 1ll << (i+1)*boardSize*2;
-        MoveOppToLeft[0][i][0] = C;
-        MoveOppToLeft[1][i][0] = (C << 1);
-        MoveOppToRight[0][i][0] = (C << (boardSize-1)*2);
-        MoveOppToRight[1][i][0] = ((C << ((boardSize-1)*2)) << 1);
-        A = ((1 << (2*boardSize)) - 1) << ((i+1)*boardSize*2);
-        for (int j=0;j<2;j++){
-            MoveOppToLeft[j][i][1] = A;
-            MoveOppToRight[j][i][1] = A;
-            MoveOppToLeft[j][i][2] = MoveOppToRight[j][i][0]; // B
-            MoveOppToRight[j][i][2] = MoveOppToLeft[j][i][0];
-        }
-    }
-     // to Top and Bottom
-    for(int i=0;i<boardSize-2;i++){
-        C = 1ll << (i+1)*2;
-        MoveOppToTop[0][i][0] = C;
-        MoveOppToTop[1][i][0] = (C << 1);
-        MoveOppToBottom[0][i][0] = (C << (boardSize*(boardSize-1)*2));
-        MoveOppToBottom[1][i][0] = ((C << (boardSize*(boardSize-1)*2)) << 1);
+        // C
+        MovePreviousOppLeftShift[i*2][0] = oMark << ((i+2)*boardSize-1)*2;
+        MovePreviousOppLeftShift[i*2+1][0] = oMark << (i+1+boardSize*(boardSize-1))*2;
+        MovePreviousOppRightShift[i*2][0] = oMark << (i+1)*boardSize*2;
+        MovePreviousOppRightShift[i*2+1][0] = oMark << (i+1)*2;
+        // A
+        MovePreviousOppLeftShift[i*2][1] = ((bMark << boardSize*2) - 1) << ((i+1)*boardSize*2);
         A = 0ll;
-        for (int j=0;j<boardSize;j++){
-            A = (A << (boardSize*2)) + 1ll;
+        for(int j=0;j<boardSize;j++){
+            A = (A << boardSize*2) + (bMark << (i+1)*2); 
         }
-        A = (A << ((i+1)*boardSize*2));
-        for (int j=0;j<2;j++){
-            MoveOppToTop[j][i][1] = A;
-            MoveOppToBottom[j][i][1] = A;
-            MoveOppToTop[j][i][2] = MoveOppToBottom[j][i][0]; // B
-            MoveOppToBottom[j][i][2] = MoveOppToTop[j][i][0];
+        MovePreviousOppLeftShift[i*2+1][1] = A;
+        MovePreviousOppRightShift[i*2][1] = ((bMark << boardSize*2) - 1) << ((i+1)*boardSize*2);
+        MovePreviousOppRightShift[i*2+1][1] = A;
+        // B
+        MovePreviousOppLeftShift[i*2][2] = oMark << (i+1)*boardSize*2;
+        MovePreviousOppLeftShift[i*2+1][2] = oMark << (i+1)*2;
+        MovePreviousOppRightShift[i*2][2] = oMark << ((i+2)*boardSize-1)*2;
+        MovePreviousOppRightShift[i*2+1][2] = oMark << ((i+1)+boardSize*(boardSize-1))*2;
+        // shift length 
+        MovePreviousOppLeftShift[i*2][3] = 1;
+        MovePreviousOppLeftShift[i*2+1][3] = boardSize;
+        MovePreviousOppRightShift[i*2][3] = 1;
+        MovePreviousOppRightShift[i*2+1][3] = boardSize;
+    }
+     // Move Previous Edge
+     // l = 0.
+    for(int s=0;s<2;s++){
+        for(int i=0;i<boardSize-2;i++){
+            // C
+            MovePreviousEdgeLeftShift[0][s][i][0] = (oMark << (boardSize-1)*2) << (s*boardSize*(boardSize-1)*2);
+            MovePreviousEdgeRightShift[0][s][i][0] = oMark << (s*boardSize*(boardSize-1)*2);
+            // A
+            MovePreviousEdgeLeftShift[0][s][i][1] = ((1ll << ((i+2)*2)) - 1ll) << s*boardSize*(boardSize-1)*2;
+            MovePreviousEdgeRightShift[0][s][i][1] = (((1ll << (boardSize-i-1)*2) - 1ll) << (i+1)*2) << s*boardSize*(boardSize-1)*2;
+            // B
+            MovePreviousEdgeLeftShift[0][s][i][2] = (oMark << (i+1)*2) << s*boardSize*(boardSize-1)*2;
+            MovePreviousEdgeRightShift[0][s][i][2] = (oMark << (i+1)*2) << s*boardSize*(boardSize-1)*2;
+            // shift length
+            MovePreviousEdgeRightShift[0][s][i][3] = 1ll;
+            cout << s << ", " << i;
+            cout << "hoge " << MovePreviousEdgeRightShift[0][s][i][3] << endl;
+            cout << "hogeuuu " << MovePreviousEdgeRightShift[0][1][0][3] << endl;
+            MovePreviousEdgeLeftShift[0][s][i][3] = 1ll;
         }
     }
+    cout << "fin " << MovePreviousEdgeRightShift[0][1][0][3] << endl;
+    // l = 1
+    for(int s=0;s<2;s++){
+        for(int i=0;i<boardSize-2;i++){
+            // C
+            MovePreviousEdgeLeftShift[1][s][i][0] = (oMark << boardSize*2) << s*(boardSize-1)*2;
+            MovePreviousEdgeRightShift[1][s][i][0] = oMark << s*(boardSize-1)*2;
+            // A
+            A = 0ll;
+            for(int j=0;j<boardSize-i+1;j++){
+                A = (A << boardSize*2) + bMark;
+            }
+            MovePreviousEdgeLeftShift[1][s][i][1] = (A << (boardSize*(i+1)*2)) << ((boardSize-1)*2*s);
+            A = 0ll;
+            for(int j=0;j<i+2;j++){
+                A = (A << boardSize*2) + bMark;
+            }
+            MovePreviousEdgeRightShift[1][s][i][1] = A << ((boardSize-1)*2*s);
+            // B
+            MovePreviousEdgeLeftShift[1][s][i][2] = (oMark << (i+1)*boardSize*2) << s*2*(boardSize-1);
+            MovePreviousEdgeRightShift[1][s][i][2] = (oMark << (i+1)*boardSize*2) << s*2*(boardSize-1);
+            // shift length
+            MovePreviousEdgeRightShift[1][s][i][3] = boardSize;
+            MovePreviousEdgeLeftShift[1][s][i][3] = boardSize;
+        }
+    }
+    cout << MovePreviousEdgeRightShift[0][1][0][3] << endl;
+    cout << "hoge " << MovePreviousEdgeRightShift[0][0][1][3] << endl;
 }
 
 ll moveLeft(ll rowState, int fromI, int toI, ll addMark){
