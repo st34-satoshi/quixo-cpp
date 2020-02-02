@@ -41,12 +41,12 @@ void init(){
  update all values
 */
 
-inline void updateToWin(vector<bool> *values, ll index){
+inline void updateToLoss(vector<bool> *values, ll index){
     values->at(index*2ll) = true;
     values->at(index*2ll + 1ll) = false;
 }
 
-inline void updateToLoss(vector<bool> *values, ll index){
+inline void updateToWin(vector<bool> *values, ll index){
     values->at(index*2ll) = false;
     values->at(index*2ll + 1ll) = true;
 }
@@ -56,21 +56,17 @@ inline void updateToLoss(vector<bool> *values, ll index){
 //     values->at(index*2ll + 1ll) = false;
 // }
 
-inline bool isWin(vector<bool> *values, ll index){
+inline bool isLoss(vector<bool> *values, ll index){
     return values->at(index*2ll) && !values->at(index*2ll + 1ll);
 }
 
-inline bool isLoss(vector<bool> *values, ll index){
+inline bool isWin(vector<bool> *values, ll index){
     return !values->at(index*2ll) && values->at(index*2ll + 1ll);
 }
 
 // inline bool isWinOrDraw(vector<bool> *values, ll index){
 //     return values->at(index*2ll) && !(values->at(index*2ll + 1ll));
 // }
-
-inline bool isDraw(vector<bool> *values, ll index){
-    return !(values->at(index*2ll)) && !(values->at(index*2ll + 1ll));
-}
 
 // inline void updateToWin(vector<bool> *values, ll index){
 //     values->at(index*2ll) = false;
@@ -99,9 +95,9 @@ inline bool isDraw(vector<bool> *values, ll index){
 //     return values->at(index*2ll) && !(values->at(index*2ll + 1ll));
 // }
 
-// inline bool isDraw(vector<bool> *values, ll index){
-//     return !(values->at(index*2ll)) && !(values->at(index*2ll + 1ll));
-// }
+inline bool isDraw(vector<bool> *values, ll index){
+    return !(values->at(index*2ll)) && !(values->at(index*2ll + 1ll));
+}
 
 inline bool isNotDraw(vector<bool> *values, ll index){
     return values->at(index*2ll) || values->at(index*2ll + 1ll);
