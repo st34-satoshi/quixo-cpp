@@ -29,7 +29,7 @@ void createCombinations(){
     combinations = comb;
 }
 
-ll getPatterns(int spaceNumber, int oNumber, int xNumber){
+inline ll getPatterns(int spaceNumber, int oNumber, int xNumber){
     return combinations.at(spaceNumber).at(oNumber) * combinations.at(spaceNumber-oNumber).at(xNumber);
 }
 
