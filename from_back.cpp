@@ -247,7 +247,7 @@ void computeStatesValue(int oNumber, int xNumber){
 
 void computeAllStatesValue(){
     // compute from end(o+x=combinationSize)
-    for(int total=combinationSize; total>=0 ;total--){
+    for(int total=combinationSize; total>=14;total--){
         cout << "total = " << total << endl;
         for(int oNumber=0;oNumber<=total/2;oNumber++){
             cout << "o number = " << oNumber << endl;
