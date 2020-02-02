@@ -7,6 +7,11 @@ bitset saves 2 bits.
 10: win
 11: ??
 
+00: unknown(draw)
+01: win or draw (later draw)
+10: win
+11: loss
+
 but it is difficult to create next states and find cymmetric states using indexNumber.
 we use this state.
 states are represented by long long.
@@ -36,6 +41,37 @@ void init(){
  update all values
 */
 
+inline void updateToWin(vector<bool> *values, ll index){
+    values->at(index*2ll) = false;
+    values->at(index*2ll + 1ll) = true;
+}
+
+inline void updateToLoss(vector<bool> *values, ll index){
+    values->at(index*2ll) = true;
+    values->at(index*2ll + 1ll) = true;
+}
+
+inline void updateToWinOrDraw(vector<bool> *values, ll index){
+    values->at(index*2ll) = true;
+    values->at(index*2ll + 1ll) = false;
+}
+
+inline bool isWin(vector<bool> *values, ll index){
+    return (!values->at(index*2ll) && values->at(index*2ll + 1ll));
+}
+
+inline bool isLoss(vector<bool> *values, ll index){
+    return values->at(index*2ll) && values->at(index*2ll + 1ll);
+}
+
+inline bool isWinOrDraw(vector<bool> *values, ll index){
+    return values->at(index*2ll) && !(values->at(index*2ll + 1ll));
+}
+
+inline bool isDraw(vector<bool> *values, ll index){
+    return !(values->at(index*2ll)) && !(values->at(index*2ll + 1ll));
+}
+
 bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAddO){
     // if all next states are win this state is lose
     ll thisState = generateState(indexState, oNumber, xNumber);
@@ -43,7 +79,7 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStat
     auto nextStatesReverse = createNextStates(thisState, /*chooseEmpty*/false);
     for (auto state : nextStatesReverse){
         ll indexNextState = generateIndexNumber(state);
-        if(!nextStatesValuesSame->at(indexNextState*2)){
+        if(!nextStatesValuesSame->at(indexNextState*2ll)){
             // not win (lose or draw)
             // at least 1 next state is not win. this state is not lose
             return false;
@@ -53,7 +89,7 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStat
     auto nextStatesAddO = createNextStates(thisState, true);
     for (auto state : nextStatesAddO){
         ll indexNextState = generateIndexNumber(state);
-        if(!nextStatesValuesAddO->at(indexNextState*2)){
+        if(!nextStatesValuesAddO->at(indexNextState*2ll)){
             // not win (lose or draw)
             // at least 1 next state is not win. this state is not lose
             return false;
