@@ -240,7 +240,7 @@ void computeStatesValue(int oNumber, int xNumber){
         updated = false;
         // check all states
         updated = updateValues(&values, oNumber, xNumber, &valuesReverse);
-        updated = updateValues(&valuesReverse, xNumber, oNumber, &valuesReverse) || updated;
+        updated = updateValues(&valuesReverse, xNumber, oNumber, &values) || updated;
     }
     // save resutl to strage
     writeStatesValue(&values, oNumber, xNumber);
