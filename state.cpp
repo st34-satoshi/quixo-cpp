@@ -340,10 +340,15 @@ StateArray createP(ll pres, bool fromEmpty){
         for(int s=0;s<2;s++){
             updated = false;
             for(int i=0;i<boardSize-1;i++){
-                if(MovePreviousEdgeRightShift[l][s][i][0] & ps){
+                if (MovePreviousEdgeRightShift[l][s][i][2] & ps){
                     if(updated){
                         continue; // skip. because the next tile is same mark and created the same state.
                     }
+                    updated = true;
+                }else{
+                    updated = false;
+                }
+                if(MovePreviousEdgeRightShift[l][s][i][0] & ps){
                     newS = (((ps & MovePreviousEdgeRightShift[l][s][i][1]) >> MovePreviousEdgeRightShift[l][s][i][3]) & MovePreviousEdgeRightShift[l][s][i][1]) | (ps & ~MovePreviousEdgeRightShift[l][s][i][1]);
                     if (!fromEmpty){
                         newS = newS | MovePreviousEdgeRightShift[l][s][i][2];
@@ -351,8 +356,6 @@ StateArray createP(ll pres, bool fromEmpty){
                     if (isWin(newS)==0){
                         states.State_array[states.count++] = newS;
                     }
-                }else{
-                    updated = false;
                 }
             }
         }
@@ -361,24 +364,22 @@ StateArray createP(ll pres, bool fromEmpty){
         for(int s=0;s<2;s++){
             updated = false;
             for(int i=0;i<boardSize-1;i++){
-                if(MovePreviousEdgeLeftShift[l][s][i][0] & ps){
+                if (MovePreviousEdgeLeftShift[l][s][i][2] & ps){
                     if(updated){
                         continue;
                     }
+                    updated = true;
+                }else{
+                    updated = false;
+                }
+                if(MovePreviousEdgeLeftShift[l][s][i][0] & ps){
                     newS = (((ps & MovePreviousEdgeLeftShift[l][s][i][1]) << MovePreviousEdgeLeftShift[l][s][i][3]) & MovePreviousEdgeLeftShift[l][s][i][1]) | (ps & ~MovePreviousEdgeLeftShift[l][s][i][1]);
                     if (!fromEmpty){
                         newS = newS | MovePreviousEdgeLeftShift[l][s][i][2];
                     }
                     if (isWin(newS)==0){
                         states.State_array[states.count++] = newS;
-                        if(!fromEmpty){
-                            updated = true;
-                        }
-                    }else{
-                        updated = false;
                     }
-                }else{
-                    updated = false;
                 }
             }
         }
