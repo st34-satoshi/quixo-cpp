@@ -176,7 +176,9 @@ void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber){
             for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
                 for(auto s : symmetricAllStates(stateN)){
                     ll stateI = generateIndexNumber(s);
-                    updateToWinOrDraw(values, stateI);
+                    if (isDefault(values, stateI)){
+                        updateToWinOrDraw(values, stateI);
+                    }
                 }
             }
         }
