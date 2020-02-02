@@ -335,10 +335,15 @@ StateArray createP(ll pres, bool fromEmpty){
             }
         }
     }
+    bool updated; // avoid the same previous states
     for(int l=0;l<2;l++){
         for(int s=0;s<2;s++){
+            updated = false;
             for(int i=0;i<boardSize-1;i++){
                 if(MovePreviousEdgeRightShift[l][s][i][0] & ps){
+                    if(updated){
+                        continue; // skip. because the next tile is same mark and created the same state.
+                    }
                     newS = (((ps & MovePreviousEdgeRightShift[l][s][i][1]) >> MovePreviousEdgeRightShift[l][s][i][3]) & MovePreviousEdgeRightShift[l][s][i][1]) | (ps & ~MovePreviousEdgeRightShift[l][s][i][1]);
                     if (!fromEmpty){
                         newS = newS | MovePreviousEdgeRightShift[l][s][i][2];
@@ -346,22 +351,34 @@ StateArray createP(ll pres, bool fromEmpty){
                     if (isWin(newS)==0){
                         states.State_array[states.count++] = newS;
                     }
+                }else{
+                    updated = false;
                 }
             }
         }
     }
     for(int l=0;l<2;l++){
         for(int s=0;s<2;s++){
+            updated = false;
             for(int i=0;i<boardSize-1;i++){
                 if(MovePreviousEdgeLeftShift[l][s][i][0] & ps){
-                    // cout << "i " << i << endl;
+                    if(updated){
+                        continue;
+                    }
                     newS = (((ps & MovePreviousEdgeLeftShift[l][s][i][1]) << MovePreviousEdgeLeftShift[l][s][i][3]) & MovePreviousEdgeLeftShift[l][s][i][1]) | (ps & ~MovePreviousEdgeLeftShift[l][s][i][1]);
                     if (!fromEmpty){
                         newS = newS | MovePreviousEdgeLeftShift[l][s][i][2];
                     }
                     if (isWin(newS)==0){
                         states.State_array[states.count++] = newS;
+                        if(!fromEmpty){
+                            updated = true;
+                        }
+                    }else{
+                        updated = false;
                     }
+                }else{
+                    updated = false;
                 }
             }
         }
