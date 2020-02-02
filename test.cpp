@@ -57,19 +57,21 @@ void testInitOpp(){
 }
 
 void testCreatePreviousState(){
-    ll bs = 0b10100001'01100110'10001001'10000010;
-    cout << "initial state !" << endl;
+    // ll bs = 0b10100001'01100110'10001001'10000010;
+    ll bs = 0b001100110101010101001101010101001;
+    bs = 1722456745;
+    cout << "initial state !4" << endl;
     printState(bs);
     auto ss = createPreviousStates(bs, false);
     // for(auto s: ss){
     //     cout << "state = " << bitset<32>(s) << endl;
     //     printState(s);
     // }
-    createP(bs, false);
+    auto states = createP(bs, false);
     cout << "swap" << endl;
     printState(swapPlayer(bs));
-    for(auto s: State_array){
-        // printState(s);
+    for(auto s: states.State_array){
+        printState(s);
         if (!s){
             break;
         }
@@ -89,7 +91,7 @@ void testCreatePreviousState(){
     }
     for(auto s: ss){
         bool ok = false;
-        for(auto ans: State_array){
+        for(auto ans: states.State_array){
             if (s == ans){
                 ok = true;
             }
@@ -116,9 +118,9 @@ int main(){
     // testWinMasks();
     // testIsWin();
     // printAllStates();
-    testInitMovingMask();
+    // testInitMovingMask();
     // testInitOpp();
-    // testCreatePreviousState();
+    testCreatePreviousState();
 
     return 0;
 }

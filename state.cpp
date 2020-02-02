@@ -22,13 +22,6 @@ array<array<ll, 4>, (boardSize-2)*2> MovePreviousOppLeftShift;
 array<array<array<array<ll, 4>, boardSize-1>, 2>, 2> MovePreviousEdgeRightShift;
 array<array<array<array<ll, 4>, boardSize-1>, 2>, 2> MovePreviousEdgeLeftShift;
 
-void initGlobalState(){
-    for(int i=0;i<STATE_COUNT;i++){
-        State_array[i] = 0ll;
-    }
-    STATE_COUNT = 0;
-}
-
 void initMovingMasks(){
     ll A;
     // o is 1, x is 2. turn is always o. but creating states turn is swapped!
@@ -316,15 +309,15 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
     }
     return nextStates;
 }
-void createP(ll pres, bool fromEmpty){
+StateArray createP(ll pres, bool fromEmpty){
     ll ps = swapPlayer(pres);
+    StateArray states;
     ll newS;
-    initGlobalState();
     for(int i=0;i<(boardSize-2)*2;i++){
         if (MovePreviousOppRightShift[i][0] & ps){
             newS = (((ps & MovePreviousOppRightShift[i][1]) >> MovePreviousOppRightShift[i][3]) & MovePreviousOppRightShift[i][1]) | (ps & ~MovePreviousOppRightShift[i][1]) | MovePreviousOppRightShift[i][2];
             if (isWin(newS)==0){
-                State_array[STATE_COUNT++] =  newS;
+                states.State_array[states.count++] = newS;
             }
         }
     }
@@ -332,7 +325,7 @@ void createP(ll pres, bool fromEmpty){
         if (MovePreviousOppLeftShift[i][0] & ps){
             newS = (((ps & MovePreviousOppLeftShift[i][1]) << MovePreviousOppLeftShift[i][3]) & MovePreviousOppLeftShift[i][1]) | (ps & ~MovePreviousOppLeftShift[i][1]) | MovePreviousOppLeftShift[i][2];
             if (isWin(newS)==0){
-                State_array[STATE_COUNT++] =  newS;
+                states.State_array[states.count++] = newS;
             }
         }
     }
@@ -342,7 +335,7 @@ void createP(ll pres, bool fromEmpty){
                 if(MovePreviousEdgeRightShift[l][s][i][0] & ps){
                     newS = (((ps & MovePreviousEdgeRightShift[l][s][i][1]) >> MovePreviousEdgeRightShift[l][s][i][3]) & MovePreviousEdgeRightShift[l][s][i][1]) | (ps & ~MovePreviousEdgeRightShift[l][s][i][1]) | MovePreviousEdgeRightShift[l][s][i][2];
                     if (isWin(newS)==0){
-                        State_array[STATE_COUNT++] =  newS;
+                        states.State_array[states.count++] = newS;
                     }
                 }
             }
@@ -355,12 +348,13 @@ void createP(ll pres, bool fromEmpty){
                     // cout << "i " << i << endl;
                     newS = (((ps & MovePreviousEdgeLeftShift[l][s][i][1]) << MovePreviousEdgeLeftShift[l][s][i][3]) & MovePreviousEdgeLeftShift[l][s][i][1]) | (ps & ~MovePreviousEdgeLeftShift[l][s][i][1]) | MovePreviousEdgeLeftShift[l][s][i][2];
                     if (isWin(newS)==0){
-                        State_array[STATE_COUNT++] =  newS;
+                        states.State_array[states.count++] = newS;
                     }
                 }
             }
         }
     }
+    return states;
 }
 
 vector<ll> createPreviousStates(ll presentStateO, bool fromEmpty){
@@ -482,49 +476,55 @@ vector<ll> createPreviousStates(ll presentStateO, bool fromEmpty){
             }
         }
     }
-    // // TODO remove
-    // if (!fromEmpty){
-    //     createP(presentStateO, fromEmpty);
-    //     for(auto s: State_array){
-    //         if (!s){
-    //             break;
-    //         }
-    //         bool ok = false;
-    //         for(auto ans: previousStates){
-    //             if (s == ans){
-    //                 ok = true;
-    //             }
-    //             if (ok){
-    //                 break;
-    //             }
-    //         }
-    //         if(!ok){
-    //             cout << "Error: not ok" << endl;
-    //             printState(s);
-    //             exit(0);
-    //         }
-    //     }
-    //     for(auto s: previousStates){
-    //         bool ok = false;
-    //         for(auto ans: State_array){
-    //             if (s == ans){
-    //                 ok = true;
-    //             }
-    //             if (ok){
-    //                 break;
-    //             }
-    //         }
-    //         if(!ok){
-    //             cout << "Error: not ok not created" << endl;
-    //             cout << "present " << endl;
-    //             printState(presentStateO);
-    //             printState(swapPlayer(presentStateO));
-    //             cout << "want" << endl;
-    //             printState(s);
-    //             exit(0);
-    //         }
-    //     }
-    // }
+    // TODO remove
+    if (!fromEmpty){
+        // cout << "gloval count " << STATE_COUNT << endl;
+        auto states = createP(presentStateO, fromEmpty);
+        for(auto s: states.State_array){
+            if (!s){
+                break;
+            }
+            bool ok = false;
+            for(auto ans: previousStates){
+                if (s == ans){
+                    ok = true;
+                }
+                if (ok){
+                    break;
+                }
+            }
+            if(!ok){
+                cout << "Error: not ok" << endl;
+                printState(s);
+                exit(0);
+            }
+        }
+        for(auto s: previousStates){
+            bool ok = false;
+            for(auto ans: states.State_array){
+                if (s == ans){
+                    ok = true;
+                }
+                if (ok){
+                    break;
+                }
+            }
+            if(!ok){
+                cout << "Error: not ok not created" << endl;
+                cout << "present " << endl;
+                printState(presentStateO);
+                cout << "swap" << endl;
+                printState(swapPlayer(presentStateO));
+                cout << "want" << endl;
+                printState(s);
+                cout << "created " << states.count << endl;
+                // for(auto ans: State_array){
+                //     printState(ans);
+                // }
+                exit(0);
+            }
+        }
+    }
     return previousStates;
 }
 

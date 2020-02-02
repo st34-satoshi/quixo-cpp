@@ -19,8 +19,10 @@ const ll oMark = 1ll;
 const ll xMark = 2ll;
 const ll bMark = 3ll;
 
-int STATE_COUNT = 0;
-array<ll, MAX_STATES> State_array;
+struct StateArray{
+    int count = 0;
+    array<ll, MAX_STATES> State_array;
+};
 
 void createCombinations(){
     int combSize = combinationSize+ 1;
