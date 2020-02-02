@@ -77,27 +77,14 @@ inline bool isNotDefault(vector<bool> *values, ll index){
     return values->at(index*2ll) || values->at(index*2ll + 1ll);
 }
 
-bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAddO){
+bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *reverseStatesValues){
     // if all next states are win this state is lose
     ll thisState = generateState(indexState, oNumber, xNumber);
     // next states are reverse of o and x.
     auto nextStatesReverse = createNextStates(thisState, /*chooseEmpty*/false);
     for (auto state : nextStatesReverse){
         ll indexNextState = generateIndexNumber(state);
-        if(!isWin(nextStatesValuesSame, indexNextState)){
-        // if(!nextStatesValuesSame->at(indexNextState*2ll)){
-            // not win (lose or draw)
-            // at least 1 next state is not win. this state is not lose
-            return false;
-        }
-    }
-    // next states are nextState the number of o increase
-    auto nextStatesAddO = createNextStates(thisState, true);
-    for (auto state : nextStatesAddO){
-        ll indexNextState = generateIndexNumber(state);
-        if(!isWin(nextStatesValuesAddO, indexNextState)){
-        // if(!nextStatesValuesAddO->at(indexNextState*2ll)){
-            // not win (lose or draw)
+        if(!isWin(reverseStatesValues, indexNextState)){
             // at least 1 next state is not win. this state is not lose
             return false;
         }
@@ -105,7 +92,35 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStat
     return true;
 }
 
-bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAdd ){
+// bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAddO){
+//     // if all next states are win this state is lose
+//     ll thisState = generateState(indexState, oNumber, xNumber);
+//     // next states are reverse of o and x.
+//     auto nextStatesReverse = createNextStates(thisState, /*chooseEmpty*/false);
+//     for (auto state : nextStatesReverse){
+//         ll indexNextState = generateIndexNumber(state);
+//         if(!isWin(nextStatesValuesSame, indexNextState)){
+//         // if(!nextStatesValuesSame->at(indexNextState*2ll)){
+//             // not win (lose or draw)
+//             // at least 1 next state is not win. this state is not lose
+//             return false;
+//         }
+//     }
+//     // next states are nextState the number of o increase
+//     auto nextStatesAddO = createNextStates(thisState, true);
+//     for (auto state : nextStatesAddO){
+//         ll indexNextState = generateIndexNumber(state);
+//         if(!isWin(nextStatesValuesAddO, indexNextState)){
+//         // if(!nextStatesValuesAddO->at(indexNextState*2ll)){
+//             // not win (lose or draw)
+//             // at least 1 next state is not win. this state is not lose
+//             return false;
+//         }
+//     }
+//     return true;
+// }
+
+bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *reverseStatesValues){
     bool updated = false;
     for (ull i=0ll;i<values->size()/2ll;i++){
         if (isNotDefault(values, i)){
@@ -113,7 +128,7 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
             // lose or win --> skip
             continue;
         }
-        if (isLoseState(i, oNumber, xNumber, nextStatesValuesSame, nextStatesValuesAdd)){
+        if (isLoseState(i, oNumber, xNumber, reverseStatesValues)){
             // update this state to lose and change previous states to win
             updated = true;
             ll stateNumber = generateState(i, oNumber, xNumber);
@@ -126,7 +141,7 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
             for( auto stateN : createPreviousStates(stateNumber, false)){
                 for(auto s : symmetricAllStates(stateN)){
                     ll stateI = generateIndexNumber(s);
-                    updateToWin(nextStatesValuesSame, stateI);
+                    updateToWin(reverseStatesValues, stateI);
                 }
                 
             }
@@ -135,12 +150,17 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
     return updated;
 }
 
-void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber, vector<bool> *nextStatesValues){
+void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber){
     // if next state is loss, this state --> win
     // if next state is draw(or winOrDraw) --> winOrDraw
     // oNumber is for values
-    for (ull i=0ll;i<nextStatesValues->size()/2ll;i++){
-        if(isLoss(nextStatesValues, i)){
+
+    // read next states from the file
+    vector<bool> nextStatesValues(getCombination(combinationSize, xNumber)*getCombination(combinationSize-xNumber, oNumber+1) * 2);  // next states values of values
+    readStatesValue(&nextStatesValues, xNumber, oNumber+1);
+
+    for (ull i=0ll;i<nextStatesValues.size()/2ll;i++){
+        if(isLoss(&nextStatesValues, i)){
             ll stateNumber = generateState(i, xNumber, oNumber+1);
             // generate previous states, update to win
             for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
@@ -149,7 +169,7 @@ void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber, vector
                     updateToWin(values, stateI);
                 }
             }
-        }else if(isDraw(nextStatesValues, i)){
+        }else if(isDraw(&nextStatesValues, i)){
             // default or winOrDraw
             ll stateNumber = generateState(i, xNumber, oNumber+1);
             // generate previous states, update to winOrDraw(not loss)
@@ -204,32 +224,21 @@ void computeStatesValue(int oNumber, int xNumber){
     vector<bool> values(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
     vector<bool> valuesReverse(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber] * 2);
     
-    // read next state value
-    // TODO remove this, read in the function
-    vector<bool> nextValues(getCombination(combinationSize, xNumber)*getCombination(combinationSize-xNumber, oNumber+1) * 2);  // next states values of values
-    readStatesValue(&nextValues, xNumber, oNumber+1);
-    vector<bool> nextReverseValues(getCombination(combinationSize, oNumber)*getCombination(combinationSize-oNumber, xNumber+1) * 2); // next states values of valuesReverse
-    readStatesValue(&nextReverseValues, oNumber, xNumber+1);
-
     // at first find next lose states and update this values to win
     // find the states which end of the game, if it is lose update previous state to win
-    cout << "staert search" << nextValues.size() << "," << nextReverseValues.size() << endl;
-    updateValuesFromNext(&values, oNumber, xNumber, &nextValues);
-    updateValuesFromNext(&valuesReverse, xNumber, oNumber, &nextReverseValues);
+    updateValuesFromNext(&values, oNumber, xNumber);
+    updateValuesFromNext(&valuesReverse, xNumber, oNumber);
 
     updateValuesFromEndStates(&values, oNumber, xNumber, &valuesReverse);
     updateValuesFromEndStates(&valuesReverse, xNumber, oNumber, &values);
-
-    // updateValuesFromEnd(&values, oNumber, xNumber, &valuesReverse, &nextValues);
-    // updateValuesFromEnd(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues);
 
     // compute values until no update
     bool updated = true;
     while (updated){
         updated = false;
         // check all states
-        updated = updateValues(&values, oNumber, xNumber, &valuesReverse, &nextValues);
-        updated = updateValues(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues) || updated;
+        updated = updateValues(&values, oNumber, xNumber, &valuesReverse);
+        updated = updateValues(&valuesReverse, xNumber, oNumber, &valuesReverse) || updated;
     }
     // save resutl to strage
     writeStatesValue(&values, oNumber, xNumber);
