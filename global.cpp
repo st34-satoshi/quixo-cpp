@@ -9,7 +9,7 @@ using namespace std;
 typedef long long ll;
 typedef unsigned long long ull;
 
-const int boardSize = 4;
+const int boardSize = 3;
 const int combinationSize = boardSize * boardSize;
 
 vector< vector<ll>> combinations;  // nCr, (n<boardSize^2)

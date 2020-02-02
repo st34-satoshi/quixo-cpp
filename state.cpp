@@ -104,20 +104,6 @@ ll rotatedState(ll state){
     return newState;
 }
 
-ll symmetricState(ll state){
-    // return the minimum state of all symmetric states
-    ll rState = reverseState(state);
-    ll minState = min(state, rState);
-    vector<ll> searchingStates = {state, rState};
-    for(ll s: searchingStates){
-        for(int i=0;i<3;i++){
-            s = rotatedState(s);
-            minState = min(minState, s);
-        }
-    }
-    return minState;
-}
-
 vector<ll> symmetricAllStates(ll state){
     // return all symmetric states
     ll rState = reverseState(state);
@@ -213,7 +199,6 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
                     movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
                     newRow = moveLeft(movingRow, j, boardSize-1, 2ll);
                     newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                    newState = symmetricState(newState);  // select minimum state in symmetric states.
                     // add to nextStates
                     // TODO: avoid the newStaet which is already in nextStates
                     nextStates.push_back(newState);
@@ -223,7 +208,6 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
                     movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
                     newRow = moveRight(movingRow, j, 0, 2ll);
                     newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                    newState = symmetricState(newState);  // select minimum state in symmetric states.
                     // add to nextStates
                     // TODO: avoid the newStaet which is already in nextStates
                     nextStates.push_back(newState);
