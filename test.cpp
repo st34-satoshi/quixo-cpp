@@ -26,15 +26,16 @@ void testIsWin(){
 }
 
 void testInitMovingMask(){
-    initMovingMasks();
+    // initMovingMasks();
     for(int l=0;l<2;l++){
         cout << "l " << l << endl;
         for(int s=0;s<2;s++){
             cout << "s " << s << endl;
-            for(int i=0;i<boardSize-2;i++){
+            for(int i=0;i<boardSize-1;i++){
                 cout << "i " << i << endl;
                 for(int j=0;j<4;j++){
                     cout << j << ": "<< bitset<32>(MovePreviousEdgeLeftShift[l][s][i][j]) << ", ";
+                    printState(MovePreviousEdgeRightShift[l][s][i][j]);
                 }
                 cout << endl;
             }
@@ -67,24 +68,40 @@ void testCreatePreviousState(){
     createP(bs, false);
     printState(swapPlayer(bs));
     for(auto s: State_array){
-        printState(s);
-        // if (!s){
-        //     break;
-        // }
-        // bool ok = false;
-        // for(auto ans: ss){
-        //     if (s == ans){
-        //         ok = true;
-        //     }
-        //     if (ok){
-        //         break;
-        //     }
-        // }
-        // if(!ok){
-        //     cout << "Error: not ok" << endl;
-        //     printState(s);
-        // }
+        // printState(s);
+        if (!s){
+            break;
+        }
+        bool ok = false;
+        for(auto ans: ss){
+            if (s == ans){
+                ok = true;
+            }
+            if (ok){
+                break;
+            }
+        }
+        if(!ok){
+            cout << "Error: not ok" << endl;
+            printState(s);
+        }
     }
+    for(auto s: ss){
+        bool ok = false;
+        for(auto ans: State_array){
+            if (s == ans){
+                ok = true;
+            }
+            if (ok){
+                break;
+            }
+        }
+        if(!ok){
+            cout << "Error: not ok not created" << endl;
+            printState(s);
+        }
+    }
+
 }
 
 

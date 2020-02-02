@@ -18,9 +18,9 @@ array<array<ll, 4>, (boardSize-2)*2> MovePreviousOppRightShift;
 array<array<ll, 4>, (boardSize-2)*2> MovePreviousOppLeftShift;
 
 // move edge ex) top edge to right
-// [l][s][i][j], l is the shift length, s=0 is bottom/right, s=1 is top/left, i is the position, j=0 is C, j=1 is A, j=2 is B, j=4 is the shift length
-array<array<array<array<ll, 4>, boardSize-2>, 2>, 2> MovePreviousEdgeRightShift;
-array<array<array<array<ll, 4>, boardSize-2>, 2>, 2> MovePreviousEdgeLeftShift;
+// [l][s][i][j], l is the shift length, s=0 is bottom/right, s=1 is top/left, i is the position, j=0 is C, j=1 is A, j=2 is B, j=3 is the shift length
+array<array<array<array<ll, 4>, boardSize-1>, 2>, 2> MovePreviousEdgeRightShift;
+array<array<array<array<ll, 4>, boardSize-1>, 2>, 2> MovePreviousEdgeLeftShift;
 
 void initGlobalState(){
     for(int i=0;i<STATE_COUNT;i++){
@@ -64,40 +64,41 @@ void initMovingMasks(){
      // Move Previous Edge
      // l = 0.
     for(int s=0;s<2;s++){
-        for(int i=0;i<boardSize-2;i++){
+        for(int i=0;i<boardSize-1;i++){
+            // TODO 逆？
             // C
-            MovePreviousEdgeLeftShift[0][s][i][0] = (oMark << (boardSize-1)*2) << (s*boardSize*(boardSize-1)*2);
             MovePreviousEdgeRightShift[0][s][i][0] = oMark << (s*boardSize*(boardSize-1)*2);
+            MovePreviousEdgeLeftShift[0][s][i][0] = (oMark << (boardSize-1)*2) << (s*boardSize*(boardSize-1)*2);
             // A
-            MovePreviousEdgeLeftShift[0][s][i][1] = ((1ll << ((i+2)*2)) - 1ll) << s*boardSize*(boardSize-1)*2;
-            MovePreviousEdgeRightShift[0][s][i][1] = (((1ll << (boardSize-i-1)*2) - 1ll) << (i+1)*2) << s*boardSize*(boardSize-1)*2;
+            MovePreviousEdgeRightShift[0][s][i][1] = ((1ll << ((i+2)*2)) - 1ll) << s*boardSize*(boardSize-1)*2;
+            MovePreviousEdgeLeftShift[0][s][i][1] = (((1ll << (boardSize-i)*2) - 1ll) << i*2) << s*boardSize*(boardSize-1)*2;
             // B
-            MovePreviousEdgeLeftShift[0][s][i][2] = (oMark << (i+1)*2) << s*boardSize*(boardSize-1)*2;
             MovePreviousEdgeRightShift[0][s][i][2] = (oMark << (i+1)*2) << s*boardSize*(boardSize-1)*2;
+            MovePreviousEdgeLeftShift[0][s][i][2] = (oMark << i*2) << s*boardSize*(boardSize-1)*2;
             // shift length
-            MovePreviousEdgeRightShift[0][s][i][3] = 1ll*2ll;
             MovePreviousEdgeLeftShift[0][s][i][3] = 1ll*2ll;
+            MovePreviousEdgeRightShift[0][s][i][3] = 1ll*2ll;
         }
     }
     // l = 1
     for(int s=0;s<2;s++){
-        for(int i=0;i<boardSize-2;i++){
+        for(int i=0;i<boardSize-1;i++){
             // C
-            MovePreviousEdgeLeftShift[1][s][i][0] = (oMark << boardSize*2) << s*(boardSize-1)*2;
+            MovePreviousEdgeLeftShift[1][s][i][0] = (oMark << boardSize*(boardSize-1)*2) << s*(boardSize-1)*2;
             MovePreviousEdgeRightShift[1][s][i][0] = oMark << s*(boardSize-1)*2;
             // A
             A = 0ll;
             for(int j=0;j<boardSize-i+1;j++){
                 A = (A << boardSize*2) + bMark;
             }
-            MovePreviousEdgeLeftShift[1][s][i][1] = (A << (boardSize*(i+1)*2)) << ((boardSize-1)*2*s);
+            MovePreviousEdgeLeftShift[1][s][i][1] = (A << (boardSize*i*2)) << ((boardSize-1)*2*s);
             A = 0ll;
             for(int j=0;j<i+2;j++){
                 A = (A << boardSize*2) + bMark;
             }
             MovePreviousEdgeRightShift[1][s][i][1] = A << ((boardSize-1)*2*s);
             // B
-            MovePreviousEdgeLeftShift[1][s][i][2] = (oMark << (i+1)*boardSize*2) << s*2*(boardSize-1);
+            MovePreviousEdgeLeftShift[1][s][i][2] = (oMark << i*boardSize*2) << s*2*(boardSize-1);
             MovePreviousEdgeRightShift[1][s][i][2] = (oMark << (i+1)*boardSize*2) << s*2*(boardSize-1);
             // shift length
             MovePreviousEdgeRightShift[1][s][i][3] = boardSize*2;
@@ -316,17 +317,48 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
     }
     return nextStates;
 }
-void createP(ll ps, bool fromEmpty){
-    ll s = swapPlayer(ps);
+void createP(ll pres, bool fromEmpty){
+    ll ps = swapPlayer(pres);
+    ll newS;
     initGlobalState();
     for(int i=0;i<(boardSize-2)*2;i++){
-        if (MovePreviousOppRightShift[i][0] & s){
-            State_array[STATE_COUNT++] = (((s & MovePreviousOppRightShift[i][1]) >> MovePreviousOppRightShift[i][3]) & MovePreviousOppRightShift[i][1]) | (s & ~MovePreviousOppRightShift[i][1]) | MovePreviousOppRightShift[i][2];
+        if (MovePreviousOppRightShift[i][0] & ps){
+            newS = (((ps & MovePreviousOppRightShift[i][1]) >> MovePreviousOppRightShift[i][3]) & MovePreviousOppRightShift[i][1]) | (ps & ~MovePreviousOppRightShift[i][1]) | MovePreviousOppRightShift[i][2];
+            if (isWin(newS)==0){
+                State_array[STATE_COUNT++] =  newS;
+            }
         }
     }
     for(int i=0;i<(boardSize-2)*2;i++){
-        if (MovePreviousOppLeftShift[i][0] & s){
-            State_array[STATE_COUNT++] = (((s & MovePreviousOppLeftShift[i][1]) << MovePreviousOppLeftShift[i][3]) & MovePreviousOppLeftShift[i][1]) | (s & ~MovePreviousOppLeftShift[i][1]) | MovePreviousOppLeftShift[i][2];
+        if (MovePreviousOppLeftShift[i][0] & ps){
+            newS = (((ps & MovePreviousOppLeftShift[i][1]) << MovePreviousOppLeftShift[i][3]) & MovePreviousOppLeftShift[i][1]) | (ps & ~MovePreviousOppLeftShift[i][1]) | MovePreviousOppLeftShift[i][2];
+            if (isWin(newS)==0){
+                State_array[STATE_COUNT++] =  newS;
+            }
+        }
+    }
+    for(int l=0;l<2;l++){
+        for(int s=0;s<2;s++){
+            for(int i=0;i<boardSize-1;i++){
+                if(MovePreviousEdgeRightShift[l][s][i][0] & ps){
+                    newS = (((ps & MovePreviousEdgeRightShift[l][s][i][1]) >> MovePreviousEdgeRightShift[l][s][i][3]) & MovePreviousEdgeRightShift[l][s][i][1]) | (ps & ~MovePreviousEdgeRightShift[l][s][i][1]) | MovePreviousEdgeRightShift[l][s][i][2];
+                    if (isWin(newS)==0){
+                        State_array[STATE_COUNT++] =  newS;
+                    }
+                }
+            }
+        }
+    }
+    for(int l=0;l<2;l++){
+        for(int s=0;s<2;s++){
+            for(int i=0;i<boardSize-1;i++){
+                if(MovePreviousEdgeLeftShift[l][s][i][0] & ps){
+                    newS = (((ps & MovePreviousEdgeLeftShift[l][s][i][1]) << MovePreviousEdgeLeftShift[l][s][i][3]) & MovePreviousEdgeLeftShift[l][s][i][1]) | (ps & ~MovePreviousEdgeLeftShift[l][s][i][1]) | MovePreviousEdgeLeftShift[l][s][i][2];
+                    if (isWin(newS)==0){
+                        State_array[STATE_COUNT++] =  newS;
+                    }
+                }
+            }
         }
     }
 }
