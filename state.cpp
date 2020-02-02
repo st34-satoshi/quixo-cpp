@@ -480,7 +480,8 @@ vector<ll> createPreviousStates(ll presentStateO, bool fromEmpty){
     if (!fromEmpty){
         // cout << "gloval count " << STATE_COUNT << endl;
         auto states = createP(presentStateO, fromEmpty);
-        for(auto s: states.State_array){
+        for(int i=0;i<states.count;i++){
+            auto s = states.State_array[i];
             if (!s){
                 break;
             }
@@ -494,7 +495,12 @@ vector<ll> createPreviousStates(ll presentStateO, bool fromEmpty){
                 }
             }
             if(!ok){
-                cout << "Error: not ok" << endl;
+                cout << "Error: not ok created unexpected state" << endl;
+                cout << "present " << endl;
+                printState(presentStateO);
+                cout << "swapped" << endl;
+                printState(swapPlayer(presentStateO));
+                cout << "created" << endl;
                 printState(s);
                 exit(0);
             }

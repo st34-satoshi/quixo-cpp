@@ -70,7 +70,8 @@ void testCreatePreviousState(){
     auto states = createP(bs, false);
     cout << "swap" << endl;
     printState(swapPlayer(bs));
-    for(auto s: states.State_array){
+    for(int i=0;i<states.count;i++){
+        auto s = states.State_array[i];
         printState(s);
         if (!s){
             break;

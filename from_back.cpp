@@ -31,6 +31,7 @@ c++ -std=c++17 -Wall -O3 from_back.cpp
 void init(){
     createCombinations();
     initState();
+    initMovingMasks();
 }
 
 /*
