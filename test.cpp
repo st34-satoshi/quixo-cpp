@@ -35,7 +35,7 @@ void testInitMovingMask(){
                 cout << "i " << i << endl;
                 for(int j=0;j<4;j++){
                     cout << j << ": "<< bitset<32>(MovePreviousEdgeLeftShift[l][s][i][j]) << ", ";
-                    printState(MovePreviousEdgeRightShift[l][s][i][j]);
+                    printState(MovePreviousEdgeLeftShift[l][s][i][j]);
                 }
                 cout << endl;
             }
@@ -57,8 +57,8 @@ void testInitOpp(){
 }
 
 void testCreatePreviousState(){
-    ll bs = 0b01100001'01100110'10001001'10000010;
-    cout << "initial state " << endl;
+    ll bs = 0b10100001'01100110'10001001'10000010;
+    cout << "initial state !" << endl;
     printState(bs);
     auto ss = createPreviousStates(bs, false);
     // for(auto s: ss){
@@ -66,6 +66,7 @@ void testCreatePreviousState(){
     //     printState(s);
     // }
     createP(bs, false);
+    cout << "swap" << endl;
     printState(swapPlayer(bs));
     for(auto s: State_array){
         // printState(s);
@@ -115,9 +116,9 @@ int main(){
     // testWinMasks();
     // testIsWin();
     // printAllStates();
-    // testInitMovingMask();
+    testInitMovingMask();
     // testInitOpp();
-    testCreatePreviousState();
+    // testCreatePreviousState();
 
     return 0;
 }

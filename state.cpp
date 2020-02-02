@@ -65,7 +65,6 @@ void initMovingMasks(){
      // l = 0.
     for(int s=0;s<2;s++){
         for(int i=0;i<boardSize-1;i++){
-            // TODO 逆？
             // C
             MovePreviousEdgeRightShift[0][s][i][0] = oMark << (s*boardSize*(boardSize-1)*2);
             MovePreviousEdgeLeftShift[0][s][i][0] = (oMark << (boardSize-1)*2) << (s*boardSize*(boardSize-1)*2);
@@ -88,7 +87,7 @@ void initMovingMasks(){
             MovePreviousEdgeRightShift[1][s][i][0] = oMark << s*(boardSize-1)*2;
             // A
             A = 0ll;
-            for(int j=0;j<boardSize-i+1;j++){
+            for(int j=0;j<boardSize-i;j++){
                 A = (A << boardSize*2) + bMark;
             }
             MovePreviousEdgeLeftShift[1][s][i][1] = (A << (boardSize*i*2)) << ((boardSize-1)*2*s);
@@ -221,7 +220,7 @@ vector<ll> symmetricAllStates(ll state){
 
 void printState(ll state){
     cout << "print state" << endl;
-    cout << bitset<boardSize*boardSize*2>(state) << endl;
+    cout << bitset<boardSize*boardSize*2+20>(state) << " , n = " << state << endl;
     int n;
     for(int i=0;i<boardSize;i++){
         for(int j=0;j<boardSize;j++){
@@ -353,6 +352,7 @@ void createP(ll pres, bool fromEmpty){
         for(int s=0;s<2;s++){
             for(int i=0;i<boardSize-1;i++){
                 if(MovePreviousEdgeLeftShift[l][s][i][0] & ps){
+                    // cout << "i " << i << endl;
                     newS = (((ps & MovePreviousEdgeLeftShift[l][s][i][1]) << MovePreviousEdgeLeftShift[l][s][i][3]) & MovePreviousEdgeLeftShift[l][s][i][1]) | (ps & ~MovePreviousEdgeLeftShift[l][s][i][1]) | MovePreviousEdgeLeftShift[l][s][i][2];
                     if (isWin(newS)==0){
                         State_array[STATE_COUNT++] =  newS;
@@ -363,13 +363,13 @@ void createP(ll pres, bool fromEmpty){
     }
 }
 
-vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
+vector<ll> createPreviousStates(ll presentStateO, bool fromEmpty){
     // turn is o. last player is x
     // if fromEmpty, previous mark is -. 
     // else, previous mark is x
     // if the previous state is the end of the game avoid the state
     // before creating states, swap turn
-    presentState = swapPlayer(presentState);
+    ll presentState = swapPlayer(presentStateO);
     ll previousMark = 1ll;
     if (fromEmpty){
         previousMark = 0ll;
@@ -482,6 +482,49 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
             }
         }
     }
+    // // TODO remove
+    // if (!fromEmpty){
+    //     createP(presentStateO, fromEmpty);
+    //     for(auto s: State_array){
+    //         if (!s){
+    //             break;
+    //         }
+    //         bool ok = false;
+    //         for(auto ans: previousStates){
+    //             if (s == ans){
+    //                 ok = true;
+    //             }
+    //             if (ok){
+    //                 break;
+    //             }
+    //         }
+    //         if(!ok){
+    //             cout << "Error: not ok" << endl;
+    //             printState(s);
+    //             exit(0);
+    //         }
+    //     }
+    //     for(auto s: previousStates){
+    //         bool ok = false;
+    //         for(auto ans: State_array){
+    //             if (s == ans){
+    //                 ok = true;
+    //             }
+    //             if (ok){
+    //                 break;
+    //             }
+    //         }
+    //         if(!ok){
+    //             cout << "Error: not ok not created" << endl;
+    //             cout << "present " << endl;
+    //             printState(presentStateO);
+    //             printState(swapPlayer(presentStateO));
+    //             cout << "want" << endl;
+    //             printState(s);
+    //             exit(0);
+    //         }
+    //     }
+    // }
     return previousStates;
 }
 
