@@ -44,15 +44,63 @@ void testInitMovingMask(){
     }
 }
 
+void testInitOpp(){
+    for(int i=0;i<(boardSize-2)*2;i++){
+        cout << "i " << i; 
+        for(int j=0;j<4;j++){
+            cout << j << ": " << bitset<32>(MovePreviousOppLeftShift[i][j]) << ", " << endl;
+            printState(MovePreviousOppRightShift[i][j]);
+        }
+        cout << endl;
+    }
+}
+
+void testCreatePreviousState(){
+    ll bs = 0b01100001'01100110'10001001'10000010;
+    cout << "initial state " << endl;
+    printState(bs);
+    auto ss = createPreviousStates(bs, false);
+    // for(auto s: ss){
+    //     cout << "state = " << bitset<32>(s) << endl;
+    //     printState(s);
+    // }
+    createP(bs, false);
+    printState(swapPlayer(bs));
+    for(auto s: State_array){
+        printState(s);
+        // if (!s){
+        //     break;
+        // }
+        // bool ok = false;
+        // for(auto ans: ss){
+        //     if (s == ans){
+        //         ok = true;
+        //     }
+        //     if (ok){
+        //         break;
+        //     }
+        // }
+        // if(!ok){
+        //     cout << "Error: not ok" << endl;
+        //     printState(s);
+        // }
+    }
+}
+
 
 int main(){
     cout << "test" << endl;
+    createCombinations();
+    initState();
+    initMovingMasks();
     // init();
     // testPrintState();
     // testWinMasks();
     // testIsWin();
     // printAllStates();
-    testInitMovingMask();
+    // testInitMovingMask();
+    // testInitOpp();
+    testCreatePreviousState();
 
     return 0;
 }

@@ -12,11 +12,15 @@ typedef unsigned long long ull;
 
 const int boardSize = 4;
 const int combinationSize = boardSize * boardSize;
+const int MAX_STATES = (boardSize-2)*4*3 + 4*2;
 
 vector< vector<ll>> combinations;  // nCr, (n<boardSize^2)
 const ll oMark = 1ll;
 const ll xMark = 2ll;
 const ll bMark = 3ll;
+
+int STATE_COUNT = 0;
+array<ll, MAX_STATES> State_array;
 
 void createCombinations(){
     int combSize = combinationSize+ 1;

@@ -14,8 +14,6 @@ vector<ll> eWinMasks;
 
 // to opposite.  ex) left to right, top to bottom
 // [i][j]: i is the position, j=0 is C, j=1 is A, j=2 is B, j=3 is shift length
-// array<array<ll, 5>, (boardSize-2)*2> MoveOppRightShiftNext;
-// array<array<ll, 5>, (boardSize-2)*2> MoveOppLeftShiftNext;
 array<array<ll, 4>, (boardSize-2)*2> MovePreviousOppRightShift;
 array<array<ll, 4>, (boardSize-2)*2> MovePreviousOppLeftShift;
 
@@ -23,6 +21,13 @@ array<array<ll, 4>, (boardSize-2)*2> MovePreviousOppLeftShift;
 // [l][s][i][j], l is the shift length, s=0 is bottom/right, s=1 is top/left, i is the position, j=0 is C, j=1 is A, j=2 is B, j=4 is the shift length
 array<array<array<array<ll, 4>, boardSize-2>, 2>, 2> MovePreviousEdgeRightShift;
 array<array<array<array<ll, 4>, boardSize-2>, 2>, 2> MovePreviousEdgeLeftShift;
+
+void initGlobalState(){
+    for(int i=0;i<STATE_COUNT;i++){
+        State_array[i] = 0ll;
+    }
+    STATE_COUNT = 0;
+}
 
 void initMovingMasks(){
     ll A;
@@ -37,13 +42,13 @@ void initMovingMasks(){
         MovePreviousOppRightShift[i*2][0] = oMark << (i+1)*boardSize*2;
         MovePreviousOppRightShift[i*2+1][0] = oMark << (i+1)*2;
         // A
-        MovePreviousOppLeftShift[i*2][1] = ((bMark << boardSize*2) - 1) << ((i+1)*boardSize*2);
+        MovePreviousOppLeftShift[i*2][1] = ((1ll << boardSize*2) - 1) << ((i+1)*boardSize*2);
         A = 0ll;
         for(int j=0;j<boardSize;j++){
             A = (A << boardSize*2) + (bMark << (i+1)*2); 
         }
         MovePreviousOppLeftShift[i*2+1][1] = A;
-        MovePreviousOppRightShift[i*2][1] = ((bMark << boardSize*2) - 1) << ((i+1)*boardSize*2);
+        MovePreviousOppRightShift[i*2][1] = ((1ll << boardSize*2) - 1) << ((i+1)*boardSize*2);
         MovePreviousOppRightShift[i*2+1][1] = A;
         // B
         MovePreviousOppLeftShift[i*2][2] = oMark << (i+1)*boardSize*2;
@@ -51,10 +56,10 @@ void initMovingMasks(){
         MovePreviousOppRightShift[i*2][2] = oMark << ((i+2)*boardSize-1)*2;
         MovePreviousOppRightShift[i*2+1][2] = oMark << ((i+1)+boardSize*(boardSize-1))*2;
         // shift length 
-        MovePreviousOppLeftShift[i*2][3] = 1;
-        MovePreviousOppLeftShift[i*2+1][3] = boardSize;
-        MovePreviousOppRightShift[i*2][3] = 1;
-        MovePreviousOppRightShift[i*2+1][3] = boardSize;
+        MovePreviousOppLeftShift[i*2][3] = 1*2;
+        MovePreviousOppLeftShift[i*2+1][3] = boardSize*2;
+        MovePreviousOppRightShift[i*2][3] = 1*2;
+        MovePreviousOppRightShift[i*2+1][3] = boardSize*2;
     }
      // Move Previous Edge
      // l = 0.
@@ -70,14 +75,10 @@ void initMovingMasks(){
             MovePreviousEdgeLeftShift[0][s][i][2] = (oMark << (i+1)*2) << s*boardSize*(boardSize-1)*2;
             MovePreviousEdgeRightShift[0][s][i][2] = (oMark << (i+1)*2) << s*boardSize*(boardSize-1)*2;
             // shift length
-            MovePreviousEdgeRightShift[0][s][i][3] = 1ll;
-            cout << s << ", " << i;
-            cout << "hoge " << MovePreviousEdgeRightShift[0][s][i][3] << endl;
-            cout << "hogeuuu " << MovePreviousEdgeRightShift[0][1][0][3] << endl;
-            MovePreviousEdgeLeftShift[0][s][i][3] = 1ll;
+            MovePreviousEdgeRightShift[0][s][i][3] = 1ll*2ll;
+            MovePreviousEdgeLeftShift[0][s][i][3] = 1ll*2ll;
         }
     }
-    cout << "fin " << MovePreviousEdgeRightShift[0][1][0][3] << endl;
     // l = 1
     for(int s=0;s<2;s++){
         for(int i=0;i<boardSize-2;i++){
@@ -99,12 +100,10 @@ void initMovingMasks(){
             MovePreviousEdgeLeftShift[1][s][i][2] = (oMark << (i+1)*boardSize*2) << s*2*(boardSize-1);
             MovePreviousEdgeRightShift[1][s][i][2] = (oMark << (i+1)*boardSize*2) << s*2*(boardSize-1);
             // shift length
-            MovePreviousEdgeRightShift[1][s][i][3] = boardSize;
-            MovePreviousEdgeLeftShift[1][s][i][3] = boardSize;
+            MovePreviousEdgeRightShift[1][s][i][3] = boardSize*2;
+            MovePreviousEdgeLeftShift[1][s][i][3] = boardSize*2;
         }
     }
-    cout << MovePreviousEdgeRightShift[0][1][0][3] << endl;
-    cout << "hoge " << MovePreviousEdgeRightShift[0][0][1][3] << endl;
 }
 
 ll moveLeft(ll rowState, int fromI, int toI, ll addMark){
@@ -317,6 +316,20 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
     }
     return nextStates;
 }
+void createP(ll ps, bool fromEmpty){
+    ll s = swapPlayer(ps);
+    initGlobalState();
+    for(int i=0;i<(boardSize-2)*2;i++){
+        if (MovePreviousOppRightShift[i][0] & s){
+            State_array[STATE_COUNT++] = (((s & MovePreviousOppRightShift[i][1]) >> MovePreviousOppRightShift[i][3]) & MovePreviousOppRightShift[i][1]) | (s & ~MovePreviousOppRightShift[i][1]) | MovePreviousOppRightShift[i][2];
+        }
+    }
+    for(int i=0;i<(boardSize-2)*2;i++){
+        if (MovePreviousOppLeftShift[i][0] & s){
+            State_array[STATE_COUNT++] = (((s & MovePreviousOppLeftShift[i][1]) << MovePreviousOppLeftShift[i][3]) & MovePreviousOppLeftShift[i][1]) | (s & ~MovePreviousOppLeftShift[i][1]) | MovePreviousOppLeftShift[i][2];
+        }
+    }
+}
 
 vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
     // turn is o. last player is x
@@ -333,7 +346,7 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
     ll movingRow, newRow, newState;
     // choose only switch row, then rotate and switch row again.
     // search present state and rotated state.
-    for(ll state : {presentState, rotatedState(presentState)}){
+    for(ll state : {presentState}){
         for(int i=0;i<boardSize;i++){
             movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
             for(int j : {0, boardSize-1}){
@@ -378,6 +391,58 @@ vector<ll> createPreviousStates(ll presentState, bool fromEmpty){
                             newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
                             if(isWin(newState)==0){
                                 previousStates.push_back(newState);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    for(ll state : {rotatedState(presentState)}){
+        for(int i=0;i<boardSize;i++){
+            movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
+            for(int j : {0, boardSize-1}){
+                if (getShiftedCellNumber(i, j, state)!=1ll){
+                    // need to choose o, but the cell is o.
+                    continue;
+                }
+                if(j == boardSize-1){
+                    // previous position is right(small) (without i==0 and i== boardSize-1)
+                    newRow = moveRight(movingRow, j, 0, previousMark);
+                    newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                    // newSta RightymmetricState(newState);  // select minimum state in symmetric states.
+                    // add to previousStates
+                    // avoid the previous state which is at the end of the game
+                    // TODO: avoid the newStaet which is already in nextStates. and the state at the end of the game
+                    if(isWin(newState)==0){
+                        previousStates.push_back(rotatedState(rotatedState(rotatedState(newState))));
+                    }
+                }
+                if(j == 0){
+                    // previous position is left
+                    newRow = moveLeft(movingRow, j, boardSize-1, previousMark);
+                    newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                    if(isWin(newState)==0){
+                        previousStates.push_back(rotatedState(rotatedState(rotatedState(newState))));
+                    }
+                }
+                if (i == 0 || i == boardSize-1){
+                    // previous position is 0<j<boardsize-1
+                    for (int k=1;k<boardSize-1;k++){
+                        // previous action is k to left
+                        if ( j == boardSize - 1){
+                            newRow = moveRight(movingRow, boardSize-1, k, previousMark);
+                            newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                            if(isWin(newState)==0){
+                                previousStates.push_back(rotatedState(rotatedState(rotatedState(newState))));
+                            }
+                        }
+                        if ( j == 0){
+                            // previous action is k to right
+                            newRow = moveLeft(movingRow, 0, k, previousMark);
+                            newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                            if(isWin(newState)==0){
+                                previousStates.push_back(rotatedState(rotatedState(rotatedState(newState))));
                             }
                         }
                     }
