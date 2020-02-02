@@ -2,14 +2,10 @@
 Next player is o.
 states are represented by the number of index(i).
 bitset saves 2 bits.
-00: unknown(draw)
-01: lose
-10: win, 2*i = 1
-11: ??
 
-00: unknown(draw)
+00: default(draw)
 01: win or draw (later draw)
-10: win, 2*i=1
+10: win, 2*i=0 2*i+1=1
 11: loss
 
 but it is difficult to create next states and find cymmetric states using indexNumber.
@@ -41,65 +37,43 @@ void init(){
  update all values
 */
 
-inline void updateToLoss(vector<bool> *values, ll index){
-    values->at(index*2ll) = true;
-    values->at(index*2ll + 1ll) = false;
-}
-
 inline void updateToWin(vector<bool> *values, ll index){
     values->at(index*2ll) = false;
     values->at(index*2ll + 1ll) = true;
 }
 
-// inline void updateToWinOrDraw(vector<bool> *values, ll index){
-//     values->at(index*2ll) = true;
-//     values->at(index*2ll + 1ll) = false;
-// }
+inline void updateToLoss(vector<bool> *values, ll index){
+    values->at(index*2ll) = true;
+    values->at(index*2ll + 1ll) = true;
+}
 
-inline bool isLoss(vector<bool> *values, ll index){
-    return values->at(index*2ll) && !values->at(index*2ll + 1ll);
+inline void updateToWinOrDraw(vector<bool> *values, ll index){
+    values->at(index*2ll) = true;
+    values->at(index*2ll + 1ll) = false;
 }
 
 inline bool isWin(vector<bool> *values, ll index){
-    return !values->at(index*2ll) && values->at(index*2ll + 1ll);
+    return (!values->at(index*2ll) && values->at(index*2ll + 1ll));
 }
 
-// inline bool isWinOrDraw(vector<bool> *values, ll index){
-//     return values->at(index*2ll) && !(values->at(index*2ll + 1ll));
-// }
+inline bool isLoss(vector<bool> *values, ll index){
+    return values->at(index*2ll) && values->at(index*2ll + 1ll);
+}
 
-// inline void updateToWin(vector<bool> *values, ll index){
-//     values->at(index*2ll) = false;
-//     values->at(index*2ll + 1ll) = true;
-// }
+inline bool isWinOrDraw(vector<bool> *values, ll index){
+    return values->at(index*2ll) && !(values->at(index*2ll + 1ll));
+}
 
-// inline void updateToLoss(vector<bool> *values, ll index){
-//     values->at(index*2ll) = true;
-//     values->at(index*2ll + 1ll) = true;
-// }
-
-// inline void updateToWinOrDraw(vector<bool> *values, ll index){
-//     values->at(index*2ll) = true;
-//     values->at(index*2ll + 1ll) = false;
-// }
-
-// inline bool isWin(vector<bool> *values, ll index){
-//     return (!values->at(index*2ll) && values->at(index*2ll + 1ll));
-// }
-
-// inline bool isLoss(vector<bool> *values, ll index){
-//     return values->at(index*2ll) && values->at(index*2ll + 1ll);
-// }
-
-// inline bool isWinOrDraw(vector<bool> *values, ll index){
-//     return values->at(index*2ll) && !(values->at(index*2ll + 1ll));
-// }
-
-inline bool isDraw(vector<bool> *values, ll index){
+inline bool isDefault(vector<bool> *values, ll index){
     return !(values->at(index*2ll)) && !(values->at(index*2ll + 1ll));
 }
 
-inline bool isNotDraw(vector<bool> *values, ll index){
+inline bool isDraw(vector<bool> *values, ll index){
+    // default or winOrDraw
+    return !(values->at(index*2ll + 1ll));
+}
+
+inline bool isNotDefault(vector<bool> *values, ll index){
     return values->at(index*2ll) || values->at(index*2ll + 1ll);
 }
 
@@ -134,7 +108,7 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStat
 bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAdd ){
     bool updated = false;
     for (ull i=0ll;i<values->size()/2ll;i++){
-        if (isNotDraw(values, i)){
+        if (isNotDefault(values, i)){
         // if (values->at(i*2ll) || values->at(i*2ll+1ll)){
             // lose or win --> skip
             continue;
@@ -161,23 +135,50 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
     return updated;
 }
 
-void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAdd){
-    // find the states which end of the game, and change previous states (to win)
+void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber, vector<bool> *nextStatesValues){
+    // if next state is loss, this state --> win
+    // if next state is draw(or winOrDraw) --> winOrDraw
+    // oNumber is for values
+    for (ull i=0ll;i<nextStatesValues->size()/2ll;i++){
+        if(isLoss(nextStatesValues, i)){
+            ll stateNumber = generateState(i, xNumber, oNumber+1);
+            // generate previous states, update to win
+            for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
+                for(auto s : symmetricAllStates(stateN)){
+                    ll stateI = generateIndexNumber(s);
+                    updateToWin(values, stateI);
+                }
+            }
+        }else if(isDraw(nextStatesValues, i)){
+            // default or winOrDraw
+            ll stateNumber = generateState(i, xNumber, oNumber+1);
+            // generate previous states, update to winOrDraw(not loss)
+            for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
+                for(auto s : symmetricAllStates(stateN)){
+                    ll stateI = generateIndexNumber(s);
+                    updateToWinOrDraw(values, stateI);
+                }
+            }
+        }
+    }
+}
+
+void updateValuesFromEndStates(vector<bool> *values, int oNumber, int xNumber, vector<bool> *reverseStatesValues){
+    // find the states which end of the game, update the state and update previous states (to win)
     // oNumber is for values
 
-    for (ull i=0ll;i<nextStatesValuesSame->size()/2ll;i++){
-        if (isNotDraw(nextStatesValuesSame, i)){
-            // lose or win --> skip. this precious states already updated
+    for (ull i=0ll;i<reverseStatesValues->size()/2ll;i++){
+        if (isNotDefault(reverseStatesValues, i)){
+            // loss, win or winOrDraw --> skip. this is not the end of the game
             continue;
         }
         ll stateNumber = generateState(i, xNumber, oNumber);
         int win = isWin(stateNumber); // win:1, lose:-1, draw:0
         if (win == -1){
             // update this state to lose and change previous states to win
-            // update all symmetric states
             for(auto stateN : symmetricAllStates(stateNumber)){
                 ll stateI = generateIndexNumber(stateN);
-                updateToLoss(nextStatesValuesSame, stateI);
+                updateToLoss(reverseStatesValues, stateI);
             }
             // generate previous states, update to win
             for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/false)){
@@ -187,28 +188,9 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
                 }
             }
         }else if (win == 1){
-            // for symmetric states!!
             for(auto state : symmetricAllStates(stateNumber)){
                 ll stateI = generateIndexNumber(state);
-                updateToWin(nextStatesValuesSame, stateI);
-            }
-        }
-    }
-
-    // find next lose state update this state to win
-    for (ull i=0ll;i<nextStatesValuesAdd->size()/2ll;i++){
-        if(!isLoss(nextStatesValuesAdd, i)){
-            // not lose --> skip
-            continue;
-        }
-        
-        ll stateNumber = generateState(i, xNumber, oNumber+1);
-        
-        // generate previous states, update to win
-        for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
-            for(auto s : symmetricAllStates(stateN)){
-                ll stateI = generateIndexNumber(s);
-                updateToWin(values, stateI);
+                updateToWin(reverseStatesValues, stateI);
             }
         }
     }
@@ -216,12 +198,6 @@ void updateValuesFromEnd(vector<bool> *values, int oNumber, int xNumber, vector<
 
 void computeStatesValue(int oNumber, int xNumber){
     // TODO implement: the case no == nx. do not need to use reverse???
-    // 00: unknown(draw)
-    // 01: lose
-    // 10: win
-    // 11: ??
-    // you need to check only first bit to know the state is win (it is used to check the previous state is lose?) 
-
     // oNumber != xNumber
     // initialize this state value
     // we need to compute reverse states at the same time. 
@@ -229,6 +205,7 @@ void computeStatesValue(int oNumber, int xNumber){
     vector<bool> valuesReverse(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber] * 2);
     
     // read next state value
+    // TODO remove this, read in the function
     vector<bool> nextValues(getCombination(combinationSize, xNumber)*getCombination(combinationSize-xNumber, oNumber+1) * 2);  // next states values of values
     readStatesValue(&nextValues, xNumber, oNumber+1);
     vector<bool> nextReverseValues(getCombination(combinationSize, oNumber)*getCombination(combinationSize-oNumber, xNumber+1) * 2); // next states values of valuesReverse
@@ -237,8 +214,14 @@ void computeStatesValue(int oNumber, int xNumber){
     // at first find next lose states and update this values to win
     // find the states which end of the game, if it is lose update previous state to win
     cout << "staert search" << nextValues.size() << "," << nextReverseValues.size() << endl;
-    updateValuesFromEnd(&values, oNumber, xNumber, &valuesReverse, &nextValues);
-    updateValuesFromEnd(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues);
+    updateValuesFromNext(&values, oNumber, xNumber, &nextValues);
+    updateValuesFromNext(&valuesReverse, xNumber, oNumber, &nextReverseValues);
+
+    updateValuesFromEndStates(&values, oNumber, xNumber, &valuesReverse);
+    updateValuesFromEndStates(&valuesReverse, xNumber, oNumber, &values);
+
+    // updateValuesFromEnd(&values, oNumber, xNumber, &valuesReverse, &nextValues);
+    // updateValuesFromEnd(&valuesReverse, xNumber, oNumber, &values, &nextReverseValues);
 
     // compute values until no update
     bool updated = true;

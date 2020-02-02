@@ -15,8 +15,8 @@ void convertResultsTOXO(){
                 // cout << "value = " << values.at(i*2) << values.at(i*2+1) << endl;
                 // printState(s);
                 countState++;
-                if (values.at(i*2)) win++;
-                else if (values.at(i*2+1)) loss++;
+                if (!values.at(i*2ll)&&values.at(i*2ll+1ll)) win++;
+                else if (values.at(i*2ll+1ll) && values.at(i*2ll+1ll)) loss++;
                 else draw++;
             }
         }
