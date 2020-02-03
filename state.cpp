@@ -237,21 +237,22 @@ void printState(ll state){
 int isWin(ll state){
     // return 0:not decided, 1:win, -1:lose
     // turn is o;
-    // if there is line of x, lose
-    // else if there is line of o, win
-    bool win = false;
+    // if there is line of o, win
+    // else if there is line of x, lose
+    // if there two lines (o and x), o win because the last player(x) loss.
+    bool loss = false;
     ll mask;
     for(ull i=0;i<eWinMasks.size();i++){
         mask = state & eWinMasks.at(i);
         if (mask == xWinMasks.at(i)){
-            return -1;
+            loss = true;
         }
         if (mask == oWinMasks.at(i)){
-            win = true;
+            return 1;
         }
     }
-    if (win){
-        return 1;
+    if (loss){
+        return -1;
     }
     return 0;
 }

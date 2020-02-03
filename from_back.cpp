@@ -94,34 +94,6 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *reverseS
     return true;
 }
 
-// bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *nextStatesValuesSame, vector<bool> *nextStatesValuesAddO){
-//     // if all next states are win this state is lose
-//     ll thisState = generateState(indexState, oNumber, xNumber);
-//     // next states are reverse of o and x.
-//     auto nextStatesReverse = createNextStates(thisState, /*chooseEmpty*/false);
-//     for (auto state : nextStatesReverse){
-//         ll indexNextState = generateIndexNumber(state);
-//         if(!isWin(nextStatesValuesSame, indexNextState)){
-//         // if(!nextStatesValuesSame->at(indexNextState*2ll)){
-//             // not win (lose or draw)
-//             // at least 1 next state is not win. this state is not lose
-//             return false;
-//         }
-//     }
-//     // next states are nextState the number of o increase
-//     auto nextStatesAddO = createNextStates(thisState, true);
-//     for (auto state : nextStatesAddO){
-//         ll indexNextState = generateIndexNumber(state);
-//         if(!isWin(nextStatesValuesAddO, indexNextState)){
-//         // if(!nextStatesValuesAddO->at(indexNextState*2ll)){
-//             // not win (lose or draw)
-//             // at least 1 next state is not win. this state is not lose
-//             return false;
-//         }
-//     }
-//     return true;
-// }
-
 bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *reverseStatesValues){
     bool updated = false;
     for (ull i=0ll;i<values->size()/2ll;i++){
@@ -139,15 +111,12 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
                 ll stateI = generateIndexNumber(stateN, oNumber, xNumber);
                 updateToLoss(values, stateI);
             }
-            // updateToLoss(values, i);
             // generate previous states, update to win
             for( auto stateN : createPreviousStates(stateNumber, false)){
                 for(auto s : symmetricAllStates(stateN)){
                     ll stateI = generateIndexNumber(s, xNumber, oNumber);
                     updateToWin(reverseStatesValues, stateI);
                 }
-                // ll stateI = generateIndexNumber(stateN, xNumber, oNumber);
-                // updateToWin(reverseStatesValues, stateI);
             }
         }
     }
@@ -248,7 +217,7 @@ void computeStatesValue(int oNumber, int xNumber){
 
 void computeAllStatesValue(){
     // compute from end(o+x=combinationSize)
-    for(int total=combinationSize; total>=14;total--){
+    for(int total=combinationSize; total>=0;total--){
         cout << "total = " << total << endl;
         for(int oNumber=0;oNumber<=total/2;oNumber++){
             cout << "o number = " << oNumber << endl;
