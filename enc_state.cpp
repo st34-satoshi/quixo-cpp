@@ -57,20 +57,17 @@ ll generateStateFromIndex(ll indexState, int oNumber, int xNumber){
     cout << "start enc" << endl;
     int xPatterns = combinations[combinationSize-oNumber][xNumber];
     // at first decide o
-    cout << oNumber << ", " << indexState / xPatterns << endl;
     vector<bool> oStateArray = StateArrayFromI[combinationSize][oNumber][indexState/xPatterns];
-    cout << "start enc 1" << endl;
     vector<bool> xStateArray = StateArrayFromI[combinationSize-oNumber][xNumber][indexState%xPatterns];
-    cout << "start enc 2" << endl;
     ll newS = 0ll;
     int xI = 0;
     for(int i=0;i<combinationSize;i++){
         if(oStateArray[i]){
-            newS += oMark << i;
+            newS += oMark << i*2;
             continue;
         }
         if(xStateArray[xI]){
-            newS += xMark << i;
+            newS += xMark << i*2;
         }
         xI++;
     }

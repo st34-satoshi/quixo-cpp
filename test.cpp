@@ -4,15 +4,15 @@
 using namespace std;
 
 void testGenerateStateFromI(){
-    for(int i=0;i<10;i++){
+    for(int i=280;i<350;i++){
         cout << "i=" << i << endl;
-        ll s = generateStateFromIndex(i, 6, 3);
+        ll s = generateStateFromIndex(i, 3, 3);
         printState(s);
     }
         
 }
 
-void t(){
+void tstInitEncoding(){
     //
     cout << StateArrayFromI.size() << endl;
     cout << StateArrayFromI[16].size() << endl;
