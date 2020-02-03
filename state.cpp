@@ -1,7 +1,6 @@
 // #include "global.cpp"
 #include "enc_state.cpp"
 
-// TODO remove them??
 vector< vector<ll> > cellNumbers;  // it is used to get a cell number.
 vector<ll> rowNumbers;  // it is used to get a row numbers.
 // use to check win
@@ -12,12 +11,10 @@ vector<ll> eWinMasks;
 // they are used to create next states and previous states
 // C is check mask (the moving piece exist?) turn is always o!!
 // (((s & A) >> 1) & A) | (S & ~A) | B
-
 // to opposite.  ex) left to right, top to bottom
 // [i][j]: i is the position, j=0 is C, j=1 is A, j=2 is B, j=3 is shift length
 array<array<ll, 4>, (boardSize-2)*2> MovePreviousOppRightShift;
 array<array<ll, 4>, (boardSize-2)*2> MovePreviousOppLeftShift;
-
 // move edge ex) top edge to right
 // [l][s][i][j], l is the shift length, s=0 is bottom/right, s=1 is top/left, i is the position, j=0 is C, j=1 is A, j=2 is B, j=3 is the shift length
 array<array<array<array<ll, 4>, boardSize-1>, 2>, 2> MovePreviousEdgeRightShift;
@@ -100,6 +97,29 @@ void initMovingMasks(){
     }
 }
 
+// TODO: create. createNextState bit computation
+
+// masks for swap player 
+// o is 1, x is 2
+// (s & oMask) << 1 | (s & xMask) >> 1
+ll XMaskForSwap;
+ll OMaskForSwap;
+
+void initSwapMasks(){
+    ll o = 0ll;
+    ll x = 0ll;
+    for(int i=0;i<combinationSize;i++){
+        o = (o << 2) + oMark;
+        x = (x << 2) + xMark;
+    }
+    XMaskForSwap = x;
+    OMaskForSwap = o;
+}
+
+ll swapPlayer(ll state){
+    return ((state & OMaskForSwap) << 1) | ((state & XMaskForSwap) >> 1);
+}
+
 ll moveLeft(ll rowState, int fromI, int toI, ll addMark){
     // move the piece(index) to left
     // rowState is one row state
@@ -147,24 +167,6 @@ ll getCellNumber(int row, int column, ll state){
 ll getShiftedCellNumber(int row, int column, ll state){
     ll cellNumber = getCellNumber(row, column, state);
     return cellNumber >> (row*boardSize + column)*2;
-}
-
-ll swapPlayer(ll state){
-    ll newState = 0ll;
-    int n;
-    for(int i=boardSize-1;i>=0;i--){
-        for(int j=boardSize-1;j>=0;j--){
-            newState = newState << 2;
-            n = getShiftedCellNumber(i, j, state);
-            // swap 1 and 2 (o and x)
-            if (n == 1){
-                newState += 2ll;
-            }else if (n == 2){
-                newState += 1ll;
-            }
-        }
-    }
-    return newState;
 }
 
 ll reverseState(ll state){
@@ -435,6 +437,7 @@ StateArray createPreviousStates(ll pres, bool fromEmpty){
 
 void initState(){
     initEncoding();
+    initSwapMasks();
     // initialize cellNumbers
     vector< vector<ll> > cells(boardSize, vector<ll>(boardSize));
     for(int i=0;i<boardSize;i++){
