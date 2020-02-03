@@ -403,6 +403,7 @@ vector<ll> createPreviousStates(ll presentStateO, bool fromEmpty){
 }
 
 void initState(){
+    initEncoding();
     // initialize cellNumbers
     vector< vector<ll> > cells(boardSize, vector<ll>(boardSize));
     for(int i=0;i<boardSize;i++){
@@ -514,51 +515,61 @@ ll generateMark(int spaceNumber, ll *indexNumber, int oNumber, int xNumber){
 }
 
 ll generateState(ll indexNumber, int oNumber, int xNumber){
-    // change to state from indexNumber
-    // it is possible to represent state using indexNumber but it is difficult to find symmetric states using indexNumber. todo create a better algorithm
-    ll remainingIndexNumber = indexNumber;
-    int remainingONumber = oNumber;
-    int remainingXNumber = xNumber;
-    ll newState = 0ll;
-    for(int i=combinationSize;i>0;i--){
-        ll mark = generateMark(i, &remainingIndexNumber, remainingONumber, remainingXNumber);
-        newState = (newState << 2) + mark;
-        if (mark == 1ll){
-            remainingONumber--;
-        }else if (mark == 2ll){
-            remainingXNumber--;
-        }
-    }
-    return newState;
+    return generateStateFromIndex(indexNumber, oNumber, xNumber);
+    // // change to state from indexNumber
+    // // it is possible to represent state using indexNumber but it is difficult to find symmetric states using indexNumber. todo create a better algorithm
+    // ll remainingIndexNumber = indexNumber;
+    // int remainingONumber = oNumber;
+    // int remainingXNumber = xNumber;
+    // ll newState = 0ll;
+    // for(int i=combinationSize;i>0;i--){
+    //     ll mark = generateMark(i, &remainingIndexNumber, remainingONumber, remainingXNumber);
+    //     newState = (newState << 2) + mark;
+    //     if (mark == 1ll){
+    //         remainingONumber--;
+    //     }else if (mark == 2ll){
+    //         remainingXNumber--;
+    //     }
+    // }
+
+    // // cout << "test encoding" << endl;
+    // ll s = generateStateFromIndex(indexNumber, oNumber, xNumber);
+    // ll i = generateIndexFromState(s, oNumber, xNumber);
+    // if(indexNumber != i) {
+    //     cout << "Error: encoding" << endl;
+    //     exit(0);
+    // }
+    // return newState;
 }
 
 ll generateIndexNumber(ll stateNumber, int oN, int xN){
-    ll indexNumber = 0;
-    int oNumber = 0;
-    int xNumber = 0;
-    ll mark;
-    for(int i=0;i<combinationSize;i++){
-        mark = getRightMark(stateNumber);
-        stateNumber = stateNumber >> 2;
-        if(mark == 1ll){
-            oNumber++;
-        }else if (mark == 2ll){
-            xNumber++;
-            // not o. if it is possible to select o, add the number of patterns of next states.
-            if (oNumber > 0){
-                indexNumber += getPatterns(i, oNumber-1, xNumber);
-            }
-        }else if (mark == 0ll){
-            if (oNumber > 0){
-                indexNumber += getPatterns(i, oNumber-1, xNumber);
-            }
-            if (xNumber > 0){
-                indexNumber += getPatterns(i, oNumber, xNumber-1);
-            }
-        }
-    }
+    return generateIndexFromState(stateNumber, oN, xN);
+    // ll indexNumber = 0;
+    // int oNumber = 0;
+    // int xNumber = 0;
+    // ll mark;
+    // for(int i=0;i<combinationSize;i++){
+    //     mark = getRightMark(stateNumber);
+    //     stateNumber = stateNumber >> 2;
+    //     if(mark == 1ll){
+    //         oNumber++;
+    //     }else if (mark == 2ll){
+    //         xNumber++;
+    //         // not o. if it is possible to select o, add the number of patterns of next states.
+    //         if (oNumber > 0){
+    //             indexNumber += getPatterns(i, oNumber-1, xNumber);
+    //         }
+    //     }else if (mark == 0ll){
+    //         if (oNumber > 0){
+    //             indexNumber += getPatterns(i, oNumber-1, xNumber);
+    //         }
+    //         if (xNumber > 0){
+    //             indexNumber += getPatterns(i, oNumber, xNumber-1);
+    //         }
+    //     }
+    // }
 
-    return indexNumber;
+    // return indexNumber;
 }
 
 string fileName(int oNumber, int xNumber){

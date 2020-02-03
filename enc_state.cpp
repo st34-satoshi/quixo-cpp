@@ -38,6 +38,10 @@ void initEncodingArray(bool selectedStates[], int selectedStateSize, int markNum
 
 void initEncoding(){
     for(int i=1;i<=combinationSize;i++){
+        vector<vector<bool>> w(1, vector<bool>(i));
+        StateArrayFromI[i][0] = w; // j=0
+        vector<ll> v(1, 0ll);
+        IndexArrayFromState[i][0] = v;
         for(int j=1;j<=i;j++){
             // resize the vector
             vector<vector<bool>> w(combinations[i][j], vector<bool>(i));
@@ -51,13 +55,23 @@ void initEncoding(){
             initEncodingArray(selectedStates, i, j, j, &ind, -1);
         }
     }
+    for(int j=0;j<=combinationSize;j++){
+        vector<vector<bool>> w(1, vector<bool>(1));
+        StateArrayFromI[0][j] = w;
+        vector<ll> v(1, 0ll);
+        IndexArrayFromState[0][j] = v;
+    }
 }
 
 ll generateStateFromIndex(ll indexState, int oNumber, int xNumber){
+    // cout << "gene s " << oNumber << "," << xNumber << endl;
     int xPatterns = combinations[combinationSize-oNumber][xNumber];
     // at first decide o
     vector<bool> oStateArray = StateArrayFromI[combinationSize][oNumber][indexState/xPatterns];
+    // cout << "hhh" << endl;
+    // cout << StateArrayFromI[combinationSize-oNumber][xNumber].size() << endl; 
     vector<bool> xStateArray = StateArrayFromI[combinationSize-oNumber][xNumber][indexState%xPatterns];
+    // cout << "oucj" << endl;
     ll newS = 0ll;
     int xI = 0;
     for(int i=0;i<combinationSize;i++){
@@ -70,10 +84,12 @@ ll generateStateFromIndex(ll indexState, int oNumber, int xNumber){
         }
         xI++;
     }
+    // cout << "gene s ok" << endl;
     return newS;
 }
 
 ll generateIndexFromState(ll state, int oNumber, int xNumber){
+    // cout << "gene i" <<endl;
     int oState = 0;
     int xState = 0;  // without o tile space
     int n;
@@ -90,8 +106,12 @@ ll generateIndexFromState(ll state, int oNumber, int xNumber){
         }
         xI++;
     }
+    // cout << "onumber, ostate" << endl;
     ll oIndex = IndexArrayFromState[combinationSize][oNumber][oState];
+    // cout << "gg " << xNumber << ", " << xState << endl;
+    // cout << IndexArrayFromState[combinationSize-oNumber][xNumber].size() << endl;
     ll xIndex = IndexArrayFromState[combinationSize-oNumber][xNumber][xState];
     int xPatterns = combinations[combinationSize-oNumber][xNumber];
+    // cout << "gene i ok " << endl;
     return oIndex * ll(xPatterns) + xIndex;
 }

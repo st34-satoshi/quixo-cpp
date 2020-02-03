@@ -32,6 +32,7 @@ void init(){
     createCombinations();
     initState();
     initMovingMasks();
+    initEncoding();
 }
 
 /*
