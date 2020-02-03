@@ -349,7 +349,13 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
 
     return nextStates;
 }
-StateArray createP(ll pres, bool fromEmpty){
+StateArray createPreviousStates(ll pres, bool fromEmpty){
+    // turn is o. last player is x
+    // if fromEmpty, previous mark is -. 
+    // else, previous mark is x
+    // if the previous state is the end of the game avoid the state
+    // before creating states, swap turn
+
     ll ps = swapPlayer(pres);
     StateArray states;
     ll newS;
@@ -425,20 +431,6 @@ StateArray createP(ll pres, bool fromEmpty){
         }
     }
     return states;
-}
-
-vector<ll> createPreviousStates(ll presentStateO, bool fromEmpty){
-    // turn is o. last player is x
-    // if fromEmpty, previous mark is -. 
-    // else, previous mark is x
-    // if the previous state is the end of the game avoid the state
-    // before creating states, swap turn
-    auto states = createP(presentStateO, fromEmpty);
-    vector<ll> previousStates;
-    for(int i=0;i<states.count;i++){
-        previousStates.push_back(states.State_array[i]);
-    }
-    return previousStates;
 }
 
 void initState(){

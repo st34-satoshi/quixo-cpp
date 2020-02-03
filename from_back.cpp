@@ -112,7 +112,9 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
                 updateToLoss(values, stateI);
             }
             // generate previous states, update to win
-            for( auto stateN : createPreviousStates(stateNumber, false)){
+            StateArray sa = createPreviousStates(stateNumber, false);
+            for(int i=0;i<sa.count;i++){
+                ll stateN = sa.State_array[i];
                 for(auto s : symmetricAllStates(stateN)){
                     ll stateI = generateIndexNumber(s, xNumber, oNumber);
                     updateToWin(reverseStatesValues, stateI);
@@ -135,16 +137,22 @@ void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber){
     for (ull i=0ll;i<nextStatesValues.size()/2ll;i++){
         if(isLoss(&nextStatesValues, i)){
             ll stateNumber = generateState(i, xNumber, oNumber+1);
-            for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
-                ll stateI = generateIndexNumber(stateN, oNumber, xNumber);
+            StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
+            ll stateN, stateI;
+            for(int i=0;i<sa.count;i++){
+                stateN = sa.State_array[i];
+                stateI = generateIndexNumber(stateN, oNumber, xNumber);
                 updateToWin(values, stateI);
             }
         }else if(isDraw(&nextStatesValues, i)){
             // default or winOrDraw
             ll stateNumber = generateState(i, xNumber, oNumber+1);
             // generate previous states, update to winOrDraw(not loss)
-            for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
-                ll stateI = generateIndexNumber(stateN, oNumber, xNumber);
+            StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
+            ll stateN, stateI;
+            for(int i=0;i<sa.count;i++){
+                stateN = sa.State_array[i];
+                stateI = generateIndexNumber(stateN, oNumber, xNumber);
                 if (isDefault(values, stateI)){
                     updateToWinOrDraw(values, stateI);
                 }
@@ -171,9 +179,12 @@ void updateValuesFromEndStates(vector<bool> *values, int oNumber, int xNumber, v
                 updateToLoss(reverseStatesValues, stateI);
             }
             // generate previous states, update to win
-            for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/false)){
+            StateArray sa = createPreviousStates(stateNumber, false);
+            ll stateN, stateI;
+            for(int i=0;i<sa.count;i++){
+                stateN = sa.State_array[i];
                 for(auto s : symmetricAllStates(stateN)){
-                    ll stateI = generateIndexNumber(s, oNumber, xNumber);
+                    stateI = generateIndexNumber(s, oNumber, xNumber);
                     updateToWin(values, stateI);
                 }
             }
@@ -217,7 +228,7 @@ void computeStatesValue(int oNumber, int xNumber){
 
 void computeAllStatesValue(){
     // compute from end(o+x=combinationSize)
-    for(int total=combinationSize; total>=0;total--){
+    for(int total=combinationSize; total>=14;total--){
         cout << "total = " << total << endl;
         for(int oNumber=0;oNumber<=total/2;oNumber++){
             cout << "o number = " << oNumber << endl;
