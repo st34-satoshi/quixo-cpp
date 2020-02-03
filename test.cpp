@@ -4,23 +4,35 @@
 using namespace std;
 
 void testGenerateStateFromI(){
-    for(int i=280;i<350;i++){
+    for(int i=0;i<10;i++){
+    // for(int i=280;i<350;i++){
         cout << "i=" << i << endl;
         ll s = generateStateFromIndex(i, 3, 3);
         printState(s);
+        cout << generateIndexFromState(s, 3, 3) << endl;
     }
         
 }
 
-void tstInitEncoding(){
+void testInitEncoding(){
     //
-    cout << StateArrayFromI.size() << endl;
-    cout << StateArrayFromI[16].size() << endl;
-    cout << StateArrayFromI[16][6].size() << endl;
-    for(int i=0;i<combinationSize+1;i++){
-        for(int j=0;j<combinationSize+1;j++){
-            cout << i << "," << j << " size = " << StateArrayFromI[i][j].size() << endl;
-        }
+    // cout << StateArrayFromI.size() << endl;
+    // cout << StateArrayFromI[16].size() << endl;
+    // cout << StateArrayFromI[16][6].size() << endl;
+    // for(int i=0;i<combinationSize+1;i++){
+    //     for(int j=0;j<combinationSize+1;j++){
+    //         cout << i << "," << j << " size = " << StateArrayFromI[i][j].size() << endl;
+    //     }
+    // }
+    cout << IndexArrayFromState.size() << endl;
+    cout << IndexArrayFromState[16].size() << endl;
+    // for(int i=0;i<combinationSize+1;i++){
+    //     for(int j=0;j<combinationSize+1;j++){
+    //         cout << i << "," << j << " size = " << IndexArrayFromState[i][j].size() << endl;
+    //     }
+    // }
+    for(int i=0;i<100;i++){
+        cout << i << ", " << IndexArrayFromState[16][3][i] << endl;
     }
 }
 
@@ -40,7 +52,7 @@ int main(){
     // testCreatePreviousState();
     createCombinations();
     initEncoding();
-    // t();
+    // testInitEncoding();
     testGenerateStateFromI();
 
     return 0;

@@ -54,7 +54,6 @@ void initEncoding(){
 }
 
 ll generateStateFromIndex(ll indexState, int oNumber, int xNumber){
-    cout << "start enc" << endl;
     int xPatterns = combinations[combinationSize-oNumber][xNumber];
     // at first decide o
     vector<bool> oStateArray = StateArrayFromI[combinationSize][oNumber][indexState/xPatterns];
@@ -63,13 +62,36 @@ ll generateStateFromIndex(ll indexState, int oNumber, int xNumber){
     int xI = 0;
     for(int i=0;i<combinationSize;i++){
         if(oStateArray[i]){
-            newS += oMark << i*2;
+            newS += oMark << (combinationSize - i -1)*2;
             continue;
         }
         if(xStateArray[xI]){
-            newS += xMark << i*2;
+            newS += xMark << (combinationSize - i - 1)*2;
         }
         xI++;
     }
     return newS;
+}
+
+ll generateIndexFromState(ll state, int oNumber, int xNumber){
+    int oState = 0;
+    int xState = 0;  // without o tile space
+    int n;
+    int xI = 0;
+    for(int i=0;i<combinationSize;i++){
+        n = state % 4; // right 2 bit
+        state = state >> 2;
+        if(n == oMark){
+            oState = oState + (1 << i);
+            continue;
+        }
+        if (n == xMark){
+            xState = xState + (1 << xI);
+        }
+        xI++;
+    }
+    ll oIndex = IndexArrayFromState[combinationSize][oNumber][oState];
+    ll xIndex = IndexArrayFromState[combinationSize-oNumber][xNumber][xState];
+    int xPatterns = combinations[combinationSize-oNumber][xNumber];
+    return oIndex * ll(xPatterns) + xIndex;
 }
