@@ -15,6 +15,7 @@ const int combinationSize = boardSize * boardSize;
 const int MAX_STATES = (boardSize-2)*4*3 + 4*2;
 
 vector< vector<ll>> combinations;  // nCr, (n<boardSize^2)
+
 const ll oMark = 1ll;
 const ll xMark = 2ll;
 const ll bMark = 3ll;

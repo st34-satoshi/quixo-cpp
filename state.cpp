@@ -1,4 +1,5 @@
-#include "global.cpp"
+// #include "global.cpp"
+#include "enc_state.cpp"
 
 // TODO remove them??
 vector< vector<ll> > cellNumbers;  // it is used to get a cell number.

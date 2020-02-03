@@ -1,3 +1,4 @@
+#include "global.cpp"
 /*
 encoding
 i <--> state
@@ -36,7 +37,7 @@ void initEncodingArray(bool selectedStates[], int selectedStateSize, int markNum
 }
 
 void initEncoding(){
-    for(int i=1;i<combinationSize;i++){
+    for(int i=1;i<=combinationSize;i++){
         for(int j=1;j<=i;j++){
             // resize the vector
             vector<vector<bool>> w(combinations[i][j], vector<bool>(i));
@@ -50,4 +51,28 @@ void initEncoding(){
             initEncodingArray(selectedStates, i, j, j, &ind, -1);
         }
     }
+}
+
+ll generateStateFromIndex(ll indexState, int oNumber, int xNumber){
+    cout << "start enc" << endl;
+    int xPatterns = combinations[combinationSize-oNumber][xNumber];
+    // at first decide o
+    cout << oNumber << ", " << indexState / xPatterns << endl;
+    vector<bool> oStateArray = StateArrayFromI[combinationSize][oNumber][indexState/xPatterns];
+    cout << "start enc 1" << endl;
+    vector<bool> xStateArray = StateArrayFromI[combinationSize-oNumber][xNumber][indexState%xPatterns];
+    cout << "start enc 2" << endl;
+    ll newS = 0ll;
+    int xI = 0;
+    for(int i=0;i<combinationSize;i++){
+        if(oStateArray[i]){
+            newS += oMark << i;
+            continue;
+        }
+        if(xStateArray[xI]){
+            newS += xMark << i;
+        }
+        xI++;
+    }
+    return newS;
 }
