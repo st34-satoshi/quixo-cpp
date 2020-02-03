@@ -163,36 +163,10 @@ void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber){
     vector<bool> nextStatesValues(getCombination(combinationSize, xNumber)*getCombination(combinationSize-xNumber, oNumber+1) * 2);  // next states values of values
     readStatesValue(&nextStatesValues, xNumber, oNumber+1);
 
-    // // TODO: debug
-    // unordered_set<ll> inSym;
-    // unordered_set<ll> inOrigin;
-
     for (ull i=0ll;i<nextStatesValues.size()/2ll;i++){
         if(isLoss(&nextStatesValues, i)){
             ll stateNumber = generateState(i, xNumber, oNumber+1);
-            // if(stateNu4dmber == 2792004266){
-            //     cout << "appear!! " << endl;
-            //     // exit(0);
-            // }
-            // generate previous states, update to win
             for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
-                // inOrigin.insert(stateN);
-                // if(stateNumber == 2792004266){
-                //     cout << "this one !!" << endl;
-                //     printState(stateN);
-                //     cout << inOrigin.count(1502963028) << endl;
-                // }
-                // for(auto s : symmetricAllStates(stateN)){
-                //     // inSym.insert(s);
-                //     // if(s == 1502963028){
-                //     //     cout << "not appear. origin is" << endl;
-                //     //     printState(stateN);
-                //     //     cout << "next state is " << endl;
-                //     //     printState(stateNumber);
-                //     // }
-                //     ll stateI = generateIndexNumber(s, oNumber, xNumber);
-                //     updateToWin(values, stateI);
-                // }
                 ll stateI = generateIndexNumber(stateN, oNumber, xNumber);
                 updateToWin(values, stateI);
             }
@@ -201,35 +175,13 @@ void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber){
             ll stateNumber = generateState(i, xNumber, oNumber+1);
             // generate previous states, update to winOrDraw(not loss)
             for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
-                for(auto s : symmetricAllStates(stateN)){
-                    ll stateI = generateIndexNumber(s, oNumber, xNumber);
-                    if (isDefault(values, stateI)){
-                        updateToWinOrDraw(values, stateI);
-                    }
+                ll stateI = generateIndexNumber(stateN, oNumber, xNumber);
+                if (isDefault(values, stateI)){
+                    updateToWinOrDraw(values, stateI);
                 }
-                // ll stateI = generateIndexNumber(stateN, oNumber, xNumber);
-                // if (isDefault(values, stateI)){
-                //     updateToWinOrDraw(values, stateI);
-                // }
             }
         }
     }
-    // for(auto itr=inSym.begin();itr!=inSym.end();itr++){
-    //     // bool ok = false;
-    //     // for(auto it=inOrigin.begin(); it!=inOrigin.end();it++){
-    //     //     if (itr == it){
-    //     //         ok = true;
-    //     //         break;
-    //     //     }
-    //     // }
-    //     if(!inOrigin.count(*itr)){
-    //         cout << "Error: it is not appear in origin" << endl;
-    //         cout << inOrigin.count(1502963028) << endl;
-    //         cout << *itr << endl;
-    //         printState(*itr);
-    //         exit(0);
-    //     }
-    // // }
 }
 
 void updateValuesFromEndStates(vector<bool> *values, int oNumber, int xNumber, vector<bool> *reverseStatesValues){
