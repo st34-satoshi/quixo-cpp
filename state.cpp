@@ -271,7 +271,7 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
     ll movingRow, newRow, newState;
     // choose only switch row, then rotate and switch row again.
     // search present state and rotated state.
-    for(ll state : {presentState, rotatedState(presentState)}){
+    for(ll state : {presentState}){
         for(int i=0;i<boardSize;i++){
             for(int j=0;j<boardSize;j++){
                 if(0<i && i<boardSize-1 && 0<j && j<boardSize-1){
@@ -308,6 +308,44 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
             }
         }
     }
+    for(ll state : {rotatedState(presentState)}){
+        for(int i=0;i<boardSize;i++){
+            for(int j=0;j<boardSize;j++){
+                if(0<i && i<boardSize-1 && 0<j && j<boardSize-1){
+                    // not edge
+                    continue;
+                }
+                if (chooseEmpty && getShiftedCellNumber(i, j, state)!=0){
+                    // need to choose empty but the cell is not empty.
+                    continue;
+                }
+                if (!chooseEmpty && getShiftedCellNumber(i, j, state)!=2){
+                    // need to choose x but the cell is not x. turn is already changed.
+                    continue;
+                }
+                // TODO: refactor. move right and move left are similar. make it simple.
+                if(j!=boardSize-1){
+                    // move to left
+                    movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
+                    newRow = moveLeft(movingRow, j, boardSize-1, 2ll);
+                    newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                    // add to nextStates
+                    // TODO: avoid the newStaet which is already in nextStates
+                    nextStates.push_back(rotatedState(rotatedState(rotatedState(newState))));
+                }
+                if(j!=0){
+                    // move to right
+                    movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
+                    newRow = moveRight(movingRow, j, 0, 2ll);
+                    newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
+                    // add to nextStates
+                    // TODO: avoid the newStaet which is already in nextStates
+                    nextStates.push_back(rotatedState(rotatedState(rotatedState(newState))));
+                }
+            }
+        }
+    }
+
     return nextStates;
 }
 StateArray createP(ll pres, bool fromEmpty){
@@ -336,19 +374,19 @@ StateArray createP(ll pres, bool fromEmpty){
             }
         }
     }
-    bool updated; // avoid the same previous states
+    // bool updated; // avoid the same previous states TODO:
     for(int l=0;l<2;l++){
         for(int s=0;s<2;s++){
-            updated = false;
+            // updated = false;
             for(int i=0;i<boardSize-1;i++){
-                if (MovePreviousEdgeRightShift[l][s][i][2] & ps){
-                    if(updated){
-                        continue; // skip. because the next tile is same mark and created the same state.
-                    }
-                    updated = true;
-                }else{
-                    updated = false;
-                }
+                // if (MovePreviousEdgeRightShift[l][s][i][2] & ps){
+                //     if(updated){
+                //         continue; // skip. because the next tile is same mark and created the same state.
+                //     }
+                //     updated = true;
+                // }else{
+                //     updated = false;
+                // }
                 if(MovePreviousEdgeRightShift[l][s][i][0] & ps){
                     newS = (((ps & MovePreviousEdgeRightShift[l][s][i][1]) >> MovePreviousEdgeRightShift[l][s][i][3]) & MovePreviousEdgeRightShift[l][s][i][1]) | (ps & ~MovePreviousEdgeRightShift[l][s][i][1]);
                     if (!fromEmpty){
@@ -363,16 +401,16 @@ StateArray createP(ll pres, bool fromEmpty){
     }
     for(int l=0;l<2;l++){
         for(int s=0;s<2;s++){
-            updated = false;
+            // updated = false;
             for(int i=0;i<boardSize-1;i++){
-                if (MovePreviousEdgeLeftShift[l][s][i][2] & ps){
-                    if(updated){
-                        continue;
-                    }
-                    updated = true;
-                }else{
-                    updated = false;
-                }
+                // if (MovePreviousEdgeLeftShift[l][s][i][2] & ps){
+                //     if(updated){
+                //         continue;
+                //     }
+                //     updated = true;
+                // }else{
+                //     updated = false;
+                // }
                 if(MovePreviousEdgeLeftShift[l][s][i][0] & ps){
                     newS = (((ps & MovePreviousEdgeLeftShift[l][s][i][1]) << MovePreviousEdgeLeftShift[l][s][i][3]) & MovePreviousEdgeLeftShift[l][s][i][1]) | (ps & ~MovePreviousEdgeLeftShift[l][s][i][1]);
                     if (!fromEmpty){

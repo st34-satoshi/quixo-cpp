@@ -3,16 +3,16 @@
 #include "state.cpp"
 using namespace std;
 
-void testGenerateStateFromI(){
-    for(int i=0;i<10;i++){
-    // for(int i=280;i<350;i++){
-        cout << "i=" << i << endl;
-        ll s = generateStateFromIndex(i, 3, 3);
-        printState(s);
-        cout << generateIndexFromState(s, 3, 3) << endl;
-    }
+// void testGenerateStateFromI(){
+//     for(int i=0;i<10;i++){
+//     // for(int i=280;i<350;i++){
+//         cout << "i=" << i << endl;
+//         ll s = generateStateFromIndex(i, 3, 3);
+//         printState(s);
+//         cout << generateIndexFromState(s, 3, 3) << endl;
+//     }
         
-}
+// }
 
 void testInitEncoding(){
     //
@@ -36,6 +36,16 @@ void testInitEncoding(){
     }
 }
 
+void testPreviousStates(){
+    ll s = 0b00000000'01010101'01010110'01100101'01011001;
+    cout << "init state" << endl;
+    printState(swapPlayer(s));
+    auto preS = createPreviousStates(swapPlayer(s), true);
+    for(auto i:preS){
+        printState(i);
+    }
+}
+
 
 int main(){
     cout << "test" << endl;
@@ -53,7 +63,8 @@ int main(){
     createCombinations();
     initEncoding();
     // testInitEncoding();
-    testGenerateStateFromI();
+    // testGenerateStateFromI();
+    testPreviousStates();
 
     return 0;
 }
