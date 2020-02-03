@@ -84,7 +84,6 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *reverseS
     // next states are reverse of o and x.
     auto nextStatesReverse = createNextStates(thisState, /*chooseEmpty*/false);
     for (auto state : nextStatesReverse){
-        cout << "test 1" << endl;
         ll indexNextState = generateIndexNumber(state, xNumber, oNumber);
         if(!isWin(reverseStatesValues, indexNextState)){
             // at least 1 next state is not win. this state is not lose
@@ -136,14 +135,12 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
             ll stateNumber = generateState(i, oNumber, xNumber);
             // update all symmetric states
             for(auto stateN : symmetricAllStates(stateNumber)){
-                cout << "test 139" << endl;
                 ll stateI = generateIndexNumber(stateN, oNumber, xNumber);
                 updateToLoss(values, stateI);
             }
             // generate previous states, update to win
             for( auto stateN : createPreviousStates(stateNumber, false)){
                 for(auto s : symmetricAllStates(stateN)){
-                    cout << "test 146" << endl;
                     ll stateI = generateIndexNumber(s, xNumber, oNumber);
                     updateToWin(reverseStatesValues, stateI);
                 }
@@ -179,7 +176,6 @@ void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber){
             // generate previous states, update to winOrDraw(not loss)
             for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/true)){
                 for(auto s : symmetricAllStates(stateN)){
-                    cout << "test 183" << endl;
                     ll stateI = generateIndexNumber(s, oNumber, xNumber);
                     if (isDefault(values, stateI)){
                         updateToWinOrDraw(values, stateI);
@@ -204,21 +200,18 @@ void updateValuesFromEndStates(vector<bool> *values, int oNumber, int xNumber, v
         if (win == -1){
             // update this state to lose and change previous states to win
             for(auto stateN : symmetricAllStates(stateNumber)){
-                cout << "test 208" << endl;
                 ll stateI = generateIndexNumber(stateN, xNumber, oNumber);
                 updateToLoss(reverseStatesValues, stateI);
             }
             // generate previous states, update to win
             for( auto stateN : createPreviousStates(stateNumber, /*fromEmpty*/false)){
                 for(auto s : symmetricAllStates(stateN)){
-                    cout << "test 215" << endl;
                     ll stateI = generateIndexNumber(s, oNumber, xNumber);
                     updateToWin(values, stateI);
                 }
             }
         }else if (win == 1){
             for(auto state : symmetricAllStates(stateNumber)){
-                cout << "test 223" << endl;
                 ll stateI = generateIndexNumber(state, xNumber, oNumber);
                 updateToWin(reverseStatesValues, stateI);
             }

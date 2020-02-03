@@ -558,14 +558,6 @@ ll generateIndexNumber(ll stateNumber, int oN, int xN){
         }
     }
 
-    // debug
-    if (oNumber != oN || xNumber != xN){
-        cout << "ERRORO: the number is not correct" << endl;
-        cout << "oN, xN, real o, x" << endl;
-        cout << oN << ", " << xN << ", " << oNumber << ", " << xNumber << endl; 
-        exit(0);
-    }
-
     return indexNumber;
 }
 
