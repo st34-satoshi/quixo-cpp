@@ -532,7 +532,7 @@ ll generateState(ll indexNumber, int oNumber, int xNumber){
     return newState;
 }
 
-ll generateIndexNumber(ll stateNumber){
+ll generateIndexNumber(ll stateNumber, int oN, int xN){
     ll indexNumber = 0;
     int oNumber = 0;
     int xNumber = 0;
@@ -556,6 +556,14 @@ ll generateIndexNumber(ll stateNumber){
                 indexNumber += getPatterns(i, oNumber, xNumber-1);
             }
         }
+    }
+
+    // debug
+    if (oNumber != oN || xNumber != xN){
+        cout << "ERRORO: the number is not correct" << endl;
+        cout << "oN, xN, real o, x" << endl;
+        cout << oN << ", " << xN << ", " << oNumber << ", " << xNumber << endl; 
+        exit(0);
     }
 
     return indexNumber;
