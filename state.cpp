@@ -585,3 +585,33 @@ void readStatesValue(vector<bool> *values, int oNumber, int xNumber){
     }
     fin.close();
 }
+
+void writeStatesSteps(vector<int> *statesStep, int oNumber, int xNumber){
+    // TODO if the file already exist, do not overwrite
+    ofstream fout(fileName(oNumber, xNumber, "Step"), ios::out | ios::binary);
+    if(!fout.is_open()){
+        cout << "cannot open file" << endl;
+        return;
+    }
+    unsigned char c = 0;
+    for(int t: *statesStep){
+        c = t;
+        fout.put(c);
+    }
+    fout.close();
+}
+
+void readStatesStep(vector<int> *statesStep, int oNumber, int xNumber){
+    ifstream fin(fileName(oNumber, xNumber, "Step"), ios::in | ios::binary);
+    if(!fin.is_open()){
+        cout << "cannot open file" << endl;
+        return;
+    }
+    unsigned char data;
+    ll number = combinations[combinationSize][oNumber]*combinations[combinationSize-oNumber][xNumber]*2;
+    for (ll i=0ll;i<number;i++){
+        data = fin.get();
+        statesStep->at(i) = data;
+    }
+    fin.close();
+}

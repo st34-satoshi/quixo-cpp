@@ -36,17 +36,17 @@ void testInitEncoding(){
     }
 }
 
-void testNextStates(){
-    // ll s = 0b00000000'01010101'01010110'00100101'01011001;
-    ll s = 0b00000000'00010100'01000100'01000101'00001001;
-    cout << "init state !!!!!" << endl;
-    printState(swapPlayer(s));
-    auto nS = createNextStates2(s, true);
-    cout << "cout = " << nS.count << endl;
-    for(int i=0;i<nS.count;i++){
-        printState(nS.State_array[i]);
-    }
-}
+// void testNextStates(){
+//     // ll s = 0b00000000'01010101'01010110'00100101'01011001;
+//     ll s = 0b00000000'00010100'01000100'01000101'00001001;
+//     cout << "init state !!!!!" << endl;
+//     printState(swapPlayer(s));
+//     auto nS = createNextStates2(s, true);
+//     cout << "cout = " << nS.count << endl;
+//     for(int i=0;i<nS.count;i++){
+//         printState(nS.State_array[i]);
+//     }
+// }
 
 void testMoveNextEdge(){
     for(int s=0;s<2;s++){
@@ -67,8 +67,21 @@ void testChar(){
         i++;
         cout << i << "," << j << endl;
     }
-
 }
+
+void testREADWrite(){
+    vector<int> tt;
+    for(int i=0;i<100;i++){
+        tt.push_back(i);
+    }
+    writeStatesSteps(&tt, 13, 1);
+    vector<int> rr(10000);
+    readStatesStep(&rr, 13, 1);
+    for(int i=0;i<100;i++){
+        cout << i << ",";
+    }
+}
+
 int main(){
     cout << "test" << endl;
     createCombinations();
@@ -78,8 +91,9 @@ int main(){
     initEncoding();
     // testPreviousStates();
     // testChar();
-    testNextStates();
+    // testNextStates();
     // testMoveNextEdge();
+    testREADWrite();
 
     return 0;
 }
