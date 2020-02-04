@@ -608,7 +608,7 @@ void readStatesStep(vector<int> *statesStep, int oNumber, int xNumber){
         return;
     }
     unsigned char data;
-    ll number = combinations[combinationSize][oNumber]*combinations[combinationSize-oNumber][xNumber]*2;
+    ll number = combinations[combinationSize][oNumber]*combinations[combinationSize-oNumber][xNumber];
     for (ll i=0ll;i<number;i++){
         data = fin.get();
         statesStep->at(i) = data;
