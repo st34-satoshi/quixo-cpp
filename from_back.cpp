@@ -83,9 +83,10 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *reverseS
     // if all next states are win this state is lose, no next state, it is loss because the all next states(creating o) are win(if not win this state value is not default)
     ll thisState = generateState(indexState, oNumber, xNumber);
     // next states are reverse of o and x.
-    auto nextStatesReverse = createNextStates(thisState, /*chooseEmpty*/false);
-    for (auto state : nextStatesReverse){
-        ll indexNextState = generateIndexNumber(state, xNumber, oNumber);
+    StateArray sa = createNextStates(thisState, /*chooseEmpty*/false);
+    for(int i=0;i<sa.count;i++){
+    // for (auto state : nextStatesReverse){
+        ll indexNextState = generateIndexNumber(sa.State_array[i], xNumber, oNumber);
         if(!isWin(reverseStatesValues, indexNextState)){
             // at least 1 next state is not win. this state is not lose
             return false;

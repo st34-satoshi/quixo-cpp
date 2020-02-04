@@ -343,7 +343,7 @@ int isWin(ll state){
     return 0;
 }
 
-StateArray createNextStates2(ll pres, bool fromEmpty){
+StateArray createNextStates(ll pres, bool fromEmpty){
     // turn is o. last player is x
     // if fromEmpty, previous mark is -. 
     // else, previous mark is x
@@ -434,132 +434,6 @@ StateArray createNextStates2(ll pres, bool fromEmpty){
         }
     }
     return states;
-}
-
-vector<ll> createNextStates(ll presentState, bool chooseEmpty){
-    // if chooseEmpty, increase o number. choose e. turn is o.
-    // else, the number of o, x, e are same. choose o.  turn is o.
-    // before creating states, swap turn
-    presentState = swapPlayer(presentState);
-
-    vector<ll> nextStates;
-    // if this state is end of the game (there is line) no next states.
-    if (isWin(presentState)!=0){
-        return nextStates;
-    }
-
-    ll movingRow, newRow, newState;
-    // choose only switch row, then rotate and switch row again.
-    // search present state and rotated state.
-    for(ll state : {presentState}){
-        for(int i=0;i<boardSize;i++){
-            for(int j=0;j<boardSize;j++){
-                if(0<i && i<boardSize-1 && 0<j && j<boardSize-1){
-                    // not edge
-                    continue;
-                }
-                if (chooseEmpty && getShiftedCellNumber(i, j, state)!=0){
-                    // need to choose empty but the cell is not empty.
-                    continue;
-                }
-                if (!chooseEmpty && getShiftedCellNumber(i, j, state)!=2){
-                    // need to choose x but the cell is not x. turn is already changed.
-                    continue;
-                }
-                // TODO: refactor. move right and move left are similar. make it simple.
-                if(j!=boardSize-1){
-                    // move to left
-                    movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
-                    newRow = moveLeft(movingRow, j, boardSize-1, 2ll);
-                    newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                    // add to nextStates
-                    // TODO: avoid the newStaet which is already in nextStates
-                    nextStates.push_back(newState);
-                }
-                if(j!=0){
-                    // move to right
-                    movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
-                    newRow = moveRight(movingRow, j, 0, 2ll);
-                    newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                    // add to nextStates
-                    // TODO: avoid the newStaet which is already in nextStates
-                    nextStates.push_back(newState);
-                }
-            }
-        }
-    }
-    for(ll state : {rotatedState(presentState)}){
-        for(int i=0;i<boardSize;i++){
-            for(int j=0;j<boardSize;j++){
-                if(0<i && i<boardSize-1 && 0<j && j<boardSize-1){
-                    // not edge
-                    continue;
-                }
-                if (chooseEmpty && getShiftedCellNumber(i, j, state)!=0){
-                    // need to choose empty but the cell is not empty.
-                    continue;
-                }
-                if (!chooseEmpty && getShiftedCellNumber(i, j, state)!=2){
-                    // need to choose x but the cell is not x. turn is already changed.
-                    continue;
-                }
-                // TODO: refactor. move right and move left are similar. make it simple.
-                if(j!=boardSize-1){
-                    // move to left
-                    movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
-                    newRow = moveLeft(movingRow, j, boardSize-1, 2ll);
-                    newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                    // add to nextStates
-                    // TODO: avoid the newStaet which is already in nextStates
-                    nextStates.push_back(rotatedState(rotatedState(rotatedState(newState))));
-                }
-                if(j!=0){
-                    // move to right
-                    movingRow = (state & rowNumbers[i]) >> 2*i*boardSize;
-                    newRow = moveRight(movingRow, j, 0, 2ll);
-                    newState = (state & ~rowNumbers[i]) | (newRow << 2*i*boardSize);
-                    // add to nextStates
-                    // TODO: avoid the newStaet which is already in nextStates
-                    nextStates.push_back(rotatedState(rotatedState(rotatedState(newState))));
-                }
-            }
-        }
-    }
-
-    // TODO: debug
-    auto nesSa = createNextStates2(swapPlayer(presentState), chooseEmpty);
-    for(auto bs : nextStates){
-        bool ok = false;
-        for(int i=0;i<nesSa.count;i++){
-            if(nesSa.State_array[i] == bs){
-                ok = true;
-                break;
-            }
-        }
-        if(!ok){
-            cout << "Error did not made" << endl;
-            printState(presentState);
-            printState(bs);
-            exit(0);
-        }
-    }
-    for(int i=0;i<nesSa.count;i++){
-        bool ok = false;
-        for(auto bs:nextStates){
-            if(bs == nesSa.State_array[i]){
-                ok = true;
-                break;
-            }
-        }
-        if(!ok){
-            cout << "Error made new one" << endl;
-            printState(presentState);
-            printState(nesSa.State_array[i]);
-            exit(0);
-        }
-    }
-
-    return nextStates;
 }
 
 StateArray createPreviousStates(ll pres, bool fromEmpty){

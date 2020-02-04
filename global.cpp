@@ -10,7 +10,7 @@ using namespace std;
 typedef long long ll;
 typedef unsigned long long ull;
 
-const int boardSize = 3;
+const int boardSize = 4;
 const int combinationSize = boardSize * boardSize;
 const int MAX_STATES = (boardSize-2)*4*3 + 4*2;
 
