@@ -367,9 +367,7 @@ StateArray createNextStates2(ll pres, bool fromEmpty){
             continue;
         }
         newS = (((ps & MoveNextOppRightShift[i][1]) >> MoveNextOppRightShift[i][3]) & MoveNextOppRightShift[i][1]) | (ps & ~MoveNextOppRightShift[i][1]) | MoveNextOppRightShift[i][2];
-        if (isWin(newS)==0){
-            states.State_array[states.count++] = newS;
-        }
+        states.State_array[states.count++] = newS;
     }
     for(int i=0;i<(boardSize-2)*2;i++){
         if(fromEmpty && ((MoveNextOppLeftShift[i][0] >> 1 | MoveNextOppLeftShift[i][0]) & ps)){
@@ -381,9 +379,7 @@ StateArray createNextStates2(ll pres, bool fromEmpty){
             continue;
         }
         newS = (((ps & MoveNextOppLeftShift[i][1]) << MoveNextOppLeftShift[i][3]) & MoveNextOppLeftShift[i][1]) | (ps & ~MoveNextOppLeftShift[i][1]) | MoveNextOppLeftShift[i][2];
-        if (isWin(newS)==0){
-            states.State_array[states.count++] = newS;
-        }
+        states.State_array[states.count++] = newS;
     }
     // bool updated; // avoid the same Next states TODO:
     for(int l=0;l<2;l++){
@@ -408,9 +404,7 @@ StateArray createNextStates2(ll pres, bool fromEmpty){
                 //     updated = false;
                 // }
                 newS = (((ps & MoveNextEdgeRightShift[l][s][i][1]) >> MoveNextEdgeRightShift[l][s][i][3]) & MoveNextEdgeRightShift[l][s][i][1]) | (ps & ~MoveNextEdgeRightShift[l][s][i][1]) | MoveNextEdgeRightShift[l][s][i][2];
-                if (isWin(newS)==0){
-                    states.State_array[states.count++] = newS;
-                }
+                states.State_array[states.count++] = newS;
             }
         }
     }
@@ -435,9 +429,7 @@ StateArray createNextStates2(ll pres, bool fromEmpty){
                 //     updated = false;
                 // }
                 newS = (((ps & MoveNextEdgeLeftShift[l][s][i][1]) << MoveNextEdgeLeftShift[l][s][i][3]) & MoveNextEdgeLeftShift[l][s][i][1]) | (ps & ~MoveNextEdgeLeftShift[l][s][i][1]) | MoveNextEdgeLeftShift[l][s][i][2];
-                if (isWin(newS)==0){
-                    states.State_array[states.count++] = newS;
-                }
+                states.State_array[states.count++] = newS;
             }
         }
     }
@@ -535,7 +527,7 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
     }
 
     // TODO: debug
-    auto nesSa = createNextStates2(presentState, chooseEmpty);
+    auto nesSa = createNextStates2(swapPlayer(presentState), chooseEmpty);
     for(auto bs : nextStates){
         bool ok = false;
         for(int i=0;i<nesSa.count;i++){
@@ -545,7 +537,8 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
             }
         }
         if(!ok){
-            cout << "Error " << endl;
+            cout << "Error did not made" << endl;
+            printState(presentState);
             printState(bs);
             exit(0);
         }
@@ -559,7 +552,8 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
             }
         }
         if(!ok){
-            cout << "Error " << endl;
+            cout << "Error made new one" << endl;
+            printState(presentState);
             printState(nesSa.State_array[i]);
             exit(0);
         }
