@@ -36,15 +36,16 @@ void testInitEncoding(){
     }
 }
 
-// void testPreviousStates(){
-//     ll s = 0b00000000'01010101'01010110'01100101'01011001;
-//     cout << "init state" << endl;
-//     printState(swapPlayer(s));
-//     auto preS = createPreviousStates(swapPlayer(s), true);
-//     for(auto i:preS){
-//         printState(i);
-//     }
-// }
+void testNextStates(){
+    // ll s = 0b00000000'01010101'01010110'01100101'01011001;
+    ll s = 0b00000000'00010100'01000110'01000101'01001001;
+    cout << "init state" << endl;
+    printState(swapPlayer(s));
+    auto nS = createNextStates2(s, true);
+    for(int i=0;i<nS.count;i++){
+        printState(nS.State_array[i]);
+    }
+}
 
 void testChar(){
     unsigned char i = 0;
@@ -56,13 +57,14 @@ void testChar(){
 }
 int main(){
     cout << "test" << endl;
-    // createCombinations();
-    // initState();
-    // initMovingMasks();
-    // createCombinations();
-    // initEncoding();
+    createCombinations();
+    initState();
+    initMovingMasks();
+    createCombinations();
+    initEncoding();
     // testPreviousStates();
-    testChar();
+    // testChar();
+    testNextStates();
 
     return 0;
 }

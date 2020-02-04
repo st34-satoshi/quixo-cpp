@@ -3,7 +3,7 @@
 void convertResultsTOXO(){
     int countState = 0;
     unsigned int win=0, draw=0, loss=0;
-    for(int total=combinationSize; total>=14 ;total--){
+    for(int total=combinationSize; total>=0 ;total--){
         cout << "total = " << total << endl;
         for(int oNumber=0;oNumber<=total;oNumber++){
             int xNumber = total - oNumber;
