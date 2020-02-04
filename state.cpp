@@ -534,6 +534,37 @@ vector<ll> createNextStates(ll presentState, bool chooseEmpty){
         }
     }
 
+    // TODO: debug
+    auto nesSa = createNextStates2(presentState, chooseEmpty);
+    for(auto bs : nextStates){
+        bool ok = false;
+        for(int i=0;i<nesSa.count;i++){
+            if(nesSa.State_array[i] == bs){
+                ok = true;
+                break;
+            }
+        }
+        if(!ok){
+            cout << "Error " << endl;
+            printState(bs);
+            exit(0);
+        }
+    }
+    for(int i=0;i<nesSa.count;i++){
+        bool ok = false;
+        for(auto bs:nextStates){
+            if(bs == nesSa.State_array[i]){
+                ok = true;
+                break;
+            }
+        }
+        if(!ok){
+            cout << "Error " << endl;
+            printState(nesSa.State_array[i]);
+            exit(0);
+        }
+    }
+
     return nextStates;
 }
 
