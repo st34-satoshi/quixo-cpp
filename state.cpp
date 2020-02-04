@@ -524,16 +524,17 @@ void initState(){
     }
 }
 
-string fileName(int oNumber, int xNumber){
-    ostringstream osO, osX;
+string fileName(int oNumber, int xNumber, string type){
+    ostringstream osO, osX, s;
     osO << oNumber;
     osX << xNumber;
-    return "results/statesValueo"+osO.str()+"x"+osX.str()+".bin";
+    s << boardSize;
+    return "results/states"+type+s.str()+"o"+osO.str()+"x"+osX.str()+".bin";
 }
 
 void writeStatesValue(vector<bool> *values, int oNumber, int xNumber){
     // TODO if the file already exist, do not overwrite
-    ofstream fout(fileName(oNumber, xNumber), ios::out | ios::binary);
+    ofstream fout(fileName(oNumber, xNumber, "Value"), ios::out | ios::binary);
     if(!fout.is_open()){
         cout << "cannot open file" << endl;
         return;
@@ -557,7 +558,7 @@ void writeStatesValue(vector<bool> *values, int oNumber, int xNumber){
 }
 
 void readStatesValue(vector<bool> *values, int oNumber, int xNumber){
-    ifstream fin(fileName(oNumber, xNumber), ios::in | ios::binary);
+    ifstream fin(fileName(oNumber, xNumber, "Value"), ios::in | ios::binary);
     if(!fin.is_open()){
         cout << "cannot open file" << endl;
         return;
