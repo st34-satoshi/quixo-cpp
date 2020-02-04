@@ -21,7 +21,8 @@ array<array<ll, 4>, (boardSize-2)*2> MoveNextOppLeftShift;
 // [l][s][i][j], l is the shift length, s=0 is bottom/right, s=1 is top/left, i is the position, j=0 is C, j=1 is A, j=2 is B, j=3 is the shift length
 array<array<array<array<ll, 4>, boardSize-1>, 2>, 2> MovePreviousEdgeRightShift;
 array<array<array<array<ll, 4>, boardSize-1>, 2>, 2> MovePreviousEdgeLeftShift;
-// TODO: next
+array<array<array<array<ll, 4>, boardSize-1>, 2>, 2> MoveNextEdgeRightShift;
+array<array<array<array<ll, 4>, boardSize-1>, 2>, 2> MoveNextEdgeLeftShift;
 
 void initMovingMasksNext(){
     ll A;
@@ -55,49 +56,49 @@ void initMovingMasksNext(){
         MoveNextOppRightShift[i*2][3] = 1*2;
         MoveNextOppRightShift[i*2+1][3] = boardSize*2;
     }
-    //  // Move Previous Edge
-    //  // l = 0.
-    // for(int s=0;s<2;s++){
-    //     for(int i=0;i<boardSize-1;i++){
-    //         // C
-    //         MovePreviousEdgeRightShift[0][s][i][0] = oMark << (s*boardSize*(boardSize-1)*2);
-    //         MovePreviousEdgeLeftShift[0][s][i][0] = (oMark << (boardSize-1)*2) << (s*boardSize*(boardSize-1)*2);
-    //         // A
-    //         MovePreviousEdgeRightShift[0][s][i][1] = ((1ll << ((i+2)*2)) - 1ll) << s*boardSize*(boardSize-1)*2;
-    //         MovePreviousEdgeLeftShift[0][s][i][1] = (((1ll << (boardSize-i)*2) - 1ll) << i*2) << s*boardSize*(boardSize-1)*2;
-    //         // B
-    //         MovePreviousEdgeRightShift[0][s][i][2] = (oMark << (i+1)*2) << s*boardSize*(boardSize-1)*2;
-    //         MovePreviousEdgeLeftShift[0][s][i][2] = (oMark << i*2) << s*boardSize*(boardSize-1)*2;
-    //         // shift length
-    //         MovePreviousEdgeLeftShift[0][s][i][3] = 1ll*2ll;
-    //         MovePreviousEdgeRightShift[0][s][i][3] = 1ll*2ll;
-    //     }
-    // }
-    // // l = 1
-    // for(int s=0;s<2;s++){
-    //     for(int i=0;i<boardSize-1;i++){
-    //         // C
-    //         MovePreviousEdgeLeftShift[1][s][i][0] = (oMark << boardSize*(boardSize-1)*2) << s*(boardSize-1)*2;
-    //         MovePreviousEdgeRightShift[1][s][i][0] = oMark << s*(boardSize-1)*2;
-    //         // A
-    //         A = 0ll;
-    //         for(int j=0;j<boardSize-i;j++){
-    //             A = (A << boardSize*2) + bMark;
-    //         }
-    //         MovePreviousEdgeLeftShift[1][s][i][1] = (A << (boardSize*i*2)) << ((boardSize-1)*2*s);
-    //         A = 0ll;
-    //         for(int j=0;j<i+2;j++){
-    //             A = (A << boardSize*2) + bMark;
-    //         }
-    //         MovePreviousEdgeRightShift[1][s][i][1] = A << ((boardSize-1)*2*s);
-    //         // B
-    //         MovePreviousEdgeLeftShift[1][s][i][2] = (oMark << i*boardSize*2) << s*2*(boardSize-1);
-    //         MovePreviousEdgeRightShift[1][s][i][2] = (oMark << (i+1)*boardSize*2) << s*2*(boardSize-1);
-    //         // shift length
-    //         MovePreviousEdgeRightShift[1][s][i][3] = boardSize*2;
-    //         MovePreviousEdgeLeftShift[1][s][i][3] = boardSize*2;
-    //     }
-    // }
+     // Move Next Edge
+     // l = 0.
+    for(int s=0;s<2;s++){
+        for(int i=0;i<boardSize-1;i++){
+            // C
+            MoveNextEdgeLeftShift[0][s][i][0] = (xMark << (i+1)*2) << s*boardSize*(boardSize-1)*2;
+            MoveNextEdgeRightShift[0][s][i][0] = (xMark << i*2) << s*boardSize*(boardSize-1)*2;
+            // A
+            MoveNextEdgeLeftShift[0][s][i][1] = ((1ll << ((i+2)*2)) - 1ll) << s*boardSize*(boardSize-1)*2;
+            MoveNextEdgeRightShift[0][s][i][1] = (((1ll << (boardSize-i)*2) - 1ll) << i*2) << s*boardSize*(boardSize-1)*2;
+            // B
+            MoveNextEdgeLeftShift[0][s][i][2] = xMark << (s*boardSize*(boardSize-1)*2);
+            MoveNextEdgeRightShift[0][s][i][2] = (xMark << (boardSize-1)*2) << (s*boardSize*(boardSize-1)*2);
+            // shift length
+            MoveNextEdgeLeftShift[0][s][i][3] = 1ll*2ll;
+            MoveNextEdgeRightShift[0][s][i][3] = 1ll*2ll;
+        }
+    }
+    // l = 1
+    for(int s=0;s<2;s++){
+        for(int i=0;i<boardSize-1;i++){
+            // C
+            MoveNextEdgeLeftShift[1][s][i][0] = (xMark << (i+1)*boardSize*2) << s*2*(boardSize-1);
+            MoveNextEdgeRightShift[1][s][i][0] = (xMark << i*boardSize*2) << s*2*(boardSize-1);
+            // A
+            A = 0ll;
+            for(int j=0;j<i+2;j++){
+                A = (A << boardSize*2) + bMark;
+            }
+            MoveNextEdgeLeftShift[1][s][i][1] = A << ((boardSize-1)*2*s);
+            A = 0ll;
+            for(int j=0;j<boardSize-i;j++){
+                A = (A << boardSize*2) + bMark;
+            }
+            MoveNextEdgeRightShift[1][s][i][1] = (A << (boardSize*i*2)) << ((boardSize-1)*2*s);
+            // B
+            MoveNextEdgeLeftShift[1][s][i][2] = xMark << s*(boardSize-1)*2;
+            MoveNextEdgeRightShift[1][s][i][2] = (xMark << boardSize*(boardSize-1)*2) << s*(boardSize-1)*2;
+            // shift length
+            MoveNextEdgeRightShift[1][s][i][3] = boardSize*2ll;
+            MoveNextEdgeLeftShift[1][s][i][3] = boardSize*2ll;
+        }
+    }
 }
 
 void initMovingMasksPrevious(){
@@ -384,56 +385,62 @@ StateArray createNextStates2(ll pres, bool fromEmpty){
             states.State_array[states.count++] = newS;
         }
     }
-    // // bool updated; // avoid the same Next states TODO:
-    // for(int l=0;l<2;l++){
-    //     for(int s=0;s<2;s++){
-    //         // updated = false;
-    //         for(int i=0;i<boardSize-1;i++){
-    //             // TODO: if fromEmpty check the [2] is empty?, if fromCircle check the [2] is o!
-    //             // if (MoveNextEdgeRightShift[l][s][i][2] & ps){
-    //             //     if(updated){
-    //             //         continue; // skip. because the next tile is same mark and created the same state.
-    //             //     }
-    //             //     updated = true;
-    //             // }else{
-    //             //     updated = false;
-    //             // }
-    //             if(MoveNextEdgeRightShift[l][s][i][0] & ps){
-    //                 newS = (((ps & MoveNextEdgeRightShift[l][s][i][1]) >> MoveNextEdgeRightShift[l][s][i][3]) & MoveNextEdgeRightShift[l][s][i][1]) | (ps & ~MoveNextEdgeRightShift[l][s][i][1]);
-    //                 if (!fromEmpty){
-    //                     newS = newS | MoveNextEdgeRightShift[l][s][i][2];
-    //                 }
-    //                 if (isWin(newS)==0){
-    //                     states.State_array[states.count++] = newS;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-    // for(int l=0;l<2;l++){
-    //     for(int s=0;s<2;s++){
-    //         // updated = false;
-    //         for(int i=0;i<boardSize-1;i++){
-    //             // if (MoveNextEdgeLeftShift[l][s][i][2] & ps){
-    //             //     if(updated){
-    //             //         continue;
-    //             //     }
-    //             //     updated = true;
-    //             // }else{
-    //             //     updated = false;
-    //             // }
-    //             if(MoveNextEdgeLeftShift[l][s][i][0] & ps){
-    //                 newS = (((ps & MoveNextEdgeLeftShift[l][s][i][1]) << MoveNextEdgeLeftShift[l][s][i][3]) & MoveNextEdgeLeftShift[l][s][i][1]) | (ps & ~MoveNextEdgeLeftShift[l][s][i][1]);
-    //                 if (!fromEmpty){
-    //                     newS = newS | MoveNextEdgeLeftShift[l][s][i][2];
-    //                 }
-    //                 if (isWin(newS)==0){
-    //                     states.State_array[states.count++] = newS;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+    // bool updated; // avoid the same Next states TODO:
+    for(int l=0;l<2;l++){
+        for(int s=0;s<2;s++){
+            // updated = false;
+            for(int i=0;i<boardSize-1;i++){
+                if(fromEmpty && ((MoveNextEdgeRightShift[l][s][i][0] >> 1 | MoveNextEdgeRightShift[l][s][i][0]) & ps)){
+                    // need to select empty but it is o or x
+                    continue;
+                }
+                if(!fromEmpty && !(MoveNextEdgeRightShift[l][s][i][0] & ps)){
+                    // need to select x tile but not x.
+                    continue;
+                }
+                // TODO: if fromEmpty check the [2] is empty?, if fromCircle check the [2] is o!
+                // if (MoveNextEdgeRightShift[l][s][i][2] & ps){
+                //     if(updated){
+                //         continue; // skip. because the next tile is same mark and created the same state.
+                //     }
+                //     updated = true;
+                // }else{
+                //     updated = false;
+                // }
+                newS = (((ps & MoveNextEdgeRightShift[l][s][i][1]) >> MoveNextEdgeRightShift[l][s][i][3]) & MoveNextEdgeRightShift[l][s][i][1]) | (ps & ~MoveNextEdgeRightShift[l][s][i][1]) | MoveNextEdgeRightShift[l][s][i][2];
+                if (isWin(newS)==0){
+                    states.State_array[states.count++] = newS;
+                }
+            }
+        }
+    }
+    for(int l=0;l<2;l++){
+        for(int s=0;s<2;s++){
+            // updated = false;
+            for(int i=0;i<boardSize-1;i++){
+                if(fromEmpty && ((MoveNextEdgeLeftShift[l][s][i][0] >> 1 | MoveNextEdgeLeftShift[l][s][i][0]) & ps)){
+                    // need to select empty but it is o or x
+                    continue;
+                }
+                if(!fromEmpty && !(MoveNextEdgeLeftShift[l][s][i][0] & ps)){
+                    // need to select x tile but not x.
+                    continue;
+                }
+                // if (MoveNextEdgeLeftShift[l][s][i][2] & ps){
+                //     if(updated){
+                //         continue;
+                //     }
+                //     updated = true;
+                // }else{
+                //     updated = false;
+                // }
+                newS = (((ps & MoveNextEdgeLeftShift[l][s][i][1]) << MoveNextEdgeLeftShift[l][s][i][3]) & MoveNextEdgeLeftShift[l][s][i][1]) | (ps & ~MoveNextEdgeLeftShift[l][s][i][1]) | MoveNextEdgeLeftShift[l][s][i][2];
+                if (isWin(newS)==0){
+                    states.State_array[states.count++] = newS;
+                }
+            }
+        }
+    }
     return states;
 }
 

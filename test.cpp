@@ -37,14 +37,27 @@ void testInitEncoding(){
 }
 
 void testNextStates(){
-    // ll s = 0b00000000'01010101'01010110'01100101'01011001;
-    ll s = 0b00000000'00010100'01000110'01000101'01001001;
-    cout << "init state" << endl;
+    // ll s = 0b00000000'01010101'01010110'00100101'01011001;
+    ll s = 0b00000000'00010100'01000100'01000101'00001001;
+    cout << "init state !!!!!" << endl;
     printState(swapPlayer(s));
-    auto nS = createNextStates2(s, false);
+    auto nS = createNextStates2(s, true);
     cout << "cout = " << nS.count << endl;
     for(int i=0;i<nS.count;i++){
         printState(nS.State_array[i]);
+    }
+}
+
+void testMoveNextEdge(){
+    for(int s=0;s<2;s++){
+        cout << "s = " << s << endl;
+        for(int i=0;i<boardSize-1;i++){
+            cout << "i = " << i << endl;
+            for(int j=0;j<4;j++){
+                cout << "j=" << j << ", " << MoveNextEdgeRightShift[0][s][i][j] << ", " << endl;
+                printState(MoveNextEdgeRightShift[0][s][i][j]);
+            }
+        }
     }
 }
 
@@ -66,6 +79,7 @@ int main(){
     // testPreviousStates();
     // testChar();
     testNextStates();
+    // testMoveNextEdge();
 
     return 0;
 }
