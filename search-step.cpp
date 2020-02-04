@@ -7,7 +7,7 @@
 
 #include "state.cpp"
 
-const int DEFAULT_STEP = 1000;
+const int DEFAULT_STEP = 100; // TODO: select the good number
 
 void init(){
     createCombinations();
@@ -102,7 +102,7 @@ void updateStepFromEndStates(vector<int> *statesStep, int oNumber, int xNumber, 
             for(int i=0;i<sa.count;i++){
                 stateN = sa.states[i];
                 stateI = generateIndexNumber(stateN, oNumber, xNumber);
-                statesStep->at(stateI) = 1;
+                updateWinStep(statesStep, 1, stateI);
             }
         }else if (win == 1){
             reverseStatesStep->at(i) = 0;
@@ -128,7 +128,7 @@ bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector
         if(statesStep->at(i) < presentStep){
             continue; // this state step already decided!
         }
-        continueSearching = true; // 'updated' is not good name. it means need to search more.
+        continueSearching = true;
         // check all next states step
         StateArray sa = createNextStates(generateState(i, oNumber, xNumber), false);
         int nextMaxStep = 0;
@@ -145,6 +145,8 @@ bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector
                     updateWinStep(reverseStatsStep, presentStep+1, pStateI);
                 }
             }
+        }else{
+            updateLossStep(statesStep, presentStep+1, i); // temporary update.
         }
     }
     return continueSearching;
@@ -175,13 +177,17 @@ void computeStatesStep(int oNumber, int xNumber){
         }
         bool continueSearching = false;
         // // check all states
-        // TODO: 次の状態からアップデートする時に最澄ステップを受け取るそこまでは繰り返す
-        continueSearching = updateStatesStep(&values, &statesSteps, &reverseStatesSteps, oNumber, xNumber, i);
-        continueSearching = updateStatesStep(&valuesReverse, &reverseStatesSteps, &statesSteps, xNumber, oNumber, i) || continueSearching;
+        if(oNumber==xNumber){
+            continueSearching = updateStatesStep(&values, &statesSteps, &statesSteps, oNumber, xNumber, i);
+        }else{
+            continueSearching = updateStatesStep(&values, &statesSteps, &reverseStatesSteps, oNumber, xNumber, i);
+            continueSearching = updateStatesStep(&valuesReverse, &reverseStatesSteps, &statesSteps, xNumber, oNumber, i) || continueSearching;
+        }
         if (!continueSearching){
             break;
         }
     }
+
     // save resutl to strage
     writeStatesSteps(&statesSteps, oNumber, xNumber);
     writeStatesSteps(&reverseStatesSteps, xNumber, oNumber);
