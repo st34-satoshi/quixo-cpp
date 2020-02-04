@@ -357,25 +357,31 @@ StateArray createNextStates2(ll pres, bool fromEmpty){
 
     ll newS;
     for(int i=0;i<(boardSize-2)*2;i++){
-        if (MoveNextOppRightShift[i][0] & ps){
-            newS = (((ps & MoveNextOppRightShift[i][1]) >> MoveNextOppRightShift[i][3]) & MoveNextOppRightShift[i][1]) | (ps & ~MoveNextOppRightShift[i][1]);
-            if (!fromEmpty){
-                newS = newS | MoveNextOppRightShift[i][2];
-            }
-            if (isWin(newS)==0){
-                states.State_array[states.count++] = newS;
-            }
+        if(fromEmpty && ((MoveNextOppRightShift[i][0] >> 1 | MoveNextOppRightShift[i][0]) & ps)){
+            // need to select empty but it is o or x
+            continue;
+        }
+        if(!fromEmpty && !(MoveNextOppRightShift[i][0] & ps)){
+            // need to select x tile but not x.
+            continue;
+        }
+        newS = (((ps & MoveNextOppRightShift[i][1]) >> MoveNextOppRightShift[i][3]) & MoveNextOppRightShift[i][1]) | (ps & ~MoveNextOppRightShift[i][1]) | MoveNextOppRightShift[i][2];
+        if (isWin(newS)==0){
+            states.State_array[states.count++] = newS;
         }
     }
     for(int i=0;i<(boardSize-2)*2;i++){
-        if (MoveNextOppLeftShift[i][0] & ps){
-            newS = (((ps & MoveNextOppLeftShift[i][1]) << MoveNextOppLeftShift[i][3]) & MoveNextOppLeftShift[i][1]) | (ps & ~MoveNextOppLeftShift[i][1]);
-            if (!fromEmpty){
-                newS = newS | MoveNextOppLeftShift[i][2];
-            }
-            if (isWin(newS)==0){
-                states.State_array[states.count++] = newS;
-            }
+        if(fromEmpty && ((MoveNextOppLeftShift[i][0] >> 1 | MoveNextOppLeftShift[i][0]) & ps)){
+            // need to select empty but it is o or x
+            continue;
+        }
+        if(!fromEmpty && !(MoveNextOppLeftShift[i][0] & ps)){
+            // need to select x tile but not x.
+            continue;
+        }
+        newS = (((ps & MoveNextOppLeftShift[i][1]) << MoveNextOppLeftShift[i][3]) & MoveNextOppLeftShift[i][1]) | (ps & ~MoveNextOppLeftShift[i][1]) | MoveNextOppLeftShift[i][2];
+        if (isWin(newS)==0){
+            states.State_array[states.count++] = newS;
         }
     }
     // // bool updated; // avoid the same Next states TODO:

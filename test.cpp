@@ -41,7 +41,8 @@ void testNextStates(){
     ll s = 0b00000000'00010100'01000110'01000101'01001001;
     cout << "init state" << endl;
     printState(swapPlayer(s));
-    auto nS = createNextStates2(s, true);
+    auto nS = createNextStates2(s, false);
+    cout << "cout = " << nS.count << endl;
     for(int i=0;i<nS.count;i++){
         printState(nS.State_array[i]);
     }
