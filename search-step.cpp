@@ -60,31 +60,95 @@ void updateStepsFromNext(vector<int> *steps, int oNumber, int xNumber){
     vector<int> nextStatesStep(getCombination(combinationSize, xNumber)*getCombination(combinationSize-xNumber, oNumber+1));  // next states values of values
     readStatesStep(&nextStatesStep, xNumber, oNumber+1);
 
-    // for (ull i=0ll;i<nextStatesValue.size();i++){
-    //     if(isLoss(&nextStatesValue, i)){
-    //         ll stateNumber = generateState(i, xNumber, oNumber+1);
-    //         StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
-    //         ll stateN, stateI;
-    //         for(int i=0;i<sa.count;i++){
-    //             stateN = sa.states[i];
-    //             stateI = generateIndexNumber(stateN, oNumber, xNumber);
-    //             updateToWin(values, stateI);
-    //         }
-    //     }else if(isDraw(&nextStatesValues, i)){
-    //         // default or winOrDraw
-    //         ll stateNumber = generateState(i, xNumber, oNumber+1);
-    //         // generate previous states, update to winOrDraw(not loss)
-    //         StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
-    //         ll stateN, stateI;
-    //         for(int i=0;i<sa.count;i++){
-    //             stateN = sa.states[i];
-    //             stateI = generateIndexNumber(stateN, oNumber, xNumber);
-    //             if (isDefault(values, stateI)){
-    //                 updateToWinOrDraw(values, stateI);
-    //             }
-    //         }
-    //     }
-    // }
+    for (ull i=0ll;i<nextStatesValue.size();i++){
+        if(isLoss(&nextStatesValue, i)){
+            ll stateNumber = generateState(i, xNumber, oNumber+1);
+            StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
+            ll stateN, stateI;
+            for(int i=0;i<sa.count;i++){
+                stateN = sa.states[i];
+                stateI = generateIndexNumber(stateN, oNumber, xNumber);
+                updateWinStep(steps, nextStatesStep[i]+1, stateI);
+            }
+        }else if(isWin(&nextStatesValue, i)){
+            ll stateNumber = generateState(i, xNumber, oNumber+1);
+            StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
+            ll stateN, stateI;
+            for(int i=0;i<sa.count;i++){
+                stateN = sa.states[i];
+                stateI = generateIndexNumber(stateN, oNumber, xNumber);
+                updateLossStep(steps, nextStatesStep[i]+1, stateI);
+            }
+        }
+    }
+}
+
+void updateStepFromEndStates(vector<int> *statesStep, int oNumber, int xNumber, vector<bool> *reverseStatesValue, vector<int> *reverseStatesStep){
+    // find the states which end of the game in reverseStates, update the states step to 0
+    // and if the end state is loss, update previous states step to 1
+    // oNumber is for values
+
+    for (ull i=0ll;i<reverseStatesValue->size()/2ll;i++){
+        if (isDraw(reverseStatesValue, i)){
+            continue; // not the end of the game
+        }
+        ll stateNumber = generateState(i, xNumber, oNumber);
+        int win = isWin(stateNumber); // win:1, lose:-1, draw:0
+        if (win == -1){
+            // update this state step to 0 and change previous states step to 1
+            reverseStatesStep->at(i) = 0;
+            // generate previous states, update to 1
+            StateArray sa = createPreviousStates(stateNumber, false);
+            ll stateN, stateI;
+            for(int i=0;i<sa.count;i++){
+                stateN = sa.states[i];
+                stateI = generateIndexNumber(stateN, oNumber, xNumber);
+                statesStep->at(stateI) = 1;
+            }
+        }else if (win == 1){
+            reverseStatesStep->at(i) = 0;
+            StateArray sa = createPreviousStates(stateNumber, false);
+            ll stateN, stateI;
+            for(int i=0;i<sa.count;i++){
+                stateN = sa.states[i];
+                stateI = generateIndexNumber(stateN, oNumber, xNumber);
+                updateLossStep(statesStep, 1, stateI);
+            }
+        }
+    }
+}
+
+bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector<int> *reverseStatsStep, int oNumber, int xNumber, int presentStep){
+    // when loss state updated, the previous states step update
+    // the state is loss and max next states step < i, and this loss state step == i or default, update the state step
+    bool continueSearching = false;
+    for (ull i=0ll;i<statesStep->size();i++){
+        if (!isLoss(statesValue, i)){
+            continue; // not loss
+        }
+        if(statesStep->at(i) < presentStep){
+            continue; // this state step already decided!
+        }
+        continueSearching = true; // 'updated' is not good name. it means need to search more.
+        // check all next states step
+        StateArray sa = createNextStates(generateState(i, oNumber, xNumber), false);
+        int nextMaxStep = 0;
+        for(int j=0;j<sa.count;j++){
+            ll nextStateI = generateIndexNumber(sa.states[j], xNumber, oNumber);
+            nextMaxStep = max(nextMaxStep, reverseStatsStep->at(nextStateI));
+        }
+        if(nextMaxStep < presentStep){
+            if(statesStep->at(i) == presentStep || statesStep->at(i) == DEFAULT_STEP){
+                updateLossStep(statesStep, presentStep, i);
+                StateArray stateA = createPreviousStates(generateState(i, oNumber, xNumber), false);
+                for(int j=0;j<stateA.count;j++){
+                    ll pStateI = generateIndexNumber(stateA.states[j], xNumber, oNumber);
+                    updateWinStep(reverseStatsStep, presentStep+1, pStateI);
+                }
+            }
+        }
+    }
+    return continueSearching;
 }
 
 void computeStatesStep(int oNumber, int xNumber){
@@ -98,25 +162,30 @@ void computeStatesStep(int oNumber, int xNumber){
     vector<int> statesSteps(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber], DEFAULT_STEP);
     vector<int> reverseStatesSteps(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber], DEFAULT_STEP);
 
-    // // at first find next lose states and update this values to win
-    // // find the states which end of the game, if it is lose update previous state to win
-    // updateStepsFromNext(&values, oNumber, xNumber);
-    // updateValuesFromNext(&valuesReverse, xNumber, oNumber);
+    updateStepsFromNext(&statesSteps, oNumber, xNumber);
+    updateStepsFromNext(&reverseStatesSteps, xNumber, oNumber);
 
-    // updateValuesFromEndStates(&values, oNumber, xNumber, &valuesReverse);
-    // updateValuesFromEndStates(&valuesReverse, xNumber, oNumber, &values);
+    updateStepFromEndStates(&statesSteps, oNumber, xNumber, &valuesReverse, &reverseStatesSteps);
+    updateStepFromEndStates(&reverseStatesSteps, xNumber, oNumber, &values, &statesSteps);
 
-    // // compute values until no update
-    // bool updated = true;
-    // while (updated){
-    //     updated = false;
-    //     // check all states
-    //     updated = updateValues(&values, oNumber, xNumber, &valuesReverse);
-    //     updated = updateValues(&valuesReverse, xNumber, oNumber, &values) || updated;
-    // }
-    // // save resutl to strage
-    // writeStatesValue(&values, oNumber, xNumber);
-    // writeStatesValue(&valuesReverse, xNumber, oNumber);
+    // compute steps until no update
+    for(int i=1;i<=DEFAULT_STEP;i++){
+        if(i==DEFAULT_STEP){
+            cout << "ERROR: reached default step!" << endl;
+            exit(0);
+        }
+        bool continueSearching = false;
+        // // check all states
+        // TODO: 次の状態からアップデートする時に最澄ステップを受け取るそこまでは繰り返す
+        continueSearching = updateStatesStep(&values, &statesSteps, &reverseStatesSteps, oNumber, xNumber, i);
+        continueSearching = updateStatesStep(&valuesReverse, &reverseStatesSteps, &statesSteps, xNumber, oNumber, i) || continueSearching;
+        if (!continueSearching){
+            break;
+        }
+    }
+    // save resutl to strage
+    writeStatesSteps(&statesSteps, oNumber, xNumber);
+    writeStatesSteps(&reverseStatesSteps, xNumber, oNumber);
 }
 
 void computeAllStatesStep(){
