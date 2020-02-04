@@ -388,6 +388,7 @@ StateArray createPreviousStates(ll pres, bool fromEmpty){
         for(int s=0;s<2;s++){
             // updated = false;
             for(int i=0;i<boardSize-1;i++){
+                // TODO: if fromEmpty check the [2] is empty?, if fromCircle check the [2] is o!
                 // if (MovePreviousEdgeRightShift[l][s][i][2] & ps){
                 //     if(updated){
                 //         continue; // skip. because the next tile is same mark and created the same state.

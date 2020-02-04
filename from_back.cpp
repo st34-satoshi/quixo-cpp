@@ -80,7 +80,7 @@ inline bool isNotDefault(vector<bool> *values, ll index){
 }
 
 bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *reverseStatesValues){
-    // if all next states are win this state is lose
+    // if all next states are win this state is lose, no next state, it is loss because the all next states(creating o) are win(if not win this state value is not default)
     ll thisState = generateState(indexState, oNumber, xNumber);
     // next states are reverse of o and x.
     auto nextStatesReverse = createNextStates(thisState, /*chooseEmpty*/false);
@@ -228,7 +228,7 @@ void computeStatesValue(int oNumber, int xNumber){
 
 void computeAllStatesValue(){
     // compute from end(o+x=combinationSize)
-    for(int total=combinationSize; total>=14;total--){
+    for(int total=combinationSize; total>=0;total--){
         cout << "total = " << total << endl;
         for(int oNumber=0;oNumber<=total/2;oNumber++){
             cout << "o number = " << oNumber << endl;

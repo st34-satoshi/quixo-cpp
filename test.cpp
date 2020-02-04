@@ -36,35 +36,33 @@ void testInitEncoding(){
     }
 }
 
-void testPreviousStates(){
-    ll s = 0b00000000'01010101'01010110'01100101'01011001;
-    cout << "init state" << endl;
-    printState(swapPlayer(s));
-    auto preS = createPreviousStates(swapPlayer(s), true);
-    for(auto i:preS){
-        printState(i);
+// void testPreviousStates(){
+//     ll s = 0b00000000'01010101'01010110'01100101'01011001;
+//     cout << "init state" << endl;
+//     printState(swapPlayer(s));
+//     auto preS = createPreviousStates(swapPlayer(s), true);
+//     for(auto i:preS){
+//         printState(i);
+//     }
+// }
+
+void testChar(){
+    unsigned char i = 0;
+    for(int j=0;j<99;j++){
+        i++;
+        cout << i << "," << j << endl;
     }
+
 }
-
-
 int main(){
     cout << "test" << endl;
-    createCombinations();
-    initState();
-    initMovingMasks();
-    // init();
-    // testPrintState();
-    // testWinMasks();
-    // testIsWin();
-    // printAllStates();
-    // testInitMovingMask();
-    // testInitOpp();
-    // testCreatePreviousState();
-    createCombinations();
-    initEncoding();
-    // testInitEncoding();
-    // testGenerateStateFromI();
-    testPreviousStates();
+    // createCombinations();
+    // initState();
+    // initMovingMasks();
+    // createCombinations();
+    // initEncoding();
+    // testPreviousStates();
+    testChar();
 
     return 0;
 }
