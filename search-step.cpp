@@ -37,11 +37,11 @@ inline bool isDraw(vector<bool> *values, ll index){
     return !(values->at(index*2ll + 1ll));
 }
 
-inline void updateWinStep(vector<int> *stateStep, int step, int i){
+inline void updateWinStep(vector<int> *stateStep, int step, ll i){
     stateStep->at(i) = min(step, stateStep->at(i));
 }
 
-inline void updateLossStep(vector<int> *stateStep, int step, int i){
+inline void updateLossStep(vector<int> *stateStep, int step, ll i){
     if(stateStep->at(i) == DEFAULT_STEP){
         stateStep->at(i) = step;
     }else{
@@ -60,14 +60,13 @@ void updateStepsFromNext(vector<int> *steps, int oNumber, int xNumber){
     vector<int> nextStatesStep(getCombination(combinationSize, xNumber)*getCombination(combinationSize-xNumber, oNumber+1));  // next states values of values
     readStatesStep(&nextStatesStep, xNumber, oNumber+1);
 
-    for (ull i=0ll;i<nextStatesValue.size();i++){
+    for (ull i=0ll;i<nextStatesStep.size();i++){
         if(isLoss(&nextStatesValue, i)){
             ll stateNumber = generateState(i, xNumber, oNumber+1);
             StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
-            ll stateN, stateI;
-            for(int i=0;i<sa.count;i++){
-                stateN = sa.states[i];
-                stateI = generateIndexNumber(stateN, oNumber, xNumber);
+            ll stateI;
+            for(int j=0;j<sa.count;j++){
+                stateI = generateIndexNumber(sa.states[j], oNumber, xNumber);
                 updateWinStep(steps, nextStatesStep[i]+1, stateI);
             }
         }else if(isWin(&nextStatesValue, i)){

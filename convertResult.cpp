@@ -27,8 +27,63 @@ void convertResultsTOXO(){
     cout << "draw states = " << draw << endl;
 }
 
+void outputStepResult(){
+    int maxStep = 10; // TODO: you need to select the good number
+    ull win=0ll, draw=0ll, loss=0ll, all = 0ll;
+    vector<int> winSteps(maxStep);
+    vector<int> lossSteps(maxStep);
+    int step;
+    for(int total=combinationSize; total>=0 ;total--){
+        cout << "total = " << total << endl;
+        for(int oNumber=0;oNumber<=total;oNumber++){
+            int xNumber = total - oNumber;
+            vector<int> statesStep(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber]);
+            readStatesStep(&statesStep, oNumber, xNumber);
+            vector<bool> values(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
+            readStatesValue(&values, oNumber, xNumber);
+            // TODO save to file
+            for(ull i=0ull;i<statesStep.size();i++){
+                // TODO: if you want to see the result of state(win, loss or draw and step), please remove the "//"
+                // ll s = generateState(i, oNumber, xNumber);
+                step = statesStep.at(i);
+                // cout << "step = " << step << endl;
+                if(!values.at(i*2ll+1ll)){
+                    //  cout << "v = draw" << endl; 
+                     draw++;
+                }else if(values.at(i*2ll)){
+                    //  cout << "v = loss" << endl; 
+                     loss++;
+                     lossSteps[step]++;
+                }else{
+                    // cout << "v = win" << endl; 
+                    win++;
+                    winSteps[step]++;
+                }
+                // printState(s);
+                all++;
+
+            }
+        }
+    }
+    cout << "total states = " << all << endl;
+    cout << "win states = " << win << endl;
+    cout << "loss states = " << loss << endl;
+    cout << "draw states = " << draw << endl;
+    cout << endl;
+    cout << "steps to win" << endl;
+    for(int i=0;i<maxStep;i++){
+        cout << "step=" << i << ", the number of states = " << winSteps[i] << endl;
+    }
+    cout << endl;
+    cout << "steps to loss" << endl;
+    for(int i=0;i<maxStep;i++){
+        cout << "step=" << i << ", the number of states = " << lossSteps[i] << endl;
+    }
+}
+
 int main(int argc, char *argv[]){
     createCombinations();
     initState();
-    convertResultsTOXO();
+    // convertResultsTOXO();
+    outputStepResult();
 }
