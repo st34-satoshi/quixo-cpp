@@ -2,7 +2,6 @@
 #include "enc_state.cpp"
 
 vector< vector<ll> > cellNumbers;  // it is used to get a cell number.
-vector<ll> rowNumbers;  // it is used to get a row numbers.
 // use to check win
 vector<ll> xWinMasks; // check row, column and diagonal line
 vector<ll> oWinMasks;
@@ -202,10 +201,6 @@ void initSwapMasks(){
 
 ll swapPlayer(ll state){
     return ((state & OMaskForSwap) << 1) | ((state & XMaskForSwap) >> 1);
-}
-
-ll getRightMark(ll state){
-    return state & 3ll;
 }
 
 ll getCellNumber(int row, int column, ll state){
@@ -496,18 +491,6 @@ void initState(){
         }
     }
     cellNumbers = cells;
-
-    // initialize rowNumbers
-    vector<ll> rows(boardSize);
-    // create base number: 1111111111 (binary number)
-    ll baseNumber = 3ll;
-    for(int i=0;i<boardSize-1;i++){
-        baseNumber = (baseNumber<<2) + 3ll;
-    }
-    for(int i=0;i<boardSize;i++){
-        rows[i] = baseNumber << i*boardSize*2;
-    }
-    rowNumbers = rows;
 
     // make masks to check win
     ll oWin = 0ll;
