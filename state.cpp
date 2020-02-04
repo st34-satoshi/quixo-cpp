@@ -326,7 +326,7 @@ StateArray createNextStates(ll pres, bool fromEmpty){
             continue;
         }
         newS = (((ps & MoveNextOppRightShift[i][1]) >> MoveNextOppRightShift[i][3]) & MoveNextOppRightShift[i][1]) | (ps & ~MoveNextOppRightShift[i][1]) | MoveNextOppRightShift[i][2];
-        states.State_array[states.count++] = newS;
+        states.states[states.count++] = newS;
     }
     for(int i=0;i<(boardSize-2)*2;i++){
         if(fromEmpty && ((MoveNextOppLeftShift[i][0] >> 1 | MoveNextOppLeftShift[i][0]) & ps)){
@@ -338,7 +338,7 @@ StateArray createNextStates(ll pres, bool fromEmpty){
             continue;
         }
         newS = (((ps & MoveNextOppLeftShift[i][1]) << MoveNextOppLeftShift[i][3]) & MoveNextOppLeftShift[i][1]) | (ps & ~MoveNextOppLeftShift[i][1]) | MoveNextOppLeftShift[i][2];
-        states.State_array[states.count++] = newS;
+        states.states[states.count++] = newS;
     }
     // bool updated; // avoid the same Next states TODO:
     for(int l=0;l<2;l++){
@@ -363,7 +363,7 @@ StateArray createNextStates(ll pres, bool fromEmpty){
                 //     updated = false;
                 // }
                 newS = (((ps & MoveNextEdgeRightShift[l][s][i][1]) >> MoveNextEdgeRightShift[l][s][i][3]) & MoveNextEdgeRightShift[l][s][i][1]) | (ps & ~MoveNextEdgeRightShift[l][s][i][1]) | MoveNextEdgeRightShift[l][s][i][2];
-                states.State_array[states.count++] = newS;
+                states.states[states.count++] = newS;
             }
         }
     }
@@ -388,7 +388,7 @@ StateArray createNextStates(ll pres, bool fromEmpty){
                 //     updated = false;
                 // }
                 newS = (((ps & MoveNextEdgeLeftShift[l][s][i][1]) << MoveNextEdgeLeftShift[l][s][i][3]) & MoveNextEdgeLeftShift[l][s][i][1]) | (ps & ~MoveNextEdgeLeftShift[l][s][i][1]) | MoveNextEdgeLeftShift[l][s][i][2];
-                states.State_array[states.count++] = newS;
+                states.states[states.count++] = newS;
             }
         }
     }
@@ -412,7 +412,7 @@ StateArray createPreviousStates(ll pres, bool fromEmpty){
                 newS = newS | MovePreviousOppRightShift[i][2];
             }
             if (isWin(newS)==0){
-                states.State_array[states.count++] = newS;
+                states.states[states.count++] = newS;
             }
         }
     }
@@ -423,31 +423,20 @@ StateArray createPreviousStates(ll pres, bool fromEmpty){
                 newS = newS | MovePreviousOppLeftShift[i][2];
             }
             if (isWin(newS)==0){
-                states.State_array[states.count++] = newS;
+                states.states[states.count++] = newS;
             }
         }
     }
-    // bool updated; // avoid the same previous states TODO:
     for(int l=0;l<2;l++){
         for(int s=0;s<2;s++){
-            // updated = false;
             for(int i=0;i<boardSize-1;i++){
-                // TODO: if fromEmpty check the [2] is empty?, if fromCircle check the [2] is o!
-                // if (MovePreviousEdgeRightShift[l][s][i][2] & ps){
-                //     if(updated){
-                //         continue; // skip. because the next tile is same mark and created the same state.
-                //     }
-                //     updated = true;
-                // }else{
-                //     updated = false;
-                // }
                 if(MovePreviousEdgeRightShift[l][s][i][0] & ps){
                     newS = (((ps & MovePreviousEdgeRightShift[l][s][i][1]) >> MovePreviousEdgeRightShift[l][s][i][3]) & MovePreviousEdgeRightShift[l][s][i][1]) | (ps & ~MovePreviousEdgeRightShift[l][s][i][1]);
                     if (!fromEmpty){
                         newS = newS | MovePreviousEdgeRightShift[l][s][i][2];
                     }
                     if (isWin(newS)==0){
-                        states.State_array[states.count++] = newS;
+                        states.states[states.count++] = newS;
                     }
                 }
             }
@@ -455,23 +444,14 @@ StateArray createPreviousStates(ll pres, bool fromEmpty){
     }
     for(int l=0;l<2;l++){
         for(int s=0;s<2;s++){
-            // updated = false;
             for(int i=0;i<boardSize-1;i++){
-                // if (MovePreviousEdgeLeftShift[l][s][i][2] & ps){
-                //     if(updated){
-                //         continue;
-                //     }
-                //     updated = true;
-                // }else{
-                //     updated = false;
-                // }
                 if(MovePreviousEdgeLeftShift[l][s][i][0] & ps){
                     newS = (((ps & MovePreviousEdgeLeftShift[l][s][i][1]) << MovePreviousEdgeLeftShift[l][s][i][3]) & MovePreviousEdgeLeftShift[l][s][i][1]) | (ps & ~MovePreviousEdgeLeftShift[l][s][i][1]);
                     if (!fromEmpty){
                         newS = newS | MovePreviousEdgeLeftShift[l][s][i][2];
                     }
                     if (isWin(newS)==0){
-                        states.State_array[states.count++] = newS;
+                        states.states[states.count++] = newS;
                     }
                 }
             }
@@ -542,7 +522,6 @@ void initState(){
         xWinMasks.push_back(xWin<<(i*2));
         eWinMasks.push_back(eWin<<(i*2));
     }
-
 }
 
 string fileName(int oNumber, int xNumber){

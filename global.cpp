@@ -22,7 +22,7 @@ const ll bMark = 3ll;
 
 struct StateArray{
     int count = 0;
-    array<ll, MAX_STATES> State_array;
+    array<ll, MAX_STATES> states;
 };
 
 void createCombinations(){
