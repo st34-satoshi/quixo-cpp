@@ -204,42 +204,6 @@ ll swapPlayer(ll state){
     return ((state & OMaskForSwap) << 1) | ((state & XMaskForSwap) >> 1);
 }
 
-ll moveLeft(ll rowState, int fromI, int toI, ll addMark){
-    // move the piece(index) to left
-    // rowState is one row state
-    // index 0 is right
-    ll newRow = 0ll;
-    // add cell from right
-    for(int j=0;j<=boardSize-1;j++){
-        if (j==toI){
-            newRow += addMark << toI * 2;
-        }else if (j<fromI || j>toI){
-            newRow += cellNumbers[0][j] & rowState; // same as base row state
-        }else{
-            newRow += (cellNumbers[0][j+1] & rowState) >> 2; // 1 bit shift to right
-        }
-    }
-    return newRow;
-}
-
-ll moveRight(ll rowState, int fromI, int toI, ll addMark){
-    // move the piece(index) from 'fromI' to 'toI'
-    // rowState is one row state
-    // index 0 is right
-    ll newRow = 0;
-    // add cell from left
-    for(int j=boardSize-1;j>=0;j--){
-        if (j==toI){
-            newRow += addMark << toI * 2;
-        }else if (j>fromI || j<toI){
-            newRow += cellNumbers[0][j] & rowState; // same as base row state
-        }else{
-            newRow += (cellNumbers[0][j-1] & rowState) << 2; // 1 bit shift to left
-        }
-    }
-    return newRow;
-}
-
 ll getRightMark(ll state){
     return state & 3ll;
 }
