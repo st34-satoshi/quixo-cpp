@@ -2,11 +2,13 @@
 solve real quixo 
 
 ## find reachable states
+TODO:
+
 - `c++ -std=c++17 reachable_state.cpp`
 - `./a.out`
 
 ## compute all states value from back
-I recommend you to start a smaller size (2 or 3). You can change board size in global.cpp.
+You can change board size in global.cpp.
 ### prepare
 windows may need to modify the fileName function in state.cpp (line 435). 
 ### Run
