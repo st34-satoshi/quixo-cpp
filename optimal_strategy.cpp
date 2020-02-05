@@ -1,5 +1,6 @@
 /**
  * find optimal action
+ * you can get the record of the perfect player!
  */
 
 #include "state.cpp"
@@ -36,17 +37,13 @@ inline bool isNotDefault(vector<bool> *values, ll index){
 }
 
 StateSet optimalNextState(StateSet presentState){
-    cout << "start optimal " << presentState.oNumber << "," << presentState.xNumber << endl;
     // 1: select min next loss, 2: select draw, 3: select max next win
     vector<bool> reverseValues(combinations[combinationSize][presentState.xNumber] * combinations[(combinationSize-presentState.xNumber)][presentState.oNumber] * 2);
     readStatesValue(&reverseValues, presentState.xNumber, presentState.oNumber);
-    cout << "start 2 optimal" << endl;
     vector<int> reverseSteps(combinations[combinationSize][presentState.xNumber] * combinations[(combinationSize-presentState.xNumber)][presentState.oNumber]);
     readStatesStep(&reverseSteps, presentState.xNumber, presentState.oNumber);
-    cout << "start optimal" << endl;
     vector<bool> nextValues(combinations[combinationSize][presentState.xNumber] * combinations[(combinationSize-presentState.xNumber)][presentState.oNumber+1] * 2);
     readStatesValue(&nextValues, presentState.xNumber, presentState.oNumber+1);
-    cout << "start 5 optimal" << endl;
     vector<int> nextSteps(combinations[combinationSize][presentState.xNumber] * combinations[(combinationSize-presentState.xNumber)][presentState.oNumber+1]);
     readStatesStep(&nextSteps, presentState.xNumber, presentState.oNumber+1);
 
@@ -54,7 +51,6 @@ StateSet optimalNextState(StateSet presentState){
     int stateStep = 0;
     StateSet ss;
     StateArray saAdd = createNextStates(presentState.state, true);
-    cout << "start update" << endl;
     for(int i=0;i<saAdd.count;i++){
         ll stateI = generateIndexNumber(saAdd.states[i], presentState.xNumber, presentState.oNumber+1);
         if(isLoss(&nextValues, stateI)){
@@ -91,7 +87,6 @@ StateSet optimalNextState(StateSet presentState){
             }
         }
     }
-    cout << "start update 2" << endl;
     StateArray saR = createNextStates(presentState.state, false);
     for(int i=0;i<saR.count;i++){
         ll stateI = generateIndexNumber(saR.states[i], presentState.xNumber, presentState.oNumber);
@@ -143,7 +138,8 @@ int main(){
     for(int i=1;i<100;i++){
         cout << "step = " << i << endl;
         ss = optimalNextState(ss);
-        printState(ss.state);
+        if(i%2==0) printState(swapPlayer(ss.state));
+        else printState(ss.state);
         if (isWin(ss.state)!=0){
             // end of the game
             cout << "reached End! " << endl;
