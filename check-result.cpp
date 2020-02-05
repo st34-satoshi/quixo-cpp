@@ -95,19 +95,19 @@ void checkStates(vector<int> *statesStep, vector<bool> *statesValue, vector<int>
             int nextMinStep = 1000; // TODO: large number enough
             for(int j=0;j<saAdd.count;j++){
                 stateI = generateIndexNumber(saAdd.states[j], xNumber, oNumber+1);
-                if(isWin(&nextStatesValue, stateI)){
+                if(isLoss(&nextStatesValue, stateI)){
                     nextMinStep = min(nextMinStep, nextStatesStep[stateI]);
                 }
             }
             StateArray saSame = createNextStates(stateNumber, /*fromEmpty*/false);
             for(int j=0;j<saSame.count;j++){
                 stateI = generateIndexNumber(saSame.states[j], xNumber, oNumber);
-                if(isWin(reverseStatesValue, stateI)){
+                if(isLoss(reverseStatesValue, stateI)){
                     nextMinStep = min(nextMinStep, reverseStatesStep->at(stateI));
                 }
             }
             if(nextMinStep != statesStep->at(i)-1){
-                cout << "this win state step is wrong " << nextMinStep << endl;
+                cout << "this win state step is wrong " << nextMinStep << "," << statesStep->at(i) << "," << i << endl;
                 exit(0);
             }
         }else{
