@@ -28,16 +28,16 @@ void convertResultsTOXO(){
 }
 
 void outputStepResult(){
-    int maxStep = 50; // TODO: you need to select the good number
+    int maxStep = 20; // TODO: you need to select the good number
     ull win=0ll, draw=0ll, loss=0ll, all = 0ll;
     vector<int> winSteps(maxStep);
     vector<int> lossSteps(maxStep);
     int step;
-    // for(int total=combinationSize; total>=0 ;total--){
-    for(int total=combinationSize; total>=16 ;total--){
+    for(int total=combinationSize; total>=0 ;total--){
+    // for(int total=combinationSize; total>=16 ;total--){
         cout << "total = " << total << endl;
-        // for(int oNumber=0;oNumber<=total;oNumber++){
-        for(int oNumber=8;oNumber<=8;oNumber++){
+        for(int oNumber=0;oNumber<=total;oNumber++){
+        // for(int oNumber=8;oNumber<=8;oNumber++){
             int xNumber = total - oNumber;
             vector<int> statesStep(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber]);
             readStatesStep(&statesStep, oNumber, xNumber);
@@ -48,12 +48,6 @@ void outputStepResult(){
                 // TODO: if you want to see the result of state(win, loss or draw and step), please remove the "//"
                 // ll s = generateState(i, oNumber, xNumber);
                 step = statesStep.at(i);
-                if(step > 40 && values.at(i*2ll+1ll) && values.at(i*2ll)){
-                    cout << "strange " << step << endl;
-                    cout << values.at(2ll*i) << endl;
-                    printState(generateState(i, oNumber, xNumber));
-                    exit(0);
-                }
                 // cout << "step = " << step << endl;
                 if(!values.at(i*2ll+1ll)){
                     //  cout << "v = draw" << endl; 
@@ -69,7 +63,6 @@ void outputStepResult(){
                 }
                 // printState(s);
                 all++;
-
             }
         }
     }

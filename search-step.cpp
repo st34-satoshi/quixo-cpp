@@ -128,7 +128,7 @@ void updateStepFromEndStates(vector<int> *statesStep, int oNumber, int xNumber, 
 
 int DEBI;
 
-bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector<int> *statesStetpTmp, vector<bool> *reverseStatesValue, vector<int> *reverseStatsStep, vector<int> *reverseStatesStepTmp, int oNumber, int xNumber, int presentStep){
+bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector<int> *statesStepTmp, vector<bool> *reverseStatesValue, vector<int> *reverseStatsStep, vector<int> *reverseStatesStepTmp, int oNumber, int xNumber, int presentStep){
     // if the max next states step == present step -1, then update the state step
     bool continueSearching = false;
     for (ull i=0ll;i<statesStep->size();i++){
@@ -145,7 +145,7 @@ bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector
             //     cout << "win ouch" << DEBI << endl;
             //     // exit(0);
             // }
-            if(statesStetpTmp->at(i) == presentStep){
+            if(statesStepTmp->at(i) == presentStep){
                 statesStep->at(i) = presentStep;
                 continue;
             }
@@ -176,8 +176,8 @@ bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector
             //         nextMaxStep = statesStep->at(i)*(-1);
             //     }
             // }
-            if(statesStetpTmp->at(i) != DEFAULT_STEP){
-                nextMaxStep = statesStetpTmp->at(i);
+            if(statesStepTmp->at(i) != DEFAULT_STEP){
+                nextMaxStep = statesStepTmp->at(i) - 1;
             }
             // if(DEBI > 11){
             //     cout << "loss ou" << endl;
@@ -195,6 +195,10 @@ bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector
             }
             if(nextMaxStep == presentStep-1){
                 statesStep->at(i) = presentStep;
+                // debug 
+                if(presentStep == 3){
+                    cout << "loss in 3 steps " << statesStepTmp->at(i) << endl;
+                }
             }
         }
     }
