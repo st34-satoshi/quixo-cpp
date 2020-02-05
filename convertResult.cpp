@@ -45,7 +45,7 @@ void printInitialStateResult(){
 }
 
 void outputStepResult(){
-    int maxStep = 20; // TODO: you need to select the good number
+    int maxStep = 30; // TODO: you need to select the good number
     ull win=0ll, draw=0ll, loss=0ll, all = 0ll;
     vector<int> winSteps(maxStep);
     vector<int> lossSteps(maxStep);
