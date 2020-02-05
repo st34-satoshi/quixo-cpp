@@ -1,0 +1,154 @@
+/**
+ * find optimal action
+ */
+
+#include "state.cpp"
+
+struct StateSet{
+    ll state = 0ll;
+    int oNumber = 0;
+    int xNumber = 0;
+};
+
+inline bool isWin(vector<bool> *values, ll index){
+    return (!values->at(index*2ll) && values->at(index*2ll + 1ll));
+}
+
+inline bool isLoss(vector<bool> *values, ll index){
+    return values->at(index*2ll) && values->at(index*2ll + 1ll);
+}
+
+inline bool isWinOrDraw(vector<bool> *values, ll index){
+    return values->at(index*2ll) && !(values->at(index*2ll + 1ll));
+}
+
+inline bool isDefault(vector<bool> *values, ll index){
+    return !(values->at(index*2ll)) && !(values->at(index*2ll + 1ll));
+}
+
+inline bool isDraw(vector<bool> *values, ll index){
+    // default or winOrDraw
+    return !(values->at(index*2ll + 1ll));
+}
+
+inline bool isNotDefault(vector<bool> *values, ll index){
+    return values->at(index*2ll) || values->at(index*2ll + 1ll);
+}
+
+StateSet optimalNextState(StateSet presentState){
+    cout << "start optimal " << presentState.oNumber << "," << presentState.xNumber << endl;
+    // 1: select min next loss, 2: select draw, 3: select max next win
+    vector<bool> reverseValues(combinations[combinationSize][presentState.xNumber] * combinations[(combinationSize-presentState.xNumber)][presentState.oNumber] * 2);
+    readStatesValue(&reverseValues, presentState.xNumber, presentState.oNumber);
+    cout << "start 2 optimal" << endl;
+    vector<int> reverseSteps(combinations[combinationSize][presentState.xNumber] * combinations[(combinationSize-presentState.xNumber)][presentState.oNumber]);
+    readStatesStep(&reverseSteps, presentState.xNumber, presentState.oNumber);
+    cout << "start optimal" << endl;
+    vector<bool> nextValues(combinations[combinationSize][presentState.xNumber] * combinations[(combinationSize-presentState.xNumber)][presentState.oNumber+1] * 2);
+    readStatesValue(&nextValues, presentState.xNumber, presentState.oNumber+1);
+    cout << "start 5 optimal" << endl;
+    vector<int> nextSteps(combinations[combinationSize][presentState.xNumber] * combinations[(combinationSize-presentState.xNumber)][presentState.oNumber+1]);
+    readStatesStep(&nextSteps, presentState.xNumber, presentState.oNumber+1);
+
+    int stateV = 2; // next state. 0: win, 1: draw, 2:loss
+    int stateStep = 0;
+    StateSet ss;
+    StateArray saAdd = createNextStates(presentState.state, true);
+    cout << "start update" << endl;
+    for(int i=0;i<saAdd.count;i++){
+        ll stateI = generateIndexNumber(saAdd.states[i], presentState.xNumber, presentState.oNumber+1);
+        if(isLoss(&nextValues, stateI)){
+            if(stateV != 0){
+                stateV = 0;
+                stateStep = nextSteps[stateI];
+                ss.state = saAdd.states[i];
+                ss.oNumber = presentState.xNumber;
+                ss.xNumber = presentState.oNumber+1;
+            }else{
+                if(stateStep > nextSteps[stateI]){
+                    stateStep = nextSteps[stateI];
+                    ss.state = saAdd.states[i];
+                    ss.oNumber = presentState.xNumber;
+                    ss.xNumber = presentState.oNumber+1;
+                }
+            }
+        }else if(isWin(&nextValues, stateI)){
+            if(stateV == 2){
+                if(stateStep < nextSteps[stateI]){
+                    stateStep = nextSteps[stateI];
+                    ss.state = saAdd.states[i];
+                    ss.oNumber = presentState.xNumber;
+                    ss.xNumber = presentState.oNumber+1;
+                }
+            }
+        }else{ 
+            // draw
+            if(stateV==2){
+                stateV = 1;
+                ss.state = saAdd.states[i];
+                ss.oNumber = presentState.xNumber;
+                ss.xNumber = presentState.oNumber+1;
+            }
+        }
+    }
+    cout << "start update 2" << endl;
+    StateArray saR = createNextStates(presentState.state, false);
+    for(int i=0;i<saR.count;i++){
+        ll stateI = generateIndexNumber(saR.states[i], presentState.xNumber, presentState.oNumber);
+        if(isLoss(&reverseValues, stateI)){
+            if(stateV != 0){
+                stateV = 0;
+                stateStep = reverseSteps[stateI];
+                ss.state = saR.states[i];
+                ss.oNumber = presentState.xNumber;
+                ss.xNumber = presentState.oNumber;
+            }else{
+                if(stateStep > reverseSteps[stateI]){
+                    stateStep = reverseSteps[stateI];
+                    ss.state = saR.states[i];
+                    ss.oNumber = presentState.xNumber;
+                    ss.xNumber = presentState.oNumber;
+                }
+            }
+        }else if(isWin(&reverseValues, stateI)){
+            if(stateV == 2){
+                if(stateStep < reverseSteps[stateI]){
+                    stateStep = reverseSteps[stateI];
+                    ss.state = saR.states[i];
+                    ss.oNumber = presentState.xNumber;
+                    ss.xNumber = presentState.oNumber;
+                }
+            }
+        }else{ 
+            // draw
+            if(stateV==2){
+                stateV = 1;
+                ss.state = saR.states[i];
+                ss.oNumber = presentState.xNumber;
+                ss.xNumber = presentState.oNumber;
+            }
+        }
+    }
+    return ss;
+}
+
+int main(){
+    createCombinations();
+    initState();
+    initMovingMasks();
+    initEncoding();
+    StateSet ss; // initial state
+    cout << "initial state " << endl;
+    printState(ss.state);
+    for(int i=1;i<100;i++){
+        cout << "step = " << i << endl;
+        ss = optimalNextState(ss);
+        printState(ss.state);
+        if (isWin(ss.state)!=0){
+            // end of the game
+            cout << "reached End! " << endl;
+            break;
+        }
+    }
+    return 0;
+}
