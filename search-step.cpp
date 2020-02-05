@@ -61,8 +61,8 @@ void updateStepsFromNext(vector<int> *steps, vector<bool> *values, int oNumber, 
             ll stateNumber = generateState(i, xNumber, oNumber+1);
             StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
             ll stateN, stateI;
-            for(int i=0;i<sa.count;i++){
-                stateN = sa.states[i];
+            for(int j=0;j<sa.count;j++){
+                stateN = sa.states[j];
                 stateI = generateIndexNumber(stateN, oNumber, xNumber);
                 if(isLoss(values, stateI)){
                     if(steps->at(stateI) == DEFAULT_STEP){
@@ -70,6 +70,14 @@ void updateStepsFromNext(vector<int> *steps, vector<bool> *values, int oNumber, 
                     }else{
                         steps->at(stateI) = max(steps->at(stateI), nextStatesStep[i]+1);
                     }
+                }
+                // debug
+                if(stateN == 104998){
+                    cout << "wrong !!" << steps->at(stateI) << endl;
+                    printState(stateNumber);
+                    cout << i << "l " << nextStatesStep[i] << endl;
+                    printState(stateN);
+                    // exit(0);
                 }
             }
         }
@@ -104,8 +112,17 @@ bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector
         continueSearching = true;
         // check all next states step
         if (isWin(statesValue, i)){
+            // debug
+            if(157081 == generateState(i, oNumber, xNumber)){
+                cout << "here" << endl;
+                // exit(0);
+            }
             if(statesStepTmp->at(i) == presentStep){
                 statesStep->at(i) = presentStep;
+                if(157081 == generateState(i, oNumber, xNumber)){
+                    cout << "here2" << endl;
+                    exit(0);
+                }
                 continue;
             }
             // at least one next loss state step is present step-1, update 
@@ -116,6 +133,10 @@ bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector
                     statesStep->at(i) = presentStep;
                     break;
                 }
+            }
+            if(157081 == generateState(i, oNumber, xNumber)){
+                cout << "here23 " << statesStep->at(i) <<  endl;
+                // exit(0);
             }
         }else if(isLoss(statesValue, i)){
             // if next max step == present step -1, update
