@@ -93,42 +93,20 @@ void updateStepsFromNext(vector<int> *steps, vector<bool> *values, int oNumber, 
 
 void updateStepFromEndStates(vector<int> *statesStep, int oNumber, int xNumber, vector<bool> *reverseStatesValue, vector<int> *reverseStatesStep){
     // find the states which end of the game in reverseStates, update the states step to 0
-    // and if the end state is loss, update previous states step to 1
-    // oNumber is for values
-
     for (ull i=0ll;i<reverseStatesValue->size()/2ll;i++){
         if (isDraw(reverseStatesValue, i)){
             continue; // not the end of the game
         }
         ll stateNumber = generateState(i, xNumber, oNumber);
         int win = isWin(stateNumber); // win:1, lose:-1, draw:0
-        if (win == -1){
+        if (win != 0){
             // update this state step to 0
             reverseStatesStep->at(i) = 0;
-            // // generate previous states, update to 1
-            // StateArray sa = createPreviousStates(stateNumber, false);
-            // ll stateN, stateI;
-            // for(int i=0;i<sa.count;i++){
-            //     stateN = sa.states[i];
-            //     stateI = generateIndexNumber(stateN, oNumber, xNumber);
-            //     updatWinStep(statesStep, 1, stateI);
-            // }
-        }else if (win == 1){
-            reverseStatesStep->at(i) = 0;
-            // StateArray sa = createPreviousStates(stateNumber, false);
-            // ll stateN, stateI;
-            // for(int i=0;i<sa.count;i++){
-            //     stateN = sa.states[i];
-            //     stateI = generateIndexNumber(stateN, oNumber, xNumber);
-            //     updateLossStep(statesStep, 1, stateI);
-            // }
         }
     }
 }
 
-int DEBI;
-
-bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector<int> *statesStepTmp, vector<bool> *reverseStatesValue, vector<int> *reverseStatsStep, vector<int> *reverseStatesStepTmp, int oNumber, int xNumber, int presentStep){
+bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector<int> *statesStepTmp, vector<bool> *reverseStatesValue, vector<int> *reverseStatsStep, int oNumber, int xNumber, int presentStep){
     // if the max next states step == present step -1, then update the state step
     bool continueSearching = false;
     for (ull i=0ll;i<statesStep->size();i++){
@@ -141,26 +119,14 @@ bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector
         continueSearching = true;
         // check all next states step
         if (isWin(statesValue, i)){
-            // if(DEBI > 10){
-            //     cout << "win ouch" << DEBI << endl;
-            //     // exit(0);
-            // }
             if(statesStepTmp->at(i) == presentStep){
                 statesStep->at(i) = presentStep;
                 continue;
             }
-            // if(statesStep->at(i)*(-1) == presentStep){
-            //     statesStep->at(i) = presentStep;
-            //     continue;
-            // }
             // at least one next loss state step is present step-1, update 
             StateArray sa = createNextStates(generateState(i, oNumber, xNumber), false);
             for(int j=0;j<sa.count;j++){
                 ll nextStateI = generateIndexNumber(sa.states[j], xNumber, oNumber);
-                // if(isLoss(reverseStatesValue, nextStateI) && DEBI > 10){
-                //     cout << "oipoip " << reverseStatsStep->at(nextStateI) << endl;
-                //     exit(0);
-                // }
                 if(isLoss(reverseStatesValue, nextStateI) && reverseStatsStep->at(nextStateI) == presentStep-1){
                     statesStep->at(i) = presentStep;
                     break;
@@ -169,36 +135,16 @@ bool updateStatesStep(vector<bool> *statesValue, vector<int> *statesStep, vector
         }else if(isLoss(statesValue, i)){
             // if next max step == present step -1, update
             int nextMaxStep = 0;
-            // if(statesStep->at(i)<0){
-            //     if(statesStep->at(i)*(-1) > presentStep){
-            //         continue;
-            //     }else{
-            //         nextMaxStep = statesStep->at(i)*(-1);
-            //     }
-            // }
             if(statesStepTmp->at(i) != DEFAULT_STEP){
                 nextMaxStep = statesStepTmp->at(i) - 1;
             }
-            // if(DEBI > 11){
-            //     cout << "loss ou" << endl;
-            //     exit(0);
-            // }
             StateArray sa = createNextStates(generateState(i, oNumber, xNumber), false);
             for(int j=0;j<sa.count;j++){
                 ll nextStateI = generateIndexNumber(sa.states[j], xNumber, oNumber);
-                // if (reverseStatsStep->at(nextStateI < 0)){
-                //     // the next state step is not decided, cannot update
-                //     nextMaxStep = -1;
-                //     break;
-                // }
                 nextMaxStep = max(nextMaxStep, reverseStatsStep->at(nextStateI));
             }
             if(nextMaxStep == presentStep-1){
                 statesStep->at(i) = presentStep;
-                // debug 
-                if(presentStep == 3){
-                    cout << "loss in 3 steps " << statesStepTmp->at(i) << endl;
-                }
             }
         }
     }
@@ -225,8 +171,8 @@ void computeStatesStep(int oNumber, int xNumber){
     updateStepFromEndStates(&reverseStatesSteps, xNumber, oNumber, &values, &statesSteps);
 
     // compute steps until no update
-    for(int i=1;i<=DEFAULT_STEP;i++){
-        DEBI = i;
+    int i = 1;
+    for(;i<=DEFAULT_STEP;i++){
         if(i==DEFAULT_STEP){
             cout << "ERROR: reached default step!" << endl;
             exit(0);
@@ -236,14 +182,14 @@ void computeStatesStep(int oNumber, int xNumber){
         // if(oNumber==xNumber){
         //     continueSearching = updateStatesStep(&values, &statesSteps, &statesSteps, oNumber, xNumber, i);
         // }else{
-        continueSearching = updateStatesStep(&values, &statesSteps, &statesStepsTmp, &valuesReverse, &reverseStatesSteps, &reverseStatesStepsTmp, oNumber, xNumber, i);
-        continueSearching = updateStatesStep(&valuesReverse, &reverseStatesSteps, &reverseStatesStepsTmp, &values, &statesSteps, &statesStepsTmp, xNumber, oNumber, i) || continueSearching;
+        continueSearching = updateStatesStep(&values, &statesSteps, &statesStepsTmp, &valuesReverse, &reverseStatesSteps, oNumber, xNumber, i);
+        continueSearching = updateStatesStep(&valuesReverse, &reverseStatesSteps, &reverseStatesStepsTmp, &values, &statesSteps, xNumber, oNumber, i) || continueSearching;
         // }
         if (!continueSearching){
             break;
         }
     }
-    cout << "loop count " << DEBI << endl;
+    cout << "loop count " << i << endl;
 
     // save resutl to strage
     writeStatesSteps(&statesSteps, oNumber, xNumber);
