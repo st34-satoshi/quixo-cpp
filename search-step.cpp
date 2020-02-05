@@ -37,22 +37,9 @@ inline bool isDraw(vector<bool> *values, ll index){
     return !(values->at(index*2ll + 1ll));
 }
 
-inline void updateTmpWinStep(vector<int> *stateStep, int step, ll i){
-    // temporary step number is minus. it is used for update from next
-    if(stateStep->at(i) == DEFAULT_STEP){
-        stateStep->at(i) = step * -1;
-    }else{
-        stateStep->at(i) = max(step*-1, stateStep->at(i));
-    }
-}
-
-inline void updateTmpLossStep(vector<int> *stateStep, int step, ll i){
-    stateStep->at(i) = min(step*-1, stateStep->at(i));
-}
-
 void updateStepsFromNext(vector<int> *steps, vector<bool> *values, int oNumber, int xNumber){
     // if next state is loss, this state step --> min(this step, next step+1)
-    // if next state is win, this state step --> it this step is Default, nextS+1, else max(thisS, nextS)
+    // if next state is win, this state step --> if this step is Default, nextS+1, else max(thisS, nextS)
 
     // read next states from the file
     vector<bool> nextStatesValue(getCombination(combinationSize, xNumber)*getCombination(combinationSize-xNumber, oNumber+1) * 2);  // next states values of values
@@ -69,7 +56,6 @@ void updateStepsFromNext(vector<int> *steps, vector<bool> *values, int oNumber, 
             for(int j=0;j<sa.count;j++){
                 stateI = generateIndexNumber(sa.states[j], oNumber, xNumber);
                 steps->at(stateI) = min(steps->at(stateI), nextStatesStep[i]+1);
-                // updateTmpWinStep(steps, nextStatesStep[i]+1, stateI);
             }
         }else if(isWin(&nextStatesValue, i)){
             ll stateNumber = generateState(i, xNumber, oNumber+1);
@@ -84,7 +70,6 @@ void updateStepsFromNext(vector<int> *steps, vector<bool> *values, int oNumber, 
                     }else{
                         steps->at(stateI) = max(steps->at(stateI), nextStatesStep[i]+1);
                     }
-                    // updateTmpLossStep(steps, nextStatesStep[i]+1, stateI);
                 }
             }
         }
