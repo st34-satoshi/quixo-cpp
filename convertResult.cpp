@@ -33,9 +33,11 @@ void outputStepResult(){
     vector<int> winSteps(maxStep);
     vector<int> lossSteps(maxStep);
     int step;
-    for(int total=combinationSize; total>=0 ;total--){
+    // for(int total=combinationSize; total>=0 ;total--){
+    for(int total=combinationSize; total>=16 ;total--){
         cout << "total = " << total << endl;
-        for(int oNumber=0;oNumber<=total;oNumber++){
+        // for(int oNumber=0;oNumber<=total;oNumber++){
+        for(int oNumber=8;oNumber<=8;oNumber++){
             int xNumber = total - oNumber;
             vector<int> statesStep(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber]);
             readStatesStep(&statesStep, oNumber, xNumber);
