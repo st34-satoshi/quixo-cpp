@@ -176,5 +176,6 @@ int main(){
     checkAllStates();
     clock_t end = clock();
     cout << "end : " << (double)(end - start)/ CLOCKS_PER_SEC << " sec" << endl;
+    cout << "OK!" << endl;
     return 0;
 }
