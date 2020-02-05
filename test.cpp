@@ -82,6 +82,12 @@ void testREADWrite(){
     }
 }
 
+void testCheckWin(){
+    ll s = 157081ll;
+    printState(s);
+    cout << isWin(s) << endl;
+}
+
 int main(){
     cout << "test" << endl;
     createCombinations();
@@ -93,7 +99,8 @@ int main(){
     // testChar();
     // testNextStates();
     // testMoveNextEdge();
-    testREADWrite();
+    // testREADWrite();
+    testCheckWin();
 
     return 0;
 }
