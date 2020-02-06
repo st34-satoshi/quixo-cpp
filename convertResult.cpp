@@ -125,10 +125,41 @@ void outputReachableStates(){
     cout << "all reachable states = " << totalReachableCount << endl;
 }
 
+void countNotReachableStates(){
+    int totalNotReachableCount = 0;
+    // int printCount = 0;
+    for(int total=0;total<=combinationSize;total++){
+    // for(int total=10;total<=10;total++){
+        cout << "o+x = " << total << endl;
+        for(int oNumber=0;oNumber <= total;oNumber++){
+        // for(int oNumber=5;oNumber <= 5;oNumber++){
+            int notReachableCount = 0;
+            int xNumber = total - oNumber;
+            vector<bool> statesReachable(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2ll);
+            readStatesReachable(&statesReachable, oNumber, xNumber);
+            for(ll i=0;i<statesReachable.size()/2ll;i++){
+                if(!statesReachable[i*2]){
+                    //  if(printCount>10) continue;
+                     ll s = generateState(i, oNumber, xNumber);
+                     if(isWin(s)!=0) continue;
+                     notReachableCount++;
+                    //  printCount++;
+                    //  printState(s);
+                }
+            }
+            cout << "o, x = " << oNumber << ", " << xNumber << " = "  << notReachableCount << endl;
+            totalNotReachableCount += notReachableCount;
+        }
+    }
+    cout << "all not reachable states = " << totalNotReachableCount << endl;
+
+}
+
 int main(int argc, char *argv[]){
     createCombinations();
     initState();
     // convertResultsTOXO();
     outputStepResult();
     // outputReachableStates();
+    // countNotReachableStates();
 }
