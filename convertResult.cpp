@@ -105,12 +105,27 @@ void outputStepResult(){
     //     cout << i << " ; " << t << endl;
     // }
     printInitialStateResult();
+}
 
+void outputReachableStates(){
+    for(int total=0;total<=combinationSize;total++){
+        int reachableCount = 0;
+        for(int oNumber=0;oNumber <= total;oNumber++){
+            int xNumber = total - oNumber;
+            vector<bool> statesReachable(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2ll);
+            readStatesReachable(&statesReachable, oNumber, xNumber);
+            for(ll i=0;i<statesReachable.size()/2ll;i++){
+                if(statesReachable[i]) reachableCount++;
+            }
+        }
+        cout << "total = " << total << ". reachable = " << reachableCount << endl;
+    }
 }
 
 int main(int argc, char *argv[]){
     createCombinations();
     initState();
     // convertResultsTOXO();
-    outputStepResult();
+    // outputStepResult();
+    outputReachableStates();
 }
