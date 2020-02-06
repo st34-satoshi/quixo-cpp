@@ -1,11 +1,4 @@
 # quixo-cpp
-solve real quixo 
-
-## ~~find reachable states!!~~
-TODO: I need to check!
-
-- ~~`c++ -std=c++17 reachable_state.cpp`~~
-- ~~`./a.out`~~
 
 ## compute all states value from back
 You can change board size in global.cpp.  
@@ -17,7 +10,7 @@ You can change board size in global.cpp.
 
 
 ### Run
-- `c++ -std=c++17 -Wall -O3 from_back.cpp `
+- `g++ -std=c++17 -Wall -O3 from_back.cpp `
 - `./a.out`
 
 results are saved in results directory.
@@ -32,7 +25,7 @@ You need to run `from_back.cpp` at first with the same board size.
 - size 2: soon
 
 ### Run
-- `c++ -std=c++17 -Wall -O3 search-step.cpp `
+- `g++ -std=c++17 -Wall -O3 search-step.cpp `
 - `./a.out`
 
 results are saved in results directory.
@@ -43,7 +36,7 @@ If you want to see all states result, change the comment out of the file `conver
 
 ### Run
 
-- `c++ -std=c++17 -Wall -O3 convertResult.cpp  `
+- `g++ -std=c++17 -Wall -O3 convertResult.cpp  `
 - `./a.out`
 
 ## check the result
@@ -52,5 +45,15 @@ You can check the result using the different algorithm.
 You need to run `search-step.cpp` at first with the same board size.  
 
 ### Run
-- `c++ -std=c++17 -Wall -O3 check-result.cpp `
+- `g++ -std=c++17 -Wall -O3 check-result.cpp `
 - `./a.out`
+
+<hr> 
+
+## find reachable states
+
+- `g++ -std=c++17 -O3 -Wall reachable_state.cpp`
+- `./a.out`
+
+### result
+you can see the result using the function `outputReachableStates` or `countNotReachableStates` in `convertResult.cpp`
