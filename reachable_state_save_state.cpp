@@ -11,7 +11,7 @@ is
 you can change size by boardSize.
 
 Run
-c++ -std=c++17 -O3 main.cpp 
+c++ -std=c++17 -O3 reachable_state.cpp 
 ./a.out
 */
 #include <iostream>
