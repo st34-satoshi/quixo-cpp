@@ -114,8 +114,8 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
             }
             // generate previous states, update to win
             StateArray sa = createPreviousStates(stateNumber, false);
-            for(int i=0;i<sa.count;i++){
-                ll stateN = sa.states[i];
+            for(int j=0;j<sa.count;j++){
+                ll stateN = sa.states[j];
                 for(auto s : symmetricAllStates(stateN)){
                     ll stateI = generateIndexNumber(s, xNumber, oNumber);
                     updateToWin(reverseStatesValues, stateI);
@@ -140,8 +140,8 @@ void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber){
             ll stateNumber = generateState(i, xNumber, oNumber+1);
             StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
             ll stateN, stateI;
-            for(int i=0;i<sa.count;i++){
-                stateN = sa.states[i];
+            for(int j=0;j<sa.count;j++){
+                stateN = sa.states[j];
                 stateI = generateIndexNumber(stateN, oNumber, xNumber);
                 updateToWin(values, stateI);
             }
@@ -151,8 +151,8 @@ void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber){
             // generate previous states, update to winOrDraw(not loss)
             StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
             ll stateN, stateI;
-            for(int i=0;i<sa.count;i++){
-                stateN = sa.states[i];
+            for(int j=0;j<sa.count;j++){
+                stateN = sa.states[j];
                 stateI = generateIndexNumber(stateN, oNumber, xNumber);
                 if (isDefault(values, stateI)){
                     updateToWinOrDraw(values, stateI);
@@ -182,8 +182,8 @@ void updateValuesFromEndStates(vector<bool> *values, int oNumber, int xNumber, v
             // generate previous states, update to win
             StateArray sa = createPreviousStates(stateNumber, false);
             ll stateN, stateI;
-            for(int i=0;i<sa.count;i++){
-                stateN = sa.states[i];
+            for(int j=0;j<sa.count;j++){
+                stateN = sa.states[j];
                 for(auto s : symmetricAllStates(stateN)){
                     stateI = generateIndexNumber(s, oNumber, xNumber);
                     updateToWin(values, stateI);
