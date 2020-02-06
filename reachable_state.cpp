@@ -13,34 +13,25 @@ void init(){
 
 vector<bool> statesReachable; // 2*i: false is not reachable, true: reachable, 2*i+1: false: not searched, true: searched
 vector<bool> reverseStatesReachable;
+int oNumber, xNumber;
 
-bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *reverseStatesValues){
+bool updateReachable(){
     bool updated = false;
-    for (ull i=0ll;i<values->size()/2ll;i++){
-        if (isNotDefault(values, i)){
-        // if (values->at(i*2ll) || values->at(i*2ll+1ll)){
-            // lose or win --> skip
-            continue;
-        }
-        if (isLoseState(i, oNumber, xNumber, reverseStatesValues)){
-            // update this state to lose and change previous states to win
-            updated = true;
-            ll stateNumber = generateState(i, oNumber, xNumber);
-            // update all symmetric states
-            for(auto stateN : symmetricAllStates(stateNumber)){
-                ll stateI = generateIndexNumber(stateN, oNumber, xNumber);
-                updateToLoss(values, stateI);
-            }
-            // generate previous states, update to win
-            StateArray sa = createPreviousStates(stateNumber, false);
-            for(int i=0;i<sa.count;i++){
-                ll stateN = sa.states[i];
-                for(auto s : symmetricAllStates(stateN)){
-                    ll stateI = generateIndexNumber(s, xNumber, oNumber);
-                    updateToWin(reverseStatesValues, stateI);
-                }
+    for (ull i=0ll;i<statesReachable.size();i++){
+        if (statesReachable[i*2ll+1ll]) continue;
+        if (!statesReachable[i*2ll]) continue;
+        // reachable state and not searched yet
+        updated = true;
+        ll stateNumber = generateState(i, oNumber, xNumber);
+        StateArray sa = createNextStates(stateNumber, false);
+        for(int i=0;i<sa.count;i++){
+            ll stateN = sa.states[i];
+            for(auto s : symmetricAllStates(stateN)){
+                ll stateI = generateIndexNumber(s, xNumber, oNumber);
+                updateToWin(reverseStatesValues, stateI);
             }
         }
+        
     }
     return updated;
 }
