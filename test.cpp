@@ -90,17 +90,23 @@ void testCheckWin(){
 
 int main(){
     cout << "test" << endl;
-    createCombinations();
-    initState();
-    initMovingMasks();
-    createCombinations();
-    initEncoding();
-    // testPreviousStates();
-    // testChar();
-    // testNextStates();
-    // testMoveNextEdge();
-    // testREADWrite();
-    testCheckWin();
+    // createCombinations();
+    // initState();
+    // initMovingMasks();
+    // createCombinations();
+    // initEncoding();
+    // // testPreviousStates();
+    // // testChar();
+    // // testNextStates();
+    // // testMoveNextEdge();
+    // // testREADWrite();
+    // testCheckWin();
+    for(ll i=0;i<10;i++){
+        cout << "gi = " << i << endl;
+        for(int i=0;i<10;i++){
+            cout << i << endl;
+        }
+    }
 
     return 0;
 }

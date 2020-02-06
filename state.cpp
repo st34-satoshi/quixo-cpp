@@ -615,3 +615,59 @@ void readStatesStep(vector<int> *statesStep, int oNumber, int xNumber){
     }
     fin.close();
 }
+
+void writeStatesReachable(vector<bool> *states, int oN, int xN){
+    // TODO if the file already exist, do not overwrite
+    ofstream fout(fileName(oN, xN, "Reachable"), ios::out | ios::binary);
+    if(!fout.is_open()){
+        cout << "cannot open file reachable" << endl;
+        return;
+    }
+    int bitCounter = 0;
+    unsigned char c = 0;
+    bool t;
+    for(ll i=0ll;i<states->size()/2ll;i++){
+        t = states->at(i*2ll);
+        c = c << 1;
+        c += t;
+        bitCounter++;
+        if (bitCounter == 8){
+            fout.put(c);
+            c = 0;
+            bitCounter = 0;
+        }
+    }
+    if (bitCounter != 0){
+        fout.put(c);
+    }
+    fout.close();
+}
+
+void readStatesReachable(vector<bool> *values, int oN, int xN){
+    ifstream fin(fileName(oN, xN, "Reachable"), ios::in | ios::binary);
+    if(!fin.is_open()){
+        cout << "cannot open file" << endl;
+        return;
+    }
+    unsigned char data;
+    ll number = combinations[combinationSize][oN]*combinations[combinationSize-oN][xN];
+    ll i = 0ll;
+    for (;i<number/8;i++){
+        data = fin.get();
+        ll mask = 1 << 7;
+        for(ll j=0;j<8;j++){
+            values->at((i*8ll+j)*2ll) = data & mask;
+            mask = mask >> 1;
+        }
+    }
+    ll r = number % 8;
+    if (r != 0){
+        data = fin.get();
+        ll mask = 1 << (r - 1);
+        for(ll j=0;j<r;j++){
+            values->at(i*8+j) = data & mask;
+            mask = mask >> 1;
+        }
+    }
+    fin.close();
+}
