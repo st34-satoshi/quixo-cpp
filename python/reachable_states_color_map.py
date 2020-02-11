@@ -11,7 +11,8 @@
 import matplotlib.pyplot as plt
 import math
 
-data_file_name = "tt"
+data_file_name = "notReachable"
+# data_file_name = "noRNL"
 
 
 def number_type(number):
@@ -37,8 +38,8 @@ def read_data(file_name, cells):
 # Prepare table
 s = 4
 board_size = s*s
-columns = ["o="+str(i) for i in range(board_size+1)]
-rows = ["x="+str(i) for i in range(board_size+1)]
+columns = ["x="+str(i) for i in range(board_size+1)]
+rows = ["o="+str(i) for i in range(board_size+1)]
 cell_text = [[0 for j in range(board_size+1)] for i in range(board_size+1)]
 
 # read data from file
@@ -67,8 +68,10 @@ the_table = ax.table(cellText=cell_text,
                      colLabels=columns,
                      rowLabels=rows,
                      loc='center')
-plt.title("not reachable states number")
-plt.xlabel("o Number")
+plt.title("number of not reachable states \n next player is o")
+# plt.title("number of not reachable and no line(not end of the game) states \n next player is o")
+# plt.xlabel("o Number")
 # plt.legend()
-plt.show()
-# plt.savefig("color-table")
+# plt.show()
+plt.savefig("not-reachable")
+# plt.savefig("not-reachable-not-end")
