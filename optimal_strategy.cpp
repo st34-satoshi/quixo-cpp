@@ -135,16 +135,31 @@ int main(){
     StateSet ss; // initial state
     cout << "initial state " << endl;
     printState(ss.state);
-    for(int i=1;i<100;i++){
-        cout << "step = " << i << endl;
+    // fight
+    int o, x;
+    ll s;
+    while (true){
+        printState(ss.state);
+        cout << "type state" << endl;
+        cin >> o >> x >> s;
+        ss.oNumber = o;
+        ss.xNumber = x;
+        ss.state = s;
         ss = optimalNextState(ss);
-        if(i%2==0) printState(swapPlayer(ss.state));
-        else printState(ss.state);
-        if (isWin(ss.state)!=0){
-            // end of the game
-            cout << "reached End! " << endl;
-            break;
-        }
+        // printState(swapPlayer(ss.state));
     }
+
+    // create the record of perfect player
+    // for(int i=1;i<100;i++){
+    //     cout << "step = " << i << endl;
+    //     ss = optimalNextState(ss);
+    //     if(i%2==0) printState(swapPlayer(ss.state));
+    //     else printState(ss.state);
+    //     if (isWin(ss.state)!=0){
+    //         // end of the game
+    //         cout << "reached End! " << endl;
+    //         break;
+    //     }
+    // }
     return 0;
 }

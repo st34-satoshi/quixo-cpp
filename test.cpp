@@ -101,12 +101,7 @@ int main(){
     // // testMoveNextEdge();
     // // testREADWrite();
     // testCheckWin();
-    for(ll i=0;i<10;i++){
-        cout << "gi = " << i << endl;
-        for(int i=0;i<10;i++){
-            cout << i << endl;
-        }
-    }
+    cout << isExistFile(0, 3, "Value") << endl;
 
     return 0;
 }
