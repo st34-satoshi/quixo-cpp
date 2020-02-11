@@ -227,6 +227,11 @@ void computeStatesValue(int oNumber, int xNumber){
     writeStatesValue(&valuesReverse, xNumber, oNumber);
 }
 
+bool needCompute(int oNumber, int xNumber){
+    string type = "Value";
+    return !(isExistFile(oNumber, xNumber, type) && isExistFile(xNumber, oNumber, type));
+}
+
 void computeAllStatesValue(){
     // compute from end(o+x=combinationSize)
     for(int total=combinationSize; total>=0;total--){
@@ -234,6 +239,7 @@ void computeAllStatesValue(){
         for(int oNumber=0;oNumber<=total/2;oNumber++){
             cout << "o number = " << oNumber << endl;
             int xNumber = total - oNumber;
+            if (!needCompute(oNumber, xNumber)) continue;
             computeStatesValue(oNumber, xNumber);
         }
     }
