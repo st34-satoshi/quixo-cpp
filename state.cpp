@@ -532,6 +532,15 @@ string fileName(int oNumber, int xNumber, string type){
     return "results/states"+type+s.str()+"o"+osO.str()+"x"+osX.str()+".bin";
 }
 
+bool isExistFile(int oNumber, int xNumber, string type){
+    array<string, 3> types = {"Value", "Step", "Reachable"};
+    if(find(begin(types), end(types), type) == end(types)){
+        cout << "Error: this type is not arrowed, type = " << type << endl;
+        exit(0);
+    }
+    return filesystem::exists(fileName(oNumber, xNumber, type));
+}
+
 void writeStatesValue(vector<bool> *values, int oNumber, int xNumber){
     // TODO if the file already exist, do not overwrite
     ofstream fout(fileName(oNumber, xNumber, "Value"), ios::out | ios::binary);
