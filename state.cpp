@@ -221,7 +221,6 @@ ll getShiftedCellNumber(int row, int column, ll state){
 // nes S = s & Mask[0] | (s & Mask[1]) << Mask[3] | (s & Mask[2]) >> Mask[3]
 array<array<ll, 4>, boardSize/2> RotateColumnMask;
 array<array<ll, 4>, boardSize/2> RotateRowMask;
-void printState(ll state);
 
 void initRotateMask(){
     ll M;
@@ -267,7 +266,7 @@ ll reverseState(ll state){
     return newState;
 }
 
-ll rotatedState(ll state){
+ll leftTurnState(ll state){
     // {1, 2, 3,
     //  4, 5, 6
     //  7, 8, 9}
@@ -279,14 +278,14 @@ ll rotatedState(ll state){
     for(int i=boardSize-1;i>=0;i--){
         for(int j=boardSize-1;j>=0;j--){
             newState = newState << 2;
-            newState += ll(getShiftedCellNumber(j, boardSize - i - 1, state));
+            newState += ll(getShiftedCellNumber(j, boardSize-i-1, state));
         }
     }
     return newState;
 }
 
-SymmetricStates rotatedStates(ll state){
-    SymmetricStates states;
+RotateStates rotatedStates(ll state){
+    RotateStates states;
     states.states[0] = state;
     ll newS = state;
     for(int i=0;i<boardSize/2;i++){
@@ -306,20 +305,17 @@ SymmetricStates rotatedStates(ll state){
 }
 
 SymmetricStates symmetricAllStates(ll state){
-    return rotatedStates(state);
-    // // return all symmetric states
-    // SymmetricStates sStates;
-    // int count = 0;
-    // ll rState = reverseState(state);
-    // sStates.states[count++] = state;
-    // sStates.states[count++] = rState;
-    // for(ll s: {state, rState}){
-    //     for(int i=0;i<3;i++){
-    //         s = rotatedState(s);
-    //         sStates.states[count++] = s;
-    //     }
-    // }
-    // return sStates;
+    // return rotatedStates(state);
+    // return all symmetric states
+    SymmetricStates symStates;
+    ll lState = leftTurnState(state);
+    auto rotatedS = rotatedStates(state);
+    auto rotatedLeftS = rotatedStates(lState);
+    for(int i=0;i<4;i++){
+        symStates.states[i*2] = rotatedS.states[i];
+        symStates.states[i*2+1] = rotatedLeftS.states[i];
+    }
+    return symStates;
 }
 
 void printState(ll state){

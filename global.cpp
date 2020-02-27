@@ -27,8 +27,12 @@ struct StateArray{
 };
 
 struct SymmetricStates{
-    static const int size = 4;
+    static const int size = 8;
     array<ll, size> states;
+};
+
+struct RotateStates{
+    array<ll, 4> states;
 };
 
 void createCombinations(){
