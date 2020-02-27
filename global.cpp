@@ -5,6 +5,7 @@
 #include <sstream>
 #include <time.h>
 #include <array>
+#include <algorithm>
 
 using namespace std;
 typedef long long ll;

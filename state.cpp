@@ -538,7 +538,10 @@ bool isExistFile(int oNumber, int xNumber, string type){
         cout << "Error: this type is not arrowed, type = " << type << endl;
         exit(0);
     }
-    return filesystem::exists(fileName(oNumber, xNumber, type));
+    string filename = fileName(oNumber, xNumber, type);
+
+    std::ifstream in(filename, std::ios::in | std::ios::binary);
+    return in.good(); // Not sure if it is portable
 }
 
 void writeStatesValue(vector<bool> *values, int oNumber, int xNumber){
@@ -635,7 +638,7 @@ void writeStatesReachable(vector<bool> *states, int oN, int xN){
     int bitCounter = 0;
     unsigned char c = 0;
     bool t;
-    for(ll i=0ll;i<states->size()/2ll;i++){
+    for(ull i=0ll;i<states->size()/2ll;i++){
         t = states->at(i*2ll);
         c = c << 1;
         c += t;
