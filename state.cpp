@@ -212,6 +212,49 @@ ll getShiftedCellNumber(int row, int column, ll state){
     return cellNumber >> (row*boardSize + column)*2;
 }
 
+// use for create symmetric states
+// rotate aroud an axis(row or column)
+// 1,2,3       3,2,1
+// 4,5,6  -->  6,5,4
+// 7,8,9       9,8,7
+// [i][j]: i is which row/column, j=0 is not moving tile mask, j=1 is left shift tiles mask, j=2 is right shift tiles mask, j=3 is shift length
+// nes S = s & Mask[0] | (s & Mask[1]) << Mask[3] | (s & Mask[2]) >> Mask[3]
+array<array<ll, 4>, boardSize/2> RotateColumnMask;
+array<array<ll, 4>, boardSize/2> RotateRowMask;
+void printState(ll state);
+
+void initRotateMask(){
+    ll M;
+    for(int i=0;i<boardSize/2;i++){
+        // mask 
+        M = 0ll;  // create one columne mask 
+        for(int j=0;j<boardSize;j++){
+            M = (M << (boardSize*2)) + bMark;
+        }
+        RotateColumnMask[i][1] = M << i*2;
+        RotateColumnMask[i][2] = M << (boardSize - i -1)*2;
+        ll notMovingM = 0ll;
+        for (int j=0;j<boardSize;j++){
+            if(j!=i && j!=(boardSize-1-i)){
+                notMovingM += (M << (j*2));
+            }
+        }
+        RotateColumnMask[i][0] = notMovingM;
+        M = (1ll << boardSize*2)-1ll; // row
+        RotateRowMask[i][1] = M << (i*boardSize*2);
+        RotateRowMask[i][2] = M << (boardSize - i - 1)*boardSize*2;
+        notMovingM = 0ll;
+        for (int j=0;j<boardSize;j++){
+            if(j!=i && j!=(boardSize-1-i)){
+                notMovingM += (M << (boardSize*j*2));
+            }
+        }
+        RotateRowMask[i][0] = notMovingM;
+        RotateColumnMask[i][3] = (boardSize - i*2 - 1)*2;
+        RotateRowMask[i][3] = (boardSize - i*2 - 1)*2*boardSize;
+    }
+}
+
 ll reverseState(ll state){
     // return reverse (mirror) state
     ll newState = 0ll;
@@ -242,20 +285,41 @@ ll rotatedState(ll state){
     return newState;
 }
 
-SymmetricStates symmetricAllStates(ll state){
-    // return all symmetric states
-    SymmetricStates sStates;
-    int count = 0;
-    ll rState = reverseState(state);
-    sStates.states[count++] = state;
-    sStates.states[count++] = rState;
-    for(ll s: {state, rState}){
-        for(int i=0;i<3;i++){
-            s = rotatedState(s);
-            sStates.states[count++] = s;
-        }
+SymmetricStates rotatedStates(ll state){
+    SymmetricStates states;
+    states.states[0] = state;
+    ll newS = state;
+    for(int i=0;i<boardSize/2;i++){
+        newS = (newS & RotateRowMask[i][0]) | ((newS & RotateRowMask[i][1]) << RotateRowMask[i][3]) | ((newS & RotateRowMask[i][2]) >> RotateRowMask[i][3]);
     }
-    return sStates;
+    states.states[1] = newS;
+    for(int i=0;i<boardSize/2;i++){
+        newS = (newS & RotateColumnMask[i][0]) | ((newS & RotateColumnMask[i][1]) << RotateColumnMask[i][3]) | ((newS & RotateColumnMask[i][2]) >> RotateColumnMask[i][3]);
+    }
+    states.states[2] = newS;
+    newS = state;
+    for(int i=0;i<boardSize/2;i++){
+        newS = (newS & RotateColumnMask[i][0]) | ((newS & RotateColumnMask[i][1]) << RotateColumnMask[i][3]) | ((newS & RotateColumnMask[i][2]) >> RotateColumnMask[i][3]);
+    }
+    states.states[3] = newS;
+    return states;
+}
+
+SymmetricStates symmetricAllStates(ll state){
+    return rotatedStates(state);
+    // // return all symmetric states
+    // SymmetricStates sStates;
+    // int count = 0;
+    // ll rState = reverseState(state);
+    // sStates.states[count++] = state;
+    // sStates.states[count++] = rState;
+    // for(ll s: {state, rState}){
+    //     for(int i=0;i<3;i++){
+    //         s = rotatedState(s);
+    //         sStates.states[count++] = s;
+    //     }
+    // }
+    // return sStates;
 }
 
 void printState(ll state){
@@ -464,6 +528,7 @@ StateArray createPreviousStates(ll pres, bool fromEmpty){
 void initState(){
     initEncoding();
     initSwapMasks();
+    initRotateMask();
     // initialize cellNumbers
     vector< vector<ll> > cells(boardSize, vector<ll>(boardSize));
     for(int i=0;i<boardSize;i++){

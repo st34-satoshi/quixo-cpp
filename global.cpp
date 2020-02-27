@@ -27,8 +27,8 @@ struct StateArray{
 };
 
 struct SymmetricStates{
-    int size = 8;
-    array<ll, 8> states;
+    static const int size = 4;
+    array<ll, size> states;
 };
 
 void createCombinations(){
