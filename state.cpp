@@ -285,6 +285,7 @@ ll leftTurnState(ll state){
 }
 
 RotateStates rotatedStates(ll state){
+    // rotate aroud an axis(row or column)
     RotateStates states;
     states.states[0] = state;
     ll newS = state;
@@ -305,7 +306,6 @@ RotateStates rotatedStates(ll state){
 }
 
 SymmetricStates symmetricAllStates(ll state){
-    // return rotatedStates(state);
     // return all symmetric states
     SymmetricStates symStates;
     ll lState = leftTurnState(state);
