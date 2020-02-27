@@ -108,16 +108,18 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
             updated = true;
             ll stateNumber = generateState(i, oNumber, xNumber);
             // update all symmetric states
-            for(auto stateN : symmetricAllStates(stateNumber)){
-                ll stateI = generateIndexNumber(stateN, oNumber, xNumber);
+            auto symStates = symmetricAllStates(stateNumber);
+            for(int j=0;j<symStates.size;j++){
+                ll stateI = generateIndexNumber(symStates.states[j], oNumber, xNumber);
                 updateToLoss(values, stateI);
             }
             // generate previous states, update to win
             StateArray sa = createPreviousStates(stateNumber, false);
             for(int j=0;j<sa.count;j++){
                 ll stateN = sa.states[j];
-                for(auto s : symmetricAllStates(stateN)){
-                    ll stateI = generateIndexNumber(s, xNumber, oNumber);
+                auto symStates = symmetricAllStates(stateN);
+                for(int k=0;k<symStates.size;k++){
+                    ll stateI = generateIndexNumber(symStates.states[k], xNumber, oNumber);
                     updateToWin(reverseStatesValues, stateI);
                 }
             }
@@ -175,8 +177,9 @@ void updateValuesFromEndStates(vector<bool> *values, int oNumber, int xNumber, v
         int win = isWin(stateNumber); // win:1, lose:-1, draw:0
         if (win == -1){
             // update this state to lose and change previous states to win
-            for(auto stateN : symmetricAllStates(stateNumber)){
-                ll stateI = generateIndexNumber(stateN, xNumber, oNumber);
+            auto symStates = symmetricAllStates(stateNumber);
+            for(int j=0;j<symStates.size;j++){
+                ll stateI = generateIndexNumber(symStates.states[j], xNumber, oNumber);
                 updateToLoss(reverseStatesValues, stateI);
             }
             // generate previous states, update to win
@@ -184,14 +187,16 @@ void updateValuesFromEndStates(vector<bool> *values, int oNumber, int xNumber, v
             ll stateN, stateI;
             for(int j=0;j<sa.count;j++){
                 stateN = sa.states[j];
-                for(auto s : symmetricAllStates(stateN)){
-                    stateI = generateIndexNumber(s, oNumber, xNumber);
+                auto symStates = symmetricAllStates(stateN);
+                for(int k=0;k<symStates.size;k++){
+                    stateI = generateIndexNumber(symStates.states[k], oNumber, xNumber);
                     updateToWin(values, stateI);
                 }
             }
         }else if (win == 1){
-            for(auto state : symmetricAllStates(stateNumber)){
-                ll stateI = generateIndexNumber(state, xNumber, oNumber);
+            auto symStates = symmetricAllStates(stateNumber);
+            for(int j=0;j<symStates.size;j++){
+                ll stateI = generateIndexNumber(symStates.states[j], xNumber, oNumber);
                 updateToWin(reverseStatesValues, stateI);
             }
         }
@@ -239,7 +244,7 @@ void computeAllStatesValue(){
         for(int oNumber=0;oNumber<=total/2;oNumber++){
             cout << "o number = " << oNumber << endl;
             int xNumber = total - oNumber;
-            if (!needCompute(oNumber, xNumber)) continue;
+            // if (!needCompute(oNumber, xNumber)) continue;
             computeStatesValue(oNumber, xNumber);
         }
     }

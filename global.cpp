@@ -26,6 +26,11 @@ struct StateArray{
     array<ll, MAX_STATES> states;
 };
 
+struct SymmetricStates{
+    int size = 8;
+    array<ll, 8> states;
+};
+
 void createCombinations(){
     int combSize = combinationSize+ 1;
     vector< vector<ll> > comb(combSize, vector<ll>(combSize));

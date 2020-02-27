@@ -242,7 +242,8 @@ ll rotatedState(ll state){
     return newState;
 }
 
-vector<ll> symmetricAllStates(ll state){
+// vector<ll> symmetricAllStates(ll state){
+SymmetricStates symmetricAllStates(ll state){
     // return all symmetric states
     ll rState = reverseState(state);
     vector<ll> symmetricStates;
@@ -254,7 +255,12 @@ vector<ll> symmetricAllStates(ll state){
             symmetricStates.push_back(s);
         }
     }
-    return symmetricStates;
+    // return symmetricStates;
+    SymmetricStates sStates;
+    for(int i=0;i<8;i++){
+        sStates.states[i] = symmetricStates[i];
+    }
+    return sStates;
 }
 
 void printState(ll state){
