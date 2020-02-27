@@ -242,23 +242,18 @@ ll rotatedState(ll state){
     return newState;
 }
 
-// vector<ll> symmetricAllStates(ll state){
 SymmetricStates symmetricAllStates(ll state){
     // return all symmetric states
+    SymmetricStates sStates;
+    int count = 0;
     ll rState = reverseState(state);
-    vector<ll> symmetricStates;
-    symmetricStates.push_back(state);
-    symmetricStates.push_back(rState);
+    sStates.states[count++] = state;
+    sStates.states[count++] = rState;
     for(ll s: {state, rState}){
         for(int i=0;i<3;i++){
             s = rotatedState(s);
-            symmetricStates.push_back(s);
+            sStates.states[count++] = s;
         }
-    }
-    // return symmetricStates;
-    SymmetricStates sStates;
-    for(int i=0;i<8;i++){
-        sStates.states[i] = symmetricStates[i];
     }
     return sStates;
 }
