@@ -422,26 +422,26 @@ void computeStatesValue(int oNumber, int xNumber){
     
     // at first find next lose states and update this values to win
     // find the states which end of the game, if it is lose update previous state to win
-    // statesValue.updateValuesFromNext(oNumber, xNumber);
-    // reverseStatesValue.updateValuesFromNext(xNumber, oNumber);
-    updateValuesFromNext(&statesValue.statesValue, oNumber, xNumber);
-    updateValuesFromNext(&reverseStatesValue.statesValue, xNumber, oNumber);
+    statesValue.updateValuesFromNext(oNumber, xNumber);
+    reverseStatesValue.updateValuesFromNext(xNumber, oNumber);
+    // updateValuesFromNext(&statesValue.statesValue, oNumber, xNumber);
+    // updateValuesFromNext(&reverseStatesValue.statesValue, xNumber, oNumber);
 
-    // statesValue.updateValuesFromEndStates(oNumber, xNumber, &reverseStatesValue);
-    // reverseStatesValue.updateValuesFromEndStates(xNumber, oNumber, &statesValue);
-    updateValuesFromEndStates(&statesValue.statesValue, oNumber, xNumber, &reverseStatesValue.statesValue);
-    updateValuesFromEndStates(&reverseStatesValue.statesValue, xNumber, oNumber, &statesValue.statesValue);
+    statesValue.updateValuesFromEndStates(oNumber, xNumber, &reverseStatesValue);
+    reverseStatesValue.updateValuesFromEndStates(xNumber, oNumber, &statesValue);
+    // updateValuesFromEndStates(&statesValue.statesValue, oNumber, xNumber, &reverseStatesValue.statesValue);
+    // updateValuesFromEndStates(&reverseStatesValue.statesValue, xNumber, oNumber, &statesValue.statesValue);
 
-    // // compute values until no update
-    // bool updated = true;
-    // while (updated){
-    //     updated = false;
-    //     // check all states
-    //     // updated = statesValue.updateValues(oNumber, xNumber, &reverseStatesValue);
-    //     // updated = reverseStatesValue.updateValues(xNumber, oNumber, &statesValue) || updated;
-    //     updated = updateValues(&statesValue.statesValue, oNumber, xNumber, &reverseStatesValue.statesValue);
-    //     updated = updateValues(&reverseStatesValue.statesValue, xNumber, oNumber, &statesValue.statesValue) || updated;
-    // }
+    // compute values until no update
+    bool updated = true;
+    while (updated){
+        updated = false;
+        // check all states
+        updated = statesValue.updateValues(oNumber, xNumber, &reverseStatesValue);
+        updated = reverseStatesValue.updateValues(xNumber, oNumber, &statesValue) || updated;
+        // updated = updateValues(&statesValue.statesValue, oNumber, xNumber, &reverseStatesValue.statesValue);
+        // updated = updateValues(&reverseStatesValue.statesValue, xNumber, oNumber, &statesValue.statesValue) || updated;
+    }
     // save resutl to strage
     // TODO: in struct as method
     writeStatesValue(&statesValue.statesValue, oNumber, xNumber);

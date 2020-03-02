@@ -615,7 +615,10 @@ void writeStatesValue(vector<bool> *values, int oNumber, int xNumber){
     }
     int bitCounter = 0;
     unsigned char c = 0;
-    for(auto t: *values){
+    ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber]*2ll;
+    // for(auto t: *values){
+    for(ll i=0ll;i<statesSize;i++){
+        bool t = values->at(i);
         c = c << 1;
         c += t;
         bitCounter++;
