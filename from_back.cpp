@@ -28,16 +28,81 @@ c++ -std=c++17 -Wall -O3 from_back.cpp
 
 #include "state.cpp"
 
+// global variables. this is reseted at the start of computation of the states set()
+struct StatesValue{
+    vector<bool> statesValue;
+
+    void initSize(){
+        statesValue.resize(MAX_STATES_VALUE*2ll);
+    }
+
+    void initValues(int oNumber, int xNumber){
+        for(ll i=0ll;i<combinations[combinationSize][oNumber]*combinations[combinationSize-oNumber][xNumber]*2ll;i++){
+            statesValue[i] = false;
+        }
+    }
+    bool isLoss(ll index){
+        return statesValue[index*2ll] && statesValue[index*2ll + 1ll];
+    }
+    bool isDraw(ll index){
+        // default or winOrDraw
+        return !(statesValue[index*2ll + 1ll]);
+    }
+    bool read(int oNumber, int xNumber){
+        ifstream fin(fileName(oNumber, xNumber, "Value"), ios::in | ios::binary);
+        if(!fin.is_open()){
+            cout << "cannot open file 1" << endl;
+            return false;
+        }
+        unsigned char data;
+        ll number = combinations[combinationSize][oNumber]*combinations[combinationSize-oNumber][xNumber]*2ll;
+        ll i = 0ll;
+        for (;i<number/8;i++){
+            data = fin.get();
+            ll mask = 1ll << 7;
+            for(ll j=0;j<8;j++){
+                statesValue[i*8+j] = data & mask;
+                mask = mask >> 1;
+            }
+        }
+        ll r = number % 8;
+        if (r != 0){
+            data = fin.get();
+            ll mask = 1 << (r - 1);
+            for(ll j=0;j<r;j++){
+                statesValue[i*8+j] = data & mask;
+                mask = mask >> 1;
+            }
+        }
+        fin.close();
+        return true;
+    }
+};
+
+StatesValue statesValue, reverseStatesValue, nextStatesValue; // gloval values!
+
+void initResizeGloval(){
+    statesValue.initSize();
+    reverseStatesValue.initSize();
+    nextStatesValue.initSize();
+}
+
 void init(){
     createCombinations();
     initState();
     initMovingMasks();
     initEncoding();
+    initResizeGloval();
 }
 
 /*
  update all values
 */
+
+void initGloval(int oNumber, int xNumber){
+    statesValue.initValues(oNumber, xNumber);
+    nextStatesValue.initValues(xNumber, oNumber);
+}
 
 inline void updateToWin(vector<bool> *values, ll index){
     values->at(index*2ll) = false;
@@ -58,8 +123,12 @@ inline bool isWin(vector<bool> *values, ll index){
     return (!values->at(index*2ll) && values->at(index*2ll + 1ll));
 }
 
-inline bool isLoss(vector<bool> *values, ll index){
+inline bool isLoss(vector<bool> *values, ll index){ // TODO: remove
     return values->at(index*2ll) && values->at(index*2ll + 1ll);
+}
+
+inline bool isLossState(array<bool, MAX_STATES_VALUE> *statesValue, ll index){
+    return statesValue->at(index*2ll) && statesValue->at(index*2ll + 1ll);
 }
 
 inline bool isWinOrDraw(vector<bool> *values, ll index){
@@ -70,7 +139,7 @@ inline bool isDefault(vector<bool> *values, ll index){
     return !(values->at(index*2ll)) && !(values->at(index*2ll + 1ll));
 }
 
-inline bool isDraw(vector<bool> *values, ll index){
+inline bool isDraw(vector<bool> *values, ll index){// TODO: remove
     // default or winOrDraw
     return !(values->at(index*2ll + 1ll));
 }
@@ -132,13 +201,19 @@ void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber){
     // if next state is loss, this state --> win
     // if next state is draw(or winOrDraw) --> winOrDraw
     // oNumber is for values
+    // nextStatesValue.initValues(xNumber, oNumber+1);
 
     // read next states from the file
-    vector<bool> nextStatesValues(getCombination(combinationSize, xNumber)*getCombination(combinationSize-xNumber, oNumber+1) * 2);  // next states values of values
-    readStatesValue(&nextStatesValues, xNumber, oNumber+1);
+    if(!nextStatesValue.read(xNumber, oNumber+1)){
+        return;
+    }
+    ull nextStatesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber+1];
+    cout << "size = " << nextStatesSize << endl;
+    // ull nextStatesSize = getCombination(combinationSize, xNumber)*getCombination(combinationSize-xNumber, oNumber+1) * 2ll;
 
-    for (ull i=0ll;i<nextStatesValues.size()/2ll;i++){
-        if(isLoss(&nextStatesValues, i)){
+    for (ull i=0ll;i<nextStatesSize;i++){
+        // cout << "i=" << i << endl;
+        if(nextStatesValue.isLoss(i)){ // TODO: change vector --> array at once is hard. make the function for array, do not use the function for vector, remove the old functions
             ll stateNumber = generateState(i, xNumber, oNumber+1);
             StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
             ll stateN, stateI;
@@ -147,7 +222,7 @@ void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber){
                 stateI = generateIndexNumber(stateN, oNumber, xNumber);
                 updateToWin(values, stateI);
             }
-        }else if(isDraw(&nextStatesValues, i)){
+        }else if(nextStatesValue.isDraw(i)){
             // default or winOrDraw
             ll stateNumber = generateState(i, xNumber, oNumber+1);
             // generate previous states, update to winOrDraw(not loss)
@@ -209,6 +284,8 @@ void computeStatesValue(int oNumber, int xNumber){
     // initialize this state value
     // we need to compute reverse states at the same time. 
     vector<bool> values(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
+    // TODO: remove comments out
+    // initGloval(oNumber, xNumber);  // initialize gloval variables, SatesValue, ReverseStatesValue.
     vector<bool> valuesReverse(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber] * 2);
     
     // at first find next lose states and update this values to win

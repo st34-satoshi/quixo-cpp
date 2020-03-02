@@ -88,6 +88,22 @@ void testCheckWin(){
     cout << isWin(s) << endl;
 }
 
+inline void addArray(array<bool, 3> a){
+    a[1] = 3;
+    // cout << "cp" << a[1] << endl;
+}
+
+void allocateMany(){
+    // vector<int> hoge;
+    // hoge.resize(26293088250);
+    // cout << hoge.size() << endl;
+    cout << "test";
+    vector<int> v = { 1, 2, 3 }; // size is 3
+    const vector<int>::size_type max_size = v.max_size();
+    cout << max_size << endl; // prints some large number
+
+}
+
 int main(){
     cout << "test" << endl;
     // createCombinations();
@@ -102,6 +118,10 @@ int main(){
     // // testREADWrite();
     // testCheckWin();
     cout << isExistFile(0, 3, "Value") << endl;
+    array<bool, 3> ar;
+    addArray(ar);
+    cout << "result" << ar[1] << endl;
+    allocateMany();
 
     return 0;
 }
