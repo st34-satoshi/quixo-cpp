@@ -615,10 +615,7 @@ void writeStatesValue(vector<bool> *values, int oNumber, int xNumber){
     }
     int bitCounter = 0;
     unsigned char c = 0;
-    ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber]*2ll;
-    // for(auto t: *values){
-    for(ll i=0ll;i<statesSize;i++){
-        bool t = values->at(i);
+    for(auto t: *values){
         c = c << 1;
         c += t;
         bitCounter++;
@@ -632,6 +629,35 @@ void writeStatesValue(vector<bool> *values, int oNumber, int xNumber){
         fout.put(c);
     }
     fout.close();
+}
+
+void readStatesValue(vector<bool> *values, int oNumber, int xNumber){
+    ifstream fin(fileName(oNumber, xNumber, "Value"), ios::in | ios::binary);
+    if(!fin.is_open()){
+        cout << "cannot open file" << endl;
+        return;
+    }
+    unsigned char data;
+    ll number = combinations[combinationSize][oNumber]*combinations[combinationSize-oNumber][xNumber]*2;
+    ll i = 0ll;
+    for (;i<number/8;i++){
+        data = fin.get();
+        ll mask = 1 << 7;
+        for(ll j=0;j<8;j++){
+            values->at(i*8+j) = data & mask;
+            mask = mask >> 1;
+        }
+    }
+    ll r = number % 8;
+    if (r != 0){
+        data = fin.get();
+        ll mask = 1 << (r - 1);
+        for(ll j=0;j<r;j++){
+            values->at(i*8+j) = data & mask;
+            mask = mask >> 1;
+        }
+    }
+    fin.close();
 }
 
 void writeStatesSteps(vector<int> *statesStep, int oNumber, int xNumber){

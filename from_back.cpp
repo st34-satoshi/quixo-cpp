@@ -95,6 +95,31 @@ struct StatesValue{
         fin.close();
         return true;
     }
+    void writeStatesValue(int oNumber, int xNumber){
+        ofstream fout(fileName(oNumber, xNumber, "Value"), ios::out | ios::binary);
+        if(!fout.is_open()){
+            cout << "cannot open file" << endl;
+            return;
+        }
+        int bitCounter = 0;
+        unsigned char c = 0;
+        ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber]*2ll;
+        for(ll i=0ll;i<statesSize;i++){
+            bool t = statesValue[i];
+            c = c << 1;
+            c += t;
+            bitCounter++;
+            if (bitCounter == 8){
+                fout.put(c);
+                c = 0;
+                bitCounter = 0;
+            }
+        }
+        if (bitCounter != 0){
+            fout.put(c);
+        }
+        fout.close();
+    }
 
 };
 
@@ -284,8 +309,10 @@ void computeStatesValue(int oNumber, int xNumber){
     }
     // save resutl to strage
     // TODO: in struct as method
-    writeStatesValue(&statesValue.statesValue, oNumber, xNumber);
-    writeStatesValue(&reverseStatesValue.statesValue, xNumber, oNumber);
+    // writeStatesValue(&statesValue.statesValue, oNumber, xNumber);
+    // writeStatesValue(&reverseStatesValue.statesValue, xNumber, oNumber);
+    statesValue.writeStatesValue(oNumber, xNumber);
+    reverseStatesValue.writeStatesValue(xNumber, oNumber);
 }
 
 bool needCompute(int oNumber, int xNumber){
