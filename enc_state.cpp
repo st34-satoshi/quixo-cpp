@@ -66,16 +66,14 @@ void initEncoding(){
 ll generateState(ll indexState, int oNumber, int xNumber){
     int xPatterns = combinations[combinationSize-oNumber][xNumber];
     // at first decide o
-    vector<bool> oStateArray = StateArrayFromI[combinationSize][oNumber][indexState/xPatterns];
-    vector<bool> xStateArray = StateArrayFromI[combinationSize-oNumber][xNumber][indexState%xPatterns];
     ll newS = 0ll;
     int xI = 0;
     for(int i=0;i<combinationSize;i++){
-        if(oStateArray[i]){
+        if(StateArrayFromI[combinationSize][oNumber][indexState/xPatterns][i]){
             newS += oMark << (combinationSize - i -1)*2;
             continue;
         }
-        if(xStateArray[xI]){
+        if(StateArrayFromI[combinationSize-oNumber][xNumber][indexState%xPatterns][xI]){
             newS += xMark << (combinationSize - i - 1)*2;
         }
         xI++;
