@@ -48,6 +48,24 @@ struct StatesValue{
         // default or winOrDraw
         return !(statesValue[index*2ll + 1ll]);
     }
+    bool isDefault(ll index){
+        return !(statesValue[index*2ll]) && !(statesValue[index*2ll + 1ll]);
+    }
+    bool isNotDefault(ll index){
+        return statesValue[index*2ll] || statesValue[index*2ll + 1ll];
+    }
+    void updateToWin(ll index){
+        statesValue[index*2ll] = false;
+        statesValue[index*2ll + 1ll] = true;
+    }
+    void updateToWinOrDraw(ll index){
+        statesValue[index*2ll] = true;
+        statesValue[index*2ll + 1ll] = false;
+    }
+    void updateToLoss(ll index){
+        statesValue[index*2ll] = true;
+        statesValue[index*2ll + 1ll] = true;
+    }
     bool read(int oNumber, int xNumber){
         ifstream fin(fileName(oNumber, xNumber, "Value"), ios::in | ios::binary);
         if(!fin.is_open()){
@@ -77,9 +95,93 @@ struct StatesValue{
         fin.close();
         return true;
     }
+
 };
 
-StatesValue statesValue, reverseStatesValue, nextStatesValue; // gloval values!
+StatesValue nextStatesValue; // gloval values!
+
+struct PresentStatesValue: StatesValue{
+
+    void updateValuesFromNext(int oNumber, int xNumber){
+        // if next state is loss, this state --> win
+        // if next state is draw(or winOrDraw) --> winOrDraw
+        // oNumber is for values
+
+        // read next states from the file. save to the gloval vralue.
+        if(!nextStatesValue.read(xNumber, oNumber+1)){
+            return;
+        }
+        ull nextStatesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber+1];
+        for (ull i=0ll;i<nextStatesSize;i++){
+            if(nextStatesValue.isLoss(i)){ 
+                ll stateNumber = generateState(i, xNumber, oNumber+1);
+                StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
+                ll stateN, stateI;
+                for(int j=0;j<sa.count;j++){
+                    stateN = sa.states[j];
+                    stateI = generateIndexNumber(stateN, oNumber, xNumber);
+                    updateToWin(stateI);
+                }
+            }else if(nextStatesValue.isDraw(i)){
+                // default or winOrDraw
+                ll stateNumber = generateState(i, xNumber, oNumber+1);
+                // generate previous states, update to winOrDraw(not loss)
+                StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
+                ll stateN, stateI;
+                for(int j=0;j<sa.count;j++){
+                    stateN = sa.states[j];
+                    stateI = generateIndexNumber(stateN, oNumber, xNumber);
+                    if (isDefault(stateI)){
+                        updateToWinOrDraw(stateI);
+                    }
+                }
+            }
+        }
+    }
+
+    void updateValuesFromEndStates(int oNumber, int xNumber, PresentStatesValue *reverseSV){
+        // find the states which end of the game, update the state and update previous states (to win)
+        // oNumber is for values
+        // update this struct using reverseStatesValues, but update the reverseStatesValue which is end of the game(has a line).
+
+        ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
+        for (ull i=0ll;i<statesSize;i++){
+            if (reverseSV->isNotDefault(i)){
+                // loss, win or winOrDraw --> skip. this is not the end of the game
+                continue;
+            }
+            ll stateNumber = generateState(i, xNumber, oNumber);
+            int win = isWin(stateNumber); // win:1, lose:-1, draw:0
+            if (win == -1){
+                // update this state to lose and change previous states to win
+                auto symStates = symmetricAllStates(stateNumber);
+                for(int j=0;j<symStates.size;j++){
+                    ll stateI = generateIndexNumber(symStates.states[j], xNumber, oNumber);
+                    reverseSV->updateToLoss(stateI);
+                }
+                // generate previous states, update to win
+                StateArray sa = createPreviousStates(stateNumber, false);
+                ll stateN, stateI;
+                for(int j=0;j<sa.count;j++){
+                    stateN = sa.states[j];
+                    auto symStates = symmetricAllStates(stateN);
+                    for(int k=0;k<symStates.size;k++){
+                        stateI = generateIndexNumber(symStates.states[k], oNumber, xNumber);
+                        updateToWin(stateI);
+                    }
+                }
+            }else if (win == 1){
+                auto symStates = symmetricAllStates(stateNumber);
+                for(int j=0;j<symStates.size;j++){
+                    ll stateI = generateIndexNumber(symStates.states[j], xNumber, oNumber);
+                    reverseSV->updateToWin(stateI);
+                }
+            }
+        }
+    }
+};
+
+PresentStatesValue statesValue, reverseStatesValue; // gloval values!
 
 void initResizeGloval(){
     statesValue.initSize();
@@ -101,7 +203,7 @@ void init(){
 
 void initGloval(int oNumber, int xNumber){
     statesValue.initValues(oNumber, xNumber);
-    nextStatesValue.initValues(xNumber, oNumber);
+    reverseStatesValue.initValues(xNumber, oNumber);
 }
 
 inline void updateToWin(vector<bool> *values, ll index){
@@ -197,116 +299,36 @@ bool updateValues(vector<bool> *values, int oNumber, int xNumber, vector<bool> *
     return updated;
 }
 
-void updateValuesFromNext(vector<bool> *values, int oNumber, int xNumber){
-    // if next state is loss, this state --> win
-    // if next state is draw(or winOrDraw) --> winOrDraw
-    // oNumber is for values
-    // nextStatesValue.initValues(xNumber, oNumber+1);
-
-    // read next states from the file
-    if(!nextStatesValue.read(xNumber, oNumber+1)){
-        return;
-    }
-    ull nextStatesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber+1];
-    cout << "size = " << nextStatesSize << endl;
-    // ull nextStatesSize = getCombination(combinationSize, xNumber)*getCombination(combinationSize-xNumber, oNumber+1) * 2ll;
-
-    for (ull i=0ll;i<nextStatesSize;i++){
-        // cout << "i=" << i << endl;
-        if(nextStatesValue.isLoss(i)){ // TODO: change vector --> array at once is hard. make the function for array, do not use the function for vector, remove the old functions
-            ll stateNumber = generateState(i, xNumber, oNumber+1);
-            StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
-            ll stateN, stateI;
-            for(int j=0;j<sa.count;j++){
-                stateN = sa.states[j];
-                stateI = generateIndexNumber(stateN, oNumber, xNumber);
-                updateToWin(values, stateI);
-            }
-        }else if(nextStatesValue.isDraw(i)){
-            // default or winOrDraw
-            ll stateNumber = generateState(i, xNumber, oNumber+1);
-            // generate previous states, update to winOrDraw(not loss)
-            StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
-            ll stateN, stateI;
-            for(int j=0;j<sa.count;j++){
-                stateN = sa.states[j];
-                stateI = generateIndexNumber(stateN, oNumber, xNumber);
-                if (isDefault(values, stateI)){
-                    updateToWinOrDraw(values, stateI);
-                }
-            }
-        }
-    }
-}
-
-void updateValuesFromEndStates(vector<bool> *values, int oNumber, int xNumber, vector<bool> *reverseStatesValues){
-    // find the states which end of the game, update the state and update previous states (to win)
-    // oNumber is for values
-
-    for (ull i=0ll;i<reverseStatesValues->size()/2ll;i++){
-        if (isNotDefault(reverseStatesValues, i)){
-            // loss, win or winOrDraw --> skip. this is not the end of the game
-            continue;
-        }
-        ll stateNumber = generateState(i, xNumber, oNumber);
-        int win = isWin(stateNumber); // win:1, lose:-1, draw:0
-        if (win == -1){
-            // update this state to lose and change previous states to win
-            auto symStates = symmetricAllStates(stateNumber);
-            for(int j=0;j<symStates.size;j++){
-                ll stateI = generateIndexNumber(symStates.states[j], xNumber, oNumber);
-                updateToLoss(reverseStatesValues, stateI);
-            }
-            // generate previous states, update to win
-            StateArray sa = createPreviousStates(stateNumber, false);
-            ll stateN, stateI;
-            for(int j=0;j<sa.count;j++){
-                stateN = sa.states[j];
-                auto symStates = symmetricAllStates(stateN);
-                for(int k=0;k<symStates.size;k++){
-                    stateI = generateIndexNumber(symStates.states[k], oNumber, xNumber);
-                    updateToWin(values, stateI);
-                }
-            }
-        }else if (win == 1){
-            auto symStates = symmetricAllStates(stateNumber);
-            for(int j=0;j<symStates.size;j++){
-                ll stateI = generateIndexNumber(symStates.states[j], xNumber, oNumber);
-                updateToWin(reverseStatesValues, stateI);
-            }
-        }
-    }
-}
-
 void computeStatesValue(int oNumber, int xNumber){
     // TODO implement: the case no == nx. do not need to use reverse???
     // oNumber != xNumber
     // initialize this state value
     // we need to compute reverse states at the same time. 
-    vector<bool> values(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
+    // vector<bool> values(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
     // TODO: remove comments out
-    // initGloval(oNumber, xNumber);  // initialize gloval variables, SatesValue, ReverseStatesValue.
-    vector<bool> valuesReverse(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber] * 2);
+    initGloval(oNumber, xNumber);  // initialize gloval variables, SatesValue, ReverseStatesValue.
+    // vector<bool> valuesReverse(combinations[combinationSize][xNumber] * combinations[(combinationSize-xNumber)][oNumber] * 2);
     
     // at first find next lose states and update this values to win
     // find the states which end of the game, if it is lose update previous state to win
-    updateValuesFromNext(&values, oNumber, xNumber);
-    updateValuesFromNext(&valuesReverse, xNumber, oNumber);
+    statesValue.updateValuesFromNext(oNumber, xNumber);
+    reverseStatesValue.updateValuesFromNext(xNumber, oNumber);
 
-    updateValuesFromEndStates(&values, oNumber, xNumber, &valuesReverse);
-    updateValuesFromEndStates(&valuesReverse, xNumber, oNumber, &values);
+    statesValue.updateValuesFromEndStates(oNumber, xNumber, &reverseStatesValue);
+    reverseStatesValue.updateValuesFromEndStates(xNumber, oNumber, &statesValue);
 
-    // compute values until no update
-    bool updated = true;
-    while (updated){
-        updated = false;
-        // check all states
-        updated = updateValues(&values, oNumber, xNumber, &valuesReverse);
-        updated = updateValues(&valuesReverse, xNumber, oNumber, &values) || updated;
-    }
+    // // compute values until no update
+    // bool updated = true;
+    // while (updated){
+    //     updated = false;
+    //     // check all states
+    //     updated = updateValues(&values, oNumber, xNumber, &valuesReverse);
+    //     updated = updateValues(&valuesReverse, xNumber, oNumber, &values) || updated;
+    // }
     // save resutl to strage
-    writeStatesValue(&values, oNumber, xNumber);
-    writeStatesValue(&valuesReverse, xNumber, oNumber);
+    // TODO: in struct as method
+    writeStatesValue(&statesValue.statesValue, oNumber, xNumber);
+    writeStatesValue(&reverseStatesValue.statesValue, xNumber, oNumber);
 }
 
 bool needCompute(int oNumber, int xNumber){
