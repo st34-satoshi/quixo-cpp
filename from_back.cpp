@@ -104,7 +104,7 @@ struct StatesValue{
         int bitCounter = 0;
         unsigned char c = 0;
         ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber]*2ll;
-        for(ll i=0ll;i<statesSize;i++){
+        for(ull i=0ll;i<statesSize;i++){
             bool t = statesValue[i];
             c = c << 1;
             c += t;
@@ -275,44 +275,40 @@ void init(){
     initResizeGloval();
 }
 
-/*
- update all values
-*/
-
-void initGloval(int oNumber, int xNumber){
-    statesValue.initValues(oNumber, xNumber);
-    reverseStatesValue.initValues(xNumber, oNumber);
-}
-
 void computeStatesValue(int oNumber, int xNumber){
-    // TODO implement: the case no == nx. do not need to use reverse???
-    // oNumber != xNumber
-    // initialize this state value
     // we need to compute reverse states at the same time. 
-    initGloval(oNumber, xNumber);  // initialize gloval variables, SatesValue, ReverseStatesValue.
+
+    // initialize this state value
+    statesValue.initValues(oNumber, xNumber);
+    if(oNumber!=xNumber) reverseStatesValue.initValues(xNumber, oNumber);
     
     // at first find next lose states and update this values to win
     // find the states which end of the game, if it is lose update previous state to win
     statesValue.updateValuesFromNext(oNumber, xNumber);
-    reverseStatesValue.updateValuesFromNext(xNumber, oNumber);
+    if(oNumber!=xNumber) reverseStatesValue.updateValuesFromNext(xNumber, oNumber);
 
-    statesValue.updateValuesFromEndStates(oNumber, xNumber, &reverseStatesValue);
-    reverseStatesValue.updateValuesFromEndStates(xNumber, oNumber, &statesValue);
+    if(oNumber==xNumber) {
+        statesValue.updateValuesFromEndStates(oNumber, xNumber, &statesValue);
+    }else{
+        statesValue.updateValuesFromEndStates(oNumber, xNumber, &reverseStatesValue);
+        reverseStatesValue.updateValuesFromEndStates(xNumber, oNumber, &statesValue);
+    }
 
     // compute values until no update
     bool updated = true;
     while (updated){
         updated = false;
         // check all states
-        updated = statesValue.updateValues(oNumber, xNumber, &reverseStatesValue);
-        updated = reverseStatesValue.updateValues(xNumber, oNumber, &statesValue) || updated;
+        if(oNumber==xNumber){
+            updated = statesValue.updateValues(oNumber, xNumber, &statesValue);
+        }else{
+            updated = statesValue.updateValues(oNumber, xNumber, &reverseStatesValue);
+            updated = reverseStatesValue.updateValues(xNumber, oNumber, &statesValue) || updated;
+        }
     }
     // save resutl to strage
-    // TODO: in struct as method
-    // writeStatesValue(&statesValue.statesValue, oNumber, xNumber);
-    // writeStatesValue(&reverseStatesValue.statesValue, xNumber, oNumber);
     statesValue.writeStatesValue(oNumber, xNumber);
-    reverseStatesValue.writeStatesValue(xNumber, oNumber);
+    if(oNumber!=xNumber) reverseStatesValue.writeStatesValue(xNumber, oNumber);
 }
 
 bool needCompute(int oNumber, int xNumber){
@@ -327,7 +323,7 @@ void computeAllStatesValue(){
         for(int oNumber=0;oNumber<=total/2;oNumber++){
             cout << "o number = " << oNumber << endl;
             int xNumber = total - oNumber;
-            // if (!needCompute(oNumber, xNumber)) continue;
+            if (!needCompute(oNumber, xNumber)) continue;
             computeStatesValue(oNumber, xNumber);
         }
     }
