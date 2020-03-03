@@ -145,9 +145,9 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *reverseS
     return true;
 }
 
-
 struct PresentStatesValue: StatesValue{
     array<mutex, MUTEX_NUMBER> mutexes;
+    thread threads[THREADS_NUMBER];
 
     void updateValuesFromNextThread(int oNumber, int xNumber, ll startI, ll endI){
         // if next state is loss, this state --> win
@@ -191,7 +191,13 @@ struct PresentStatesValue: StatesValue{
         }
         ull nextStatesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber+1];
         // TODO: each thread
-        updateValuesFromNextThread(oNumber, xNumber, 0ll, nextStatesSize);
+        ull statesSizePerThread = nextStatesSize / THREADS_NUMBER;
+        ull i=0;
+        for(;i<THREADS_NUMBER-1;i++) threads[i] = thread([this, oNumber, xNumber, i, statesSizePerThread]{updateValuesFromNextThread(oNumber, xNumber, i*statesSizePerThread, (i+1ll)*statesSizePerThread);});
+        threads[i] = thread([this, oNumber, xNumber, i, statesSizePerThread, nextStatesSize]{updateValuesFromNextThread(oNumber, xNumber, i*statesSizePerThread, nextStatesSize);});
+        for(int j=0;j<THREADS_NUMBER;j++){
+            threads[j].join();
+        }
     }
 
     void updateValuesFromEndStates(int oNumber, int xNumber, PresentStatesValue *reverseSV){
