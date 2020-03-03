@@ -31,16 +31,18 @@ c++ -std=c++17 -Wall -O3 from_back.cpp
 // global variables. this is reseted at the start of computation of the states set()
 struct StatesValue{
     vector<bool> statesValue;
+    array<mutex, MUTEX_NUMBER> mutexes;
 
     void initSize(){
         statesValue.resize(MAX_STATES_VALUE*2ll);
     }
-
     void initValues(int oNumber, int xNumber){
         for(ll i=0ll;i<combinations[combinationSize][oNumber]*combinations[combinationSize-oNumber][xNumber]*2ll;i++){
             statesValue[i] = false;
         }
     }
+
+    // check the state
     bool isLoss(ll index){
         return statesValue[index*2ll] && statesValue[index*2ll + 1ll];
     }
@@ -54,18 +56,24 @@ struct StatesValue{
     bool isNotDefault(ll index){
         return statesValue[index*2ll] || statesValue[index*2ll + 1ll];
     }
+
+    // update
     void updateToWin(ll index){
+        lock_guard<mutex> lock(mutexes[index%MUTEX_NUMBER]);
         statesValue[index*2ll] = false;
         statesValue[index*2ll + 1ll] = true;
     }
     void updateToWinOrDraw(ll index){
+        lock_guard<mutex> lock(mutexes[index%MUTEX_NUMBER]);
         statesValue[index*2ll] = true;
         statesValue[index*2ll + 1ll] = false;
     }
     void updateToLoss(ll index){
+        lock_guard<mutex> lock(mutexes[index%MUTEX_NUMBER]);
         statesValue[index*2ll] = true;
         statesValue[index*2ll + 1ll] = true;
     }
+
     bool read(int oNumber, int xNumber){
         ifstream fin(fileName(oNumber, xNumber, "Value"), ios::in | ios::binary);
         if(!fin.is_open()){
@@ -146,14 +154,12 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *reverseS
 }
 
 struct PresentStatesValue: StatesValue{
-    array<mutex, MUTEX_NUMBER> mutexes;
     thread threads[THREADS_NUMBER];
 
     void updateValuesFromNextThread(int oNumber, int xNumber, ll startI, ll endI){
         // if next state is loss, this state --> win
         // if next state is draw(or winOrDraw) --> winOrDraw
         // oNumber is for values
-
         for (ll i=startI;i<endI;i++){
             if(nextStatesValue.isLoss(i)){ 
                 ll stateNumber = generateState(i, xNumber, oNumber+1);
@@ -181,10 +187,6 @@ struct PresentStatesValue: StatesValue{
         }
     }
     void updateValuesFromNext(int oNumber, int xNumber){
-        // if next state is loss, this state --> win
-        // if next state is draw(or winOrDraw) --> winOrDraw
-        // oNumber is for values
-
         // read next states from the file. save to the gloval vralue.
         if(!nextStatesValue.read(xNumber, oNumber+1)){
             return;
