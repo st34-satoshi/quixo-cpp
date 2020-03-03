@@ -226,6 +226,7 @@ struct PresentStatesValue: StatesValue{
         }
     }
 
+    void updateValuesFromEndStatesThread(int oNumber, int xNumber, bool reverse, ll startI, ll endI);
     void updateValuesFromEndStates(int oNumber, int xNumber, bool reverse);
     void updateValuesThread(int oNumber, int xNumber, bool reverse, ll startI, ll endI);
     bool updateValues(int oNumber, int xNumber, bool reverse);
@@ -233,13 +234,13 @@ struct PresentStatesValue: StatesValue{
 
 PresentStatesValue statesValueGloval, reverseStatesValueGloval; // gloval values!
 
-void PresentStatesValue::updateValuesFromEndStates(int oNumber, int xNumber, bool reverse){
+void PresentStatesValue::updateValuesFromEndStatesThread(int oNumber, int xNumber, bool reverse, ll startI, ll endI){
     // find the states which end of the game, update the state and update previous states (to win)
     // oNumber is for values
     // update this struct using reverseStatesValues, but update the reverseStatesValue which is end of the game(has a line).
 
-    ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
-    for (ull i=0ll;i<statesSize;i++){
+    // ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
+    for (ll i=startI;i<endI;i++){
         bool isNotDefaultState;
         if(!reverse){
             isNotDefaultState = reverseStatesValueGloval.isNotDefaultLock(i);
@@ -285,6 +286,17 @@ void PresentStatesValue::updateValuesFromEndStates(int oNumber, int xNumber, boo
                 }
             }
         }
+    }
+}
+
+void PresentStatesValue::updateValuesFromEndStates(int oNumber, int xNumber, bool reverse){
+    ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
+    ull statesSizePerThread = statesSize / THREADS_NUMBER;
+    ull i=0;
+    for(;i<THREADS_NUMBER-1;i++) threads[i] = thread([this, oNumber, xNumber, i, reverse, statesSizePerThread]{updateValuesFromEndStatesThread(oNumber, xNumber, reverse, i*statesSizePerThread, (i+1ll)*statesSizePerThread);});
+    threads[i] = thread([this, oNumber, xNumber, i, reverse, statesSizePerThread, statesSize]{updateValuesFromEndStatesThread(oNumber, xNumber, reverse, i*statesSizePerThread, statesSize);});
+    for(int j=0;j<THREADS_NUMBER;j++){
+        threads[j].join();
     }
 }
 
