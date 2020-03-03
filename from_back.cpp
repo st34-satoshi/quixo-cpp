@@ -33,45 +33,52 @@ struct StatesValue{
     vector<bool> statesValue;
     array<mutex, MUTEX_NUMBER> mutexes;
 
+    inline bool getStateValue(ll i){
+        return statesValue[i];
+    }
+    inline void setStateValue(ll i, bool b){
+        statesValue[i] = b;
+    }
+
     void initSize(){
         statesValue.resize(MAX_STATES_VALUE*2ll);
     }
     void initValues(int oNumber, int xNumber){
         for(ll i=0ll;i<combinations[combinationSize][oNumber]*combinations[combinationSize-oNumber][xNumber]*2ll;i++){
-            statesValue[i] = false;
+            setStateValue(i, false);
         }
     }
 
     // check the state
-    bool isLoss(ll index){
-        return statesValue[index*2ll] && statesValue[index*2ll + 1ll];
+    inline bool isLoss(ll index){
+        return getStateValue(index*2ll) && getStateValue(index*2ll + 1ll);
     }
-    bool isDraw(ll index){
+    inline bool isDraw(ll index){
         // default or winOrDraw
-        return !(statesValue[index*2ll + 1ll]);
+        return !(getStateValue(index*2ll + 1ll));
     }
-    bool isDefault(ll index){
-        return !(statesValue[index*2ll]) && !(statesValue[index*2ll + 1ll]);
+    inline bool isDefault(ll index){
+        return !(getStateValue(index*2ll)) && !(getStateValue(index*2ll + 1ll));
     }
-    bool isNotDefault(ll index){
-        return statesValue[index*2ll] || statesValue[index*2ll + 1ll];
+    inline bool isNotDefault(ll index){
+        return getStateValue(index*2ll) || getStateValue(index*2ll + 1ll);
     }
 
     // update
-    void updateToWin(ll index){
+    inline void updateToWin(ll index){
         lock_guard<mutex> lock(mutexes[index%MUTEX_NUMBER]);
-        statesValue[index*2ll] = false;
-        statesValue[index*2ll + 1ll] = true;
+        setStateValue(index*2ll, false);
+        setStateValue(index*2ll + 1ll, true);
     }
-    void updateToWinOrDraw(ll index){
+    inline void updateToWinOrDraw(ll index){
         lock_guard<mutex> lock(mutexes[index%MUTEX_NUMBER]);
-        statesValue[index*2ll] = true;
-        statesValue[index*2ll + 1ll] = false;
+        setStateValue(index*2ll, true);
+        setStateValue(index*2ll + 1ll, false);
     }
-    void updateToLoss(ll index){
+    inline void updateToLoss(ll index){
         lock_guard<mutex> lock(mutexes[index%MUTEX_NUMBER]);
-        statesValue[index*2ll] = true;
-        statesValue[index*2ll + 1ll] = true;
+        setStateValue(index*2ll, true);
+        setStateValue(index*2ll + 1ll, true);
     }
 
     bool read(int oNumber, int xNumber){
@@ -87,7 +94,7 @@ struct StatesValue{
             data = fin.get();
             ll mask = 1ll << 7;
             for(ll j=0;j<8;j++){
-                statesValue[i*8+j] = data & mask;
+                setStateValue(i*8+j, data & mask);
                 mask = mask >> 1;
             }
         }
@@ -96,7 +103,7 @@ struct StatesValue{
             data = fin.get();
             ll mask = 1 << (r - 1);
             for(ll j=0;j<r;j++){
-                statesValue[i*8+j] = data & mask;
+                setStateValue(i*8+j, data & mask);
                 mask = mask >> 1;
             }
         }
@@ -113,7 +120,7 @@ struct StatesValue{
         unsigned char c = 0;
         ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber]*2ll;
         for(ull i=0ll;i<statesSize;i++){
-            bool t = statesValue[i];
+            bool t = getStateValue(i);
             c = c << 1;
             c += t;
             bitCounter++;
