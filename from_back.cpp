@@ -127,9 +127,11 @@ struct StatesValue{
         }
         mutexes[index%MUTEX_NUMBER].unlock();
     }
-    inline void updateToLoss(ll index){
+    inline void updateToLossLock(ll index){
+        mutexes[index%MUTEX_NUMBER].lock();
         setStateValue(index*2ll, true);
         setStateValue(index*2ll + 1ll, true);
+        mutexes[index%MUTEX_NUMBER].unlock();
     }
 
     bool read(int oNumber, int xNumber){
@@ -260,7 +262,7 @@ struct PresentStatesValue: StatesValue{
                 auto symStates = symmetricAllStates(stateNumber);
                 for(int j=0;j<symStates.size;j++){
                     ll stateI = generateIndexNumber(symStates.states[j], xNumber, oNumber);
-                    reverseSV->updateToLoss(stateI);
+                    reverseSV->updateToLossLock(stateI);
                 }
                 // generate previous states, update to win
                 StateArray sa = createPreviousStates(stateNumber, false);
@@ -324,7 +326,7 @@ void PresentStatesValue::updateValuesThread(int oNumber, int xNumber, bool rever
             auto symStates = symmetricAllStates(stateNumber);
             for(int j=0;j<symStates.size;j++){
                 ll stateI = generateIndexNumber(symStates.states[j], oNumber, xNumber);
-                updateToLoss(stateI);
+                updateToLossLock(stateI);
             }
             // generate previous states, update to win
             StateArray sa = createPreviousStates(stateNumber, false);
