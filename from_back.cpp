@@ -39,10 +39,16 @@ struct StatesValue{
         mutexes[i%MUTEX_NUMBER].unlock();
         return b;
     }
+    inline bool getStateValueWithoutLock(ll i){
+        return statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
+    }
     inline void setStateValue(ll i, bool b){
         mutexes[i%MUTEX_NUMBER].lock();
         statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
         mutexes[i%MUTEX_NUMBER].unlock();
+    }
+    inline void setStateValueWithoutLock(ll i, bool b){
+        statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
     }
 
     void initSize(){
@@ -118,7 +124,7 @@ struct StatesValue{
             data = fin.get();
             ll mask = 1ll << 7;
             for(ll j=0;j<8;j++){
-                setStateValue(i*8+j, data & mask);
+                setStateValueWithoutLock(i*8+j, data & mask);
                 mask = mask >> 1;
             }
         }
@@ -127,7 +133,7 @@ struct StatesValue{
             data = fin.get();
             ll mask = 1 << (r - 1);
             for(ll j=0;j<r;j++){
-                setStateValue(i*8+j, data & mask);
+                setStateValueWithoutLock(i*8+j, data & mask);
                 mask = mask >> 1;
             }
         }
@@ -144,7 +150,7 @@ struct StatesValue{
         unsigned char c = 0;
         ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber]*2ll;
         for(ull i=0ll;i<statesSize;i++){
-            bool t = getStateValue(i);
+            bool t = getStateValueWithoutLock(i);
             c = c << 1;
             c += t;
             bitCounter++;
