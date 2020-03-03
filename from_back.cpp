@@ -226,55 +226,68 @@ struct PresentStatesValue: StatesValue{
         }
     }
 
-    void updateValuesFromEndStates(int oNumber, int xNumber, PresentStatesValue *reverseSV){
-        // find the states which end of the game, update the state and update previous states (to win)
-        // oNumber is for values
-        // update this struct using reverseStatesValues, but update the reverseStatesValue which is end of the game(has a line).
-
-        ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
-        for (ull i=0ll;i<statesSize;i++){
-            if (reverseSV->isNotDefaultLock(i)){
-                // loss, win or winOrDraw --> skip. this is not the end of the game
-                continue;
-            }
-            ll stateNumber = generateState(i, xNumber, oNumber);
-            int win = isWin(stateNumber); // win:1, lose:-1, draw:0
-            if (win == -1){
-                // update this state to lose and change previous states to win
-                auto symStates = symmetricAllStates(stateNumber);
-                for(int j=0;j<symStates.size;j++){
-                    ll stateI = generateIndexNumber(symStates.states[j], xNumber, oNumber);
-                    reverseSV->updateToLossLock(stateI);
-                }
-                // generate previous states, update to win
-                StateArray sa = createPreviousStates(stateNumber, false);
-                ll stateN, stateI;
-                for(int j=0;j<sa.count;j++){
-                    stateN = sa.states[j];
-                    auto symStates = symmetricAllStates(stateN);
-                    for(int k=0;k<symStates.size;k++){
-                        stateI = generateIndexNumber(symStates.states[k], oNumber, xNumber);
-                        updateToWinLock(stateI);
-                    }
-                }
-            }else if (win == 1){
-                auto symStates = symmetricAllStates(stateNumber);
-                for(int j=0;j<symStates.size;j++){
-                    ll stateI = generateIndexNumber(symStates.states[j], xNumber, oNumber);
-                    reverseSV->updateToWinLock(stateI);
-                }
-            }
-        }
-    }
+    void updateValuesFromEndStates(int oNumber, int xNumber, bool reverse);
     void updateValuesThread(int oNumber, int xNumber, bool reverse, ll startI, ll endI);
     bool updateValues(int oNumber, int xNumber, bool reverse);
 };
 
 PresentStatesValue statesValueGloval, reverseStatesValueGloval; // gloval values!
 
-// void PresentStatesValue::huga(){
-//     cout << "hello" << endl;
-// }
+void PresentStatesValue::updateValuesFromEndStates(int oNumber, int xNumber, bool reverse){
+    // find the states which end of the game, update the state and update previous states (to win)
+    // oNumber is for values
+    // update this struct using reverseStatesValues, but update the reverseStatesValue which is end of the game(has a line).
+
+    ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
+    for (ull i=0ll;i<statesSize;i++){
+        bool isNotDefaultState;
+        if(!reverse){
+            isNotDefaultState = reverseStatesValueGloval.isNotDefaultLock(i);
+        }else{
+            isNotDefaultState = statesValueGloval.isNotDefaultLock(i);
+        }
+        if (isNotDefaultState){
+            // loss, win or winOrDraw --> skip. this is not the end of the game
+            continue;
+        }
+        ll stateNumber = generateState(i, xNumber, oNumber);
+        int win = isWin(stateNumber); // win:1, lose:-1, draw:0
+        if (win == -1){
+            // update this state to lose and change previous states to win
+            auto symStates = symmetricAllStates(stateNumber);
+            for(int j=0;j<symStates.size;j++){
+                ll stateI = generateIndexNumber(symStates.states[j], xNumber, oNumber);
+                if(!reverse){
+                    reverseStatesValueGloval.updateToLossLock(stateI);
+                }else{
+                    statesValueGloval.updateToLossLock(stateI);
+                }
+            }
+            // generate previous states, update to win
+            StateArray sa = createPreviousStates(stateNumber, false);
+            ll stateN, stateI;
+            for(int j=0;j<sa.count;j++){
+                stateN = sa.states[j];
+                auto symStates = symmetricAllStates(stateN);
+                for(int k=0;k<symStates.size;k++){
+                    stateI = generateIndexNumber(symStates.states[k], oNumber, xNumber);
+                    updateToWinLock(stateI);
+                }
+            }
+        }else if (win == 1){
+            auto symStates = symmetricAllStates(stateNumber);
+            for(int j=0;j<symStates.size;j++){
+                ll stateI = generateIndexNumber(symStates.states[j], xNumber, oNumber);
+                if(!reverse){
+                    reverseStatesValueGloval.updateToWinLock(stateI);
+                }else{
+                    statesValueGloval.updateToWinLock(stateI);
+                }
+            }
+        }
+    }
+}
+
 bool PresentStatesValue::updateValues(int oNumber, int xNumber, bool reverse){
     updatedGloval = false;
     ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
@@ -360,10 +373,10 @@ void computeStatesValue(int oNumber, int xNumber){
     if(oNumber!=xNumber) reverseStatesValueGloval.updateValuesFromNext(xNumber, oNumber);
 
     if(oNumber==xNumber) {
-        statesValueGloval.updateValuesFromEndStates(oNumber, xNumber, &statesValueGloval);
+        statesValueGloval.updateValuesFromEndStates(oNumber, xNumber, true);
     }else{
-        statesValueGloval.updateValuesFromEndStates(oNumber, xNumber, &reverseStatesValueGloval);
-        reverseStatesValueGloval.updateValuesFromEndStates(xNumber, oNumber, &statesValueGloval);
+        statesValueGloval.updateValuesFromEndStates(oNumber, xNumber, false);
+        reverseStatesValueGloval.updateValuesFromEndStates(xNumber, oNumber, true);
     }
 
     // compute values until no update
