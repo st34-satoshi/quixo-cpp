@@ -147,18 +147,14 @@ bool isLoseState(ll indexState, int oNumber, int xNumber, vector<bool> *reverseS
 
 
 struct PresentStatesValue: StatesValue{
+    array<mutex, MUTEX_NUMBER> mutexes;
 
-    void updateValuesFromNext(int oNumber, int xNumber){
+    void updateValuesFromNextThread(int oNumber, int xNumber, ll startI, ll endI){
         // if next state is loss, this state --> win
         // if next state is draw(or winOrDraw) --> winOrDraw
         // oNumber is for values
 
-        // read next states from the file. save to the gloval vralue.
-        if(!nextStatesValue.read(xNumber, oNumber+1)){
-            return;
-        }
-        ull nextStatesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber+1];
-        for (ull i=0ll;i<nextStatesSize;i++){
+        for (ll i=startI;i<endI;i++){
             if(nextStatesValue.isLoss(i)){ 
                 ll stateNumber = generateState(i, xNumber, oNumber+1);
                 StateArray sa = createPreviousStates(stateNumber, /*fromEmpty*/true);
@@ -183,6 +179,19 @@ struct PresentStatesValue: StatesValue{
                 }
             }
         }
+    }
+    void updateValuesFromNext(int oNumber, int xNumber){
+        // if next state is loss, this state --> win
+        // if next state is draw(or winOrDraw) --> winOrDraw
+        // oNumber is for values
+
+        // read next states from the file. save to the gloval vralue.
+        if(!nextStatesValue.read(xNumber, oNumber+1)){
+            return;
+        }
+        ull nextStatesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber+1];
+        // TODO: each thread
+        updateValuesFromNextThread(oNumber, xNumber, 0ll, nextStatesSize);
     }
 
     void updateValuesFromEndStates(int oNumber, int xNumber, PresentStatesValue *reverseSV){
@@ -323,7 +332,7 @@ void computeAllStatesValue(){
         for(int oNumber=0;oNumber<=total/2;oNumber++){
             cout << "o number = " << oNumber << endl;
             int xNumber = total - oNumber;
-            if (!needCompute(oNumber, xNumber)) continue;
+            // if (!needCompute(oNumber, xNumber)) continue; // skip the computed files
             computeStatesValue(oNumber, xNumber);
         }
     }

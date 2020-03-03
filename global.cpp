@@ -6,6 +6,8 @@
 #include <time.h>
 #include <array>
 #include <algorithm>
+#include <thread>
+#include <mutex>
 
 using namespace std;
 typedef long long ll;
@@ -16,6 +18,8 @@ const int combinationSize = boardSize * boardSize;
 const int MAX_STATES = (boardSize-2)*4*3 + 4*2; // max size of next states
 const ull MAX_STATES_VALUE = 2018016; // 4*4
 // const ull MAX_STATES_VALUE = 26293088250; // TODO: this is 25C16*16C8. if you change the boardSize you should change this number. It is better to create this number automatically!
+const int THREADS_NUMBER = 32;
+const int MUTEX_NUMBER = 1 << 15;
 
 vector< vector<ll>> combinations;  // nCr, (n<boardSize^2)
 
