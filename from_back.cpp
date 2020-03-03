@@ -63,6 +63,26 @@ struct StatesValue{
     inline bool isNotDefault(ll index){
         return getStateValue(index*2ll) || getStateValue(index*2ll + 1ll);
     }
+    inline bool isWin(ll index){
+        return (!getStateValue(index*2ll) && getStateValue(index*2ll + 1ll));
+    }
+
+    bool isLossState(ll indexState, int oNumber, int xNumber){
+        // this state is reverse state. oN and xN is alse reverse.
+        // check if the reverse state is loss?
+        // if all next states are win this state is lose, no next state, it is loss because the all next states(creating o) are win(if not win this state value is not default)
+        ll thisState = generateState(indexState, oNumber, xNumber);
+        // next states are reverse of o and x.
+        StateArray sa = createNextStates(thisState, /*chooseEmpty*/false);
+        for(int i=0;i<sa.count;i++){
+            ll indexNextState = generateIndexNumber(sa.states[i], xNumber, oNumber);
+            if(!isWin(indexNextState)){
+                // at least 1 next state is not win. this state is not lose
+                return false;
+            }
+        }
+        return true;
+    }
 
     // update
     inline void updateToWin(ll index){
@@ -257,7 +277,7 @@ struct PresentStatesValue: StatesValue{
                 // lose or win --> skip
                 continue;
             }
-            if (isLoseState(i, oNumber, xNumber, &reverseSV->statesValue)){
+            if (isLoseState(i, oNumber, xNumber, &reverseSV->statesValue)){// TODO:
                 // update this state to lose and change previous states to win
                 updated = true;
                 ll stateNumber = generateState(i, oNumber, xNumber);
