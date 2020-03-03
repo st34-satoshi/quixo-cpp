@@ -39,7 +39,9 @@ struct StatesValue{
         // bool b = statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
         // mutexes[i%MUTEX_NUMBER].unlock();
         // return b;
-        return statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
+        ll stateI = i / 2ll;
+        return statesValue[stateI%MUTEX_NUMBER][stateI/MUTEX_NUMBER+(i%2)];
+        // return statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
     }
     // inline bool getStateValueWithoutLock(ll i){
     //     return statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
@@ -48,7 +50,9 @@ struct StatesValue{
         // mutexes[i%MUTEX_NUMBER].lock();
         // statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
         // mutexes[i%MUTEX_NUMBER].unlock();
-        statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
+        // statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
+        ll stateI = i / 2ll;
+        statesValue[stateI%MUTEX_NUMBER][stateI/MUTEX_NUMBER+(i%2)] = b;
     }
     // inline void setStateValueWithoutLock(ll i, bool b){
     //     statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
@@ -56,7 +60,7 @@ struct StatesValue{
 
     void initSize(){
         for(int i=0;i<MUTEX_NUMBER;i++){
-            statesValue[i].resize(MAX_STATES_VALUE*2ll/MUTEX_NUMBER + 1); // round up
+            statesValue[i].resize((MAX_STATES_VALUE/MUTEX_NUMBER + 1)*2ll); // round up
         }
     }
     void initValues(int oNumber, int xNumber){
