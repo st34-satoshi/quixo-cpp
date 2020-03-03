@@ -27,6 +27,7 @@ c++ -std=c++17 -Wall -O3 from_back.cpp
 
 
 #include "state.cpp"
+// #include "gg.h"
 
 // global variables. this is reseted at the start of computation of the states set()
 struct StatesValue{
@@ -172,6 +173,8 @@ StatesValue nextStatesValue; // gloval values!
 
 struct PresentStatesValue: StatesValue{
     thread threads[THREADS_NUMBER];
+    bool updatedGloval; // this is used for updateValues
+    mutex update_mutex;
 
     void updateValuesFromNextThread(int oNumber, int xNumber, ll startI, ll endI){
         // if next state is loss, this state --> win
@@ -209,7 +212,6 @@ struct PresentStatesValue: StatesValue{
             return;
         }
         ull nextStatesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber+1];
-        // TODO: each thread
         ull statesSizePerThread = nextStatesSize / THREADS_NUMBER;
         ull i=0;
         for(;i<THREADS_NUMBER-1;i++) threads[i] = thread([this, oNumber, xNumber, i, statesSizePerThread]{updateValuesFromNextThread(oNumber, xNumber, i*statesSizePerThread, (i+1ll)*statesSizePerThread);});
@@ -259,10 +261,9 @@ struct PresentStatesValue: StatesValue{
             }
         }
     }
-    bool updateValues(int oNumber, int xNumber, PresentStatesValue *reverseSV){
+    void updateValuesThread(int oNumber, int xNumber, PresentStatesValue *reverseSV, ll startI, ll endI){
         bool updated = false;
-        ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
-        for (ull i=0ull;i<statesSize;i++){
+        for (ll i=startI;i<endI;i++){
             if (isNotDefault(i)){
                 // lose or win --> skip
                 continue;
@@ -289,11 +290,78 @@ struct PresentStatesValue: StatesValue{
                 }
             }
         }
-        return updated;
+        if(updated){
+            update_mutex.lock();
+            updatedGloval = true;
+            update_mutex.unlock();
+        }
+    }
+    bool updateValues(int oNumber, int xNumber, PresentStatesValue *reverseSV){
+        updatedGloval = false;
+        ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
+        ull statesSizePerThread = statesSize / THREADS_NUMBER;
+        ull i=0;
+        for(;i<THREADS_NUMBER-1;i++) threads[i] = thread([this, oNumber, xNumber, i, reverseSV, statesSizePerThread]{updateValuesThread(oNumber, xNumber, reverseSV, i*statesSizePerThread, (i+1ll)*statesSizePerThread);});
+        threads[i] = thread([this, oNumber, xNumber, i, reverseSV, statesSizePerThread, statesSize]{updateValuesThread(oNumber, xNumber, reverseSV, i*statesSizePerThread, statesSize);});
+        for(int j=0;j<THREADS_NUMBER;j++){
+            threads[j].join();
+        }
+        return updatedGloval;
+    }
+    void updateValuesSingleThread(int oNumber, int xNumber, ll startI, ll endI){
+        bool updated = false;
+        for (ll i=startI;i<endI;i++){
+            if (isNotDefault(i)){
+                // lose or win --> skip
+                continue;
+            }
+            if (isLossState(i, oNumber, xNumber)){
+                // update this state to lose and change previous states to win
+                updated = true;
+                ll stateNumber = generateState(i, oNumber, xNumber);
+                // update all symmetric states
+                auto symStates = symmetricAllStates(stateNumber);
+                for(int j=0;j<symStates.size;j++){
+                    ll stateI = generateIndexNumber(symStates.states[j], oNumber, xNumber);
+                    updateToLoss(stateI);
+                }
+                // generate previous states, update to win
+                StateArray sa = createPreviousStates(stateNumber, false);
+                for(int j=0;j<sa.count;j++){
+                    ll stateN = sa.states[j];
+                    auto symStates = symmetricAllStates(stateN);
+                    for(int k=0;k<symStates.size;k++){
+                        ll stateI = generateIndexNumber(symStates.states[k], xNumber, oNumber);
+                        updateToWin(stateI);
+                    }
+                }
+            }
+        }
+        if(updated){
+            update_mutex.lock();
+            updatedGloval = true;
+            update_mutex.unlock();
+        }
+    }
+    bool updateValuesSingle(int oNumber, int xNumber){
+        updatedGloval = false;
+        ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
+        ull statesSizePerThread = statesSize / THREADS_NUMBER;
+        ull i=0;
+        for(;i<THREADS_NUMBER-1;i++) threads[i] = thread([this, oNumber, xNumber, i, statesSizePerThread]{updateValuesSingleThread(oNumber, xNumber, i*statesSizePerThread, (i+1ll)*statesSizePerThread);});
+        threads[i] = thread([this, oNumber, xNumber, i, statesSizePerThread, statesSize]{updateValuesSingleThread(oNumber, xNumber, i*statesSizePerThread, statesSize);});
+        for(int j=0;j<THREADS_NUMBER;j++){
+            threads[j].join();
+        }
+        return updatedGloval;
     }
 };
 
 PresentStatesValue statesValue, reverseStatesValue; // gloval values!
+
+// void PresentStatesValue::huga(){
+//     cout << "hello" << endl;
+// }
 
 void initResizeGloval(){
     statesValue.initSize();
@@ -334,7 +402,7 @@ void computeStatesValue(int oNumber, int xNumber){
         updated = false;
         // check all states
         if(oNumber==xNumber){
-            updated = statesValue.updateValues(oNumber, xNumber, &statesValue);
+            updated = statesValue.updateValuesSingle(oNumber, xNumber);
         }else{
             updated = statesValue.updateValues(oNumber, xNumber, &reverseStatesValue);
             updated = reverseStatesValue.updateValues(xNumber, oNumber, &statesValue) || updated;
