@@ -1,2 +1,8 @@
 *.bin
 *.out
+a.out*
+python/venv-quixo/*
+python/.idea/*
+.idea/*
+.vscode/*
+CMakeLists.txt
