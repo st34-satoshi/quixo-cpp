@@ -76,8 +76,11 @@ struct StatesValue{
     inline bool isDefault(ll index){
         return !(getStateValue(index*2ll)) && !(getStateValue(index*2ll + 1ll));
     }
-    inline bool isNotDefault(ll index){
-        return getStateValue(index*2ll) || getStateValue(index*2ll + 1ll);
+    inline bool isNotDefaultLock(ll index){
+        mutexes[index%MUTEX_NUMBER].lock();
+        bool b = getStateValue(index*2ll) || getStateValue(index*2ll + 1ll);
+        mutexes[index%MUTEX_NUMBER].unlock();
+        return b;
     }
     inline bool isWinState(ll index){
         return (!getStateValue(index*2ll) && getStateValue(index*2ll + 1ll));
@@ -238,7 +241,7 @@ struct PresentStatesValue: StatesValue{
 
         ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
         for (ull i=0ll;i<statesSize;i++){
-            if (reverseSV->isNotDefault(i)){
+            if (reverseSV->isNotDefaultLock(i)){
                 // loss, win or winOrDraw --> skip. this is not the end of the game
                 continue;
             }
@@ -295,7 +298,7 @@ bool PresentStatesValue::updateValues(int oNumber, int xNumber, bool reverse){
 void PresentStatesValue::updateValuesThread(int oNumber, int xNumber, bool reverse, ll startI, ll endI){
     bool updated = false;
     for (ll i=startI;i<endI;i++){
-        if (isNotDefault(i)){
+        if (isNotDefaultLock(i)){
             // lose or win --> skip
             continue;
         }
