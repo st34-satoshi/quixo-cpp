@@ -39,8 +39,9 @@ struct StatesValue{
         // bool b = statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
         // mutexes[i%MUTEX_NUMBER].unlock();
         // return b;
+        // same stae is in the same vector
         ll stateI = i / 2ll;
-        return statesValue[stateI%MUTEX_NUMBER][stateI/MUTEX_NUMBER+(i%2)];
+        return statesValue[stateI%MUTEX_NUMBER][i/MUTEX_NUMBER+(i%2)];
         // return statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
     }
     // inline bool getStateValueWithoutLock(ll i){
@@ -52,7 +53,7 @@ struct StatesValue{
         // mutexes[i%MUTEX_NUMBER].unlock();
         // statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
         ll stateI = i / 2ll;
-        statesValue[stateI%MUTEX_NUMBER][stateI/MUTEX_NUMBER+(i%2)] = b;
+        statesValue[stateI%MUTEX_NUMBER][i/MUTEX_NUMBER+(i%2)] = b;
     }
     // inline void setStateValueWithoutLock(ll i, bool b){
     //     statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
