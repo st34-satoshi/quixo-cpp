@@ -261,53 +261,8 @@ struct PresentStatesValue: StatesValue{
             }
         }
     }
-    void updateValuesThread(int oNumber, int xNumber, PresentStatesValue *reverseSV, ll startI, ll endI){
-        bool updated = false;
-        for (ll i=startI;i<endI;i++){
-            if (isNotDefault(i)){
-                // lose or win --> skip
-                continue;
-            }
-            if (reverseSV->isLossState(i, oNumber, xNumber)){
-                // update this state to lose and change previous states to win
-                updated = true;
-                ll stateNumber = generateState(i, oNumber, xNumber);
-                // update all symmetric states
-                auto symStates = symmetricAllStates(stateNumber);
-                for(int j=0;j<symStates.size;j++){
-                    ll stateI = generateIndexNumber(symStates.states[j], oNumber, xNumber);
-                    updateToLoss(stateI);
-                }
-                // generate previous states, update to win
-                StateArray sa = createPreviousStates(stateNumber, false);
-                for(int j=0;j<sa.count;j++){
-                    ll stateN = sa.states[j];
-                    auto symStates = symmetricAllStates(stateN);
-                    for(int k=0;k<symStates.size;k++){
-                        ll stateI = generateIndexNumber(symStates.states[k], xNumber, oNumber);
-                        reverseSV->updateToWin(stateI);
-                    }
-                }
-            }
-        }
-        if(updated){
-            update_mutex.lock();
-            updatedGloval = true;
-            update_mutex.unlock();
-        }
-    }
-    bool updateValues(int oNumber, int xNumber, PresentStatesValue *reverseSV){
-        updatedGloval = false;
-        ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
-        ull statesSizePerThread = statesSize / THREADS_NUMBER;
-        ull i=0;
-        for(;i<THREADS_NUMBER-1;i++) threads[i] = thread([this, oNumber, xNumber, i, reverseSV, statesSizePerThread]{updateValuesThread(oNumber, xNumber, reverseSV, i*statesSizePerThread, (i+1ll)*statesSizePerThread);});
-        threads[i] = thread([this, oNumber, xNumber, i, reverseSV, statesSizePerThread, statesSize]{updateValuesThread(oNumber, xNumber, reverseSV, i*statesSizePerThread, statesSize);});
-        for(int j=0;j<THREADS_NUMBER;j++){
-            threads[j].join();
-        }
-        return updatedGloval;
-    }
+    void updateValuesThread(int oNumber, int xNumber, bool reverse, ll startI, ll endI);
+    bool updateValues(int oNumber, int xNumber, bool reverse);
     void updateValuesSingleThread(int oNumber, int xNumber, ll startI, ll endI){
         bool updated = false;
         for (ll i=startI;i<endI;i++){
@@ -357,15 +312,73 @@ struct PresentStatesValue: StatesValue{
     }
 };
 
-PresentStatesValue statesValue, reverseStatesValue; // gloval values!
+PresentStatesValue statesValueGloval, reverseStatesValueGloval; // gloval values!
 
 // void PresentStatesValue::huga(){
 //     cout << "hello" << endl;
 // }
+bool PresentStatesValue::updateValues(int oNumber, int xNumber, bool reverse){
+    updatedGloval = false;
+    ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
+    ull statesSizePerThread = statesSize / THREADS_NUMBER;
+    ull i=0;
+    for(;i<THREADS_NUMBER-1;i++) threads[i] = thread([this, oNumber, xNumber, i, reverse, statesSizePerThread]{updateValuesThread(oNumber, xNumber, reverse, i*statesSizePerThread, (i+1ll)*statesSizePerThread);});
+    threads[i] = thread([this, oNumber, xNumber, i, reverse, statesSizePerThread, statesSize]{updateValuesThread(oNumber, xNumber, reverse, i*statesSizePerThread, statesSize);});
+    for(int j=0;j<THREADS_NUMBER;j++){
+        threads[j].join();
+    }
+    return updatedGloval;
+}
+void PresentStatesValue::updateValuesThread(int oNumber, int xNumber, bool reverse, ll startI, ll endI){
+    bool updated = false;
+    for (ll i=startI;i<endI;i++){
+        if (isNotDefault(i)){
+            // lose or win --> skip
+            continue;
+        }
+        bool isLoss;
+        if (!reverse){
+            isLoss = reverseStatesValueGloval.isLossState(i, oNumber, xNumber);
+        }else{
+            isLoss = statesValueGloval.isLossState(i, oNumber, xNumber);
+        }
+        if (isLoss){
+            // update this state to lose and change previous states to win
+            updated = true;
+            ll stateNumber = generateState(i, oNumber, xNumber);
+            // update all symmetric states
+            auto symStates = symmetricAllStates(stateNumber);
+            for(int j=0;j<symStates.size;j++){
+                ll stateI = generateIndexNumber(symStates.states[j], oNumber, xNumber);
+                updateToLoss(stateI);
+            }
+            // generate previous states, update to win
+            StateArray sa = createPreviousStates(stateNumber, false);
+            for(int j=0;j<sa.count;j++){
+                ll stateN = sa.states[j];
+                auto symStates = symmetricAllStates(stateN);
+                for(int k=0;k<symStates.size;k++){
+                    ll stateI = generateIndexNumber(symStates.states[k], xNumber, oNumber);
+                    if (!reverse){
+                        reverseStatesValueGloval.updateToWin(stateI);
+                    }else{
+                        statesValueGloval.updateToWin(stateI);
+                    }
+                    // reverseSV->updateToWin(stateI);
+                }
+            }
+        }
+    }
+    if(updated){
+        update_mutex.lock();
+        updatedGloval = true;
+        update_mutex.unlock();
+    }
+}
 
 void initResizeGloval(){
-    statesValue.initSize();
-    reverseStatesValue.initSize();
+    statesValueGloval.initSize();
+    reverseStatesValueGloval.initSize();
     nextStatesValue.initSize();
 }
 
@@ -381,19 +394,19 @@ void computeStatesValue(int oNumber, int xNumber){
     // we need to compute reverse states at the same time. 
 
     // initialize this state value
-    statesValue.initValues(oNumber, xNumber);
-    if(oNumber!=xNumber) reverseStatesValue.initValues(xNumber, oNumber);
+    statesValueGloval.initValues(oNumber, xNumber);
+    if(oNumber!=xNumber) reverseStatesValueGloval.initValues(xNumber, oNumber);
     
     // at first find next lose states and update this values to win
     // find the states which end of the game, if it is lose update previous state to win
-    statesValue.updateValuesFromNext(oNumber, xNumber);
-    if(oNumber!=xNumber) reverseStatesValue.updateValuesFromNext(xNumber, oNumber);
+    statesValueGloval.updateValuesFromNext(oNumber, xNumber);
+    if(oNumber!=xNumber) reverseStatesValueGloval.updateValuesFromNext(xNumber, oNumber);
 
     if(oNumber==xNumber) {
-        statesValue.updateValuesFromEndStates(oNumber, xNumber, &statesValue);
+        statesValueGloval.updateValuesFromEndStates(oNumber, xNumber, &statesValueGloval);
     }else{
-        statesValue.updateValuesFromEndStates(oNumber, xNumber, &reverseStatesValue);
-        reverseStatesValue.updateValuesFromEndStates(xNumber, oNumber, &statesValue);
+        statesValueGloval.updateValuesFromEndStates(oNumber, xNumber, &reverseStatesValueGloval);
+        reverseStatesValueGloval.updateValuesFromEndStates(xNumber, oNumber, &statesValueGloval);
     }
 
     // compute values until no update
@@ -402,15 +415,15 @@ void computeStatesValue(int oNumber, int xNumber){
         updated = false;
         // check all states
         if(oNumber==xNumber){
-            updated = statesValue.updateValuesSingle(oNumber, xNumber);
+            updated = statesValueGloval.updateValuesSingle(oNumber, xNumber);
         }else{
-            updated = statesValue.updateValues(oNumber, xNumber, &reverseStatesValue);
-            updated = reverseStatesValue.updateValues(xNumber, oNumber, &statesValue) || updated;
+            updated = statesValueGloval.updateValues(oNumber, xNumber, false);
+            updated = reverseStatesValueGloval.updateValues(xNumber, oNumber, true) || updated;
         }
     }
     // save resutl to strage
-    statesValue.writeStatesValue(oNumber, xNumber);
-    if(oNumber!=xNumber) reverseStatesValue.writeStatesValue(xNumber, oNumber);
+    statesValueGloval.writeStatesValue(oNumber, xNumber);
+    if(oNumber!=xNumber) reverseStatesValueGloval.writeStatesValue(xNumber, oNumber);
 }
 
 bool needCompute(int oNumber, int xNumber){
