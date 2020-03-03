@@ -35,22 +35,24 @@ struct StatesValue{
     array<mutex, MUTEX_NUMBER> mutexes;
 
     inline bool getStateValue(ll i){
-        mutexes[i%MUTEX_NUMBER].lock();
-        bool b = statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
-        mutexes[i%MUTEX_NUMBER].unlock();
-        return b;
-    }
-    inline bool getStateValueWithoutLock(ll i){
+        // mutexes[i%MUTEX_NUMBER].lock();
+        // bool b = statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
+        // mutexes[i%MUTEX_NUMBER].unlock();
+        // return b;
         return statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
     }
+    // inline bool getStateValueWithoutLock(ll i){
+    //     return statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
+    // }
     inline void setStateValue(ll i, bool b){
-        mutexes[i%MUTEX_NUMBER].lock();
-        statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
-        mutexes[i%MUTEX_NUMBER].unlock();
-    }
-    inline void setStateValueWithoutLock(ll i, bool b){
+        // mutexes[i%MUTEX_NUMBER].lock();
+        // statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
+        // mutexes[i%MUTEX_NUMBER].unlock();
         statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
     }
+    // inline void setStateValueWithoutLock(ll i, bool b){
+    //     statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
+    // }
 
     void initSize(){
         for(int i=0;i<MUTEX_NUMBER;i++){
@@ -99,13 +101,20 @@ struct StatesValue{
     }
 
     // update
-    inline void updateToWin(ll index){
+    inline void updateToWinLock(ll index){
+        mutexes[index%MUTEX_NUMBER].lock();
         setStateValue(index*2ll, false);
         setStateValue(index*2ll + 1ll, true);
+        mutexes[index%MUTEX_NUMBER].unlock();
     }
-    inline void updateToWinOrDraw(ll index){
-        setStateValue(index*2ll, true);
-        setStateValue(index*2ll + 1ll, false);
+    inline void updateToWinOrDrawLock(ll index){
+        // check this state is default, then update
+        mutexes[index%MUTEX_NUMBER].lock();
+        if(isDefault(index)){
+            setStateValue(index*2ll, true);
+            setStateValue(index*2ll + 1ll, false);
+        }
+        mutexes[index%MUTEX_NUMBER].unlock();
     }
     inline void updateToLoss(ll index){
         setStateValue(index*2ll, true);
@@ -125,7 +134,7 @@ struct StatesValue{
             data = fin.get();
             ll mask = 1ll << 7;
             for(ll j=0;j<8;j++){
-                setStateValueWithoutLock(i*8+j, data & mask);
+                setStateValue(i*8+j, data & mask);
                 mask = mask >> 1;
             }
         }
@@ -134,7 +143,7 @@ struct StatesValue{
             data = fin.get();
             ll mask = 1 << (r - 1);
             for(ll j=0;j<r;j++){
-                setStateValueWithoutLock(i*8+j, data & mask);
+                setStateValue(i*8+j, data & mask);
                 mask = mask >> 1;
             }
         }
@@ -151,7 +160,7 @@ struct StatesValue{
         unsigned char c = 0;
         ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber]*2ll;
         for(ull i=0ll;i<statesSize;i++){
-            bool t = getStateValueWithoutLock(i);
+            bool t = getStateValue(i);
             c = c << 1;
             c += t;
             bitCounter++;
@@ -188,7 +197,7 @@ struct PresentStatesValue: StatesValue{
                 for(int j=0;j<sa.count;j++){
                     stateN = sa.states[j];
                     stateI = generateIndexNumber(stateN, oNumber, xNumber);
-                    updateToWin(stateI);
+                    updateToWinLock(stateI);
                 }
             }else if(nextStatesValue.isDraw(i)){
                 // default or winOrDraw
@@ -199,9 +208,10 @@ struct PresentStatesValue: StatesValue{
                 for(int j=0;j<sa.count;j++){
                     stateN = sa.states[j];
                     stateI = generateIndexNumber(stateN, oNumber, xNumber);
-                    if (isDefault(stateI)){
-                        updateToWinOrDraw(stateI);
-                    }
+                    // if (isDefault(stateI)){
+                    //     updateToWinOrDrawLock(stateI);
+                    // }
+                    updateToWinOrDrawLock(stateI); // check this state is defalut then update.
                 }
             }
         }
@@ -249,67 +259,20 @@ struct PresentStatesValue: StatesValue{
                     auto symStates = symmetricAllStates(stateN);
                     for(int k=0;k<symStates.size;k++){
                         stateI = generateIndexNumber(symStates.states[k], oNumber, xNumber);
-                        updateToWin(stateI);
+                        updateToWinLock(stateI);
                     }
                 }
             }else if (win == 1){
                 auto symStates = symmetricAllStates(stateNumber);
                 for(int j=0;j<symStates.size;j++){
                     ll stateI = generateIndexNumber(symStates.states[j], xNumber, oNumber);
-                    reverseSV->updateToWin(stateI);
+                    reverseSV->updateToWinLock(stateI);
                 }
             }
         }
     }
     void updateValuesThread(int oNumber, int xNumber, bool reverse, ll startI, ll endI);
     bool updateValues(int oNumber, int xNumber, bool reverse);
-    void updateValuesSingleThread(int oNumber, int xNumber, ll startI, ll endI){
-        bool updated = false;
-        for (ll i=startI;i<endI;i++){
-            if (isNotDefault(i)){
-                // lose or win --> skip
-                continue;
-            }
-            if (isLossState(i, oNumber, xNumber)){
-                // update this state to lose and change previous states to win
-                updated = true;
-                ll stateNumber = generateState(i, oNumber, xNumber);
-                // update all symmetric states
-                auto symStates = symmetricAllStates(stateNumber);
-                for(int j=0;j<symStates.size;j++){
-                    ll stateI = generateIndexNumber(symStates.states[j], oNumber, xNumber);
-                    updateToLoss(stateI);
-                }
-                // generate previous states, update to win
-                StateArray sa = createPreviousStates(stateNumber, false);
-                for(int j=0;j<sa.count;j++){
-                    ll stateN = sa.states[j];
-                    auto symStates = symmetricAllStates(stateN);
-                    for(int k=0;k<symStates.size;k++){
-                        ll stateI = generateIndexNumber(symStates.states[k], xNumber, oNumber);
-                        updateToWin(stateI);
-                    }
-                }
-            }
-        }
-        if(updated){
-            update_mutex.lock();
-            updatedGloval = true;
-            update_mutex.unlock();
-        }
-    }
-    bool updateValuesSingle(int oNumber, int xNumber){
-        updatedGloval = false;
-        ull statesSize = combinations[combinationSize][xNumber]*combinations[combinationSize-xNumber][oNumber];
-        ull statesSizePerThread = statesSize / THREADS_NUMBER;
-        ull i=0;
-        for(;i<THREADS_NUMBER-1;i++) threads[i] = thread([this, oNumber, xNumber, i, statesSizePerThread]{updateValuesSingleThread(oNumber, xNumber, i*statesSizePerThread, (i+1ll)*statesSizePerThread);});
-        threads[i] = thread([this, oNumber, xNumber, i, statesSizePerThread, statesSize]{updateValuesSingleThread(oNumber, xNumber, i*statesSizePerThread, statesSize);});
-        for(int j=0;j<THREADS_NUMBER;j++){
-            threads[j].join();
-        }
-        return updatedGloval;
-    }
 };
 
 PresentStatesValue statesValueGloval, reverseStatesValueGloval; // gloval values!
@@ -360,11 +323,10 @@ void PresentStatesValue::updateValuesThread(int oNumber, int xNumber, bool rever
                 for(int k=0;k<symStates.size;k++){
                     ll stateI = generateIndexNumber(symStates.states[k], xNumber, oNumber);
                     if (!reverse){
-                        reverseStatesValueGloval.updateToWin(stateI);
+                        reverseStatesValueGloval.updateToWinLock(stateI);
                     }else{
-                        statesValueGloval.updateToWin(stateI);
+                        statesValueGloval.updateToWinLock(stateI);
                     }
-                    // reverseSV->updateToWin(stateI);
                 }
             }
         }
@@ -415,7 +377,7 @@ void computeStatesValue(int oNumber, int xNumber){
         updated = false;
         // check all states
         if(oNumber==xNumber){
-            updated = statesValueGloval.updateValuesSingle(oNumber, xNumber);
+            updated = statesValueGloval.updateValues(oNumber, xNumber, true);
         }else{
             updated = statesValueGloval.updateValues(oNumber, xNumber, false);
             updated = reverseStatesValueGloval.updateValues(xNumber, oNumber, true) || updated;
