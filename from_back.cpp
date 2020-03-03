@@ -30,18 +30,25 @@ c++ -std=c++17 -Wall -O3 from_back.cpp
 
 // global variables. this is reseted at the start of computation of the states set()
 struct StatesValue{
-    vector<bool> statesValue;
+    array<vector<bool>, MUTEX_NUMBER> statesValue;
     array<mutex, MUTEX_NUMBER> mutexes;
 
     inline bool getStateValue(ll i){
-        return statesValue[i];
+        mutexes[i%MUTEX_NUMBER].lock();
+        bool b = statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
+        mutexes[i%MUTEX_NUMBER].unlock();
+        return b;
     }
     inline void setStateValue(ll i, bool b){
-        statesValue[i] = b;
+        mutexes[i%MUTEX_NUMBER].lock();
+        statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
+        mutexes[i%MUTEX_NUMBER].unlock();
     }
 
     void initSize(){
-        statesValue.resize(MAX_STATES_VALUE*2ll);
+        for(int i=0;i<MUTEX_NUMBER;i++){
+            statesValue[i].resize(MAX_STATES_VALUE*2ll/MUTEX_NUMBER + 1); // round up
+        }
     }
     void initValues(int oNumber, int xNumber){
         for(ll i=0ll;i<combinations[combinationSize][oNumber]*combinations[combinationSize-oNumber][xNumber]*2ll;i++){
@@ -86,17 +93,14 @@ struct StatesValue{
 
     // update
     inline void updateToWin(ll index){
-        lock_guard<mutex> lock(mutexes[index%MUTEX_NUMBER]);
         setStateValue(index*2ll, false);
         setStateValue(index*2ll + 1ll, true);
     }
     inline void updateToWinOrDraw(ll index){
-        lock_guard<mutex> lock(mutexes[index%MUTEX_NUMBER]);
         setStateValue(index*2ll, true);
         setStateValue(index*2ll + 1ll, false);
     }
     inline void updateToLoss(ll index){
-        lock_guard<mutex> lock(mutexes[index%MUTEX_NUMBER]);
         setStateValue(index*2ll, true);
         setStateValue(index*2ll + 1ll, true);
     }
