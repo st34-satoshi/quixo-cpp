@@ -82,8 +82,11 @@ struct StatesValue{
         mutexes[index%MUTEX_NUMBER].unlock();
         return b;
     }
-    inline bool isWinState(ll index){
-        return (!getStateValue(index*2ll) && getStateValue(index*2ll + 1ll));
+    inline bool isWinStateLock(ll index){
+        mutexes[index%MUTEX_NUMBER].lock();
+        bool b = (!getStateValue(index*2ll) && getStateValue(index*2ll + 1ll));
+        mutexes[index%MUTEX_NUMBER].unlock();
+        return b;
     }
 
     bool isLossState(ll indexState, int oNumber, int xNumber){
@@ -95,7 +98,7 @@ struct StatesValue{
         StateArray sa = createNextStates(thisState, /*chooseEmpty*/false);
         for(int i=0;i<sa.count;i++){
             ll indexNextState = generateIndexNumber(sa.states[i], xNumber, oNumber);
-            if(!isWinState(indexNextState)){
+            if(!isWinStateLock(indexNextState)){
                 // at least 1 next state is not win. this state is not lose
                 return false;
             }
