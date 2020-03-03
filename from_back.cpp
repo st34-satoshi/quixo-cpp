@@ -365,9 +365,12 @@ void computeAllStatesValue(){
 
 int main(){
     clock_t start = clock();
+    time_t start_time = time(NULL);
     init();
     computeAllStatesValue();
     clock_t end = clock();
+    time_t end_time = time(NULL);
     cout << "end : " << (double)(end - start)/ CLOCKS_PER_SEC << " sec" << endl;
+    cout << "time = " << end_time - start_time << endl;
     return 0;
 }
