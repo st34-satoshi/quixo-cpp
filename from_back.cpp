@@ -35,33 +35,18 @@ struct StatesValue{
     array<mutex, MUTEX_NUMBER> mutexes;
 
     inline bool getStateValue(ll i){
-        // mutexes[i%MUTEX_NUMBER].lock();
-        // bool b = statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
-        // mutexes[i%MUTEX_NUMBER].unlock();
-        // return b;
         // same stae is in the same vector
         ll stateI = i / 2ll;
         return statesValue[stateI%MUTEX_NUMBER][i/MUTEX_NUMBER+(i%2)];
-        // return statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
     }
-    // inline bool getStateValueWithoutLock(ll i){
-    //     return statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER];
-    // }
     inline void setStateValue(ll i, bool b){
-        // mutexes[i%MUTEX_NUMBER].lock();
-        // statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
-        // mutexes[i%MUTEX_NUMBER].unlock();
-        // statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
         ll stateI = i / 2ll;
         statesValue[stateI%MUTEX_NUMBER][i/MUTEX_NUMBER+(i%2)] = b;
     }
-    // inline void setStateValueWithoutLock(ll i, bool b){
-    //     statesValue[i%MUTEX_NUMBER][i/MUTEX_NUMBER] = b;
-    // }
 
     void initSize(){
         for(int i=0;i<MUTEX_NUMBER;i++){
-            statesValue[i].resize((MAX_STATES_VALUE/MUTEX_NUMBER + 1)*2ll); // round up
+            statesValue[i].resize((MAX_STATES_VALUE/MUTEX_NUMBER + 1)*2ll); // round up (+1)
         }
     }
     void initValues(int oNumber, int xNumber){
@@ -221,9 +206,6 @@ struct PresentStatesValue: StatesValue{
                 for(int j=0;j<sa.count;j++){
                     stateN = sa.states[j];
                     stateI = generateIndexNumber(stateN, oNumber, xNumber);
-                    // if (isDefault(stateI)){
-                    //     updateToWinOrDrawLock(stateI);
-                    // }
                     updateToWinOrDrawLock(stateI); // check this state is defalut then update.
                 }
             }
