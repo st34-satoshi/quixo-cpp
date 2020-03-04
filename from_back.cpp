@@ -37,11 +37,11 @@ struct StatesValue{
     inline bool getStateValue(ll i){
         // same stae is in the same vector
         ll stateI = i / 2ll;
-        return statesValue[stateI%MUTEX_NUMBER][i/MUTEX_NUMBER+(i%2)];
+        return statesValue[stateI%MUTEX_NUMBER][(stateI/MUTEX_NUMBER)*2ll+(i%2)];
     }
     inline void setStateValue(ll i, bool b){
         ll stateI = i / 2ll;
-        statesValue[stateI%MUTEX_NUMBER][i/MUTEX_NUMBER+(i%2)] = b;
+        statesValue[stateI%MUTEX_NUMBER][(stateI/MUTEX_NUMBER)*2ll+(i%2)] = b;
     }
 
     void initSize(){
