@@ -6,3 +6,5 @@ python/.idea/*
 .idea/*
 .vscode/*
 CMakeLists.txt
+*.vscode*
+cmake-build*
