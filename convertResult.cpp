@@ -2,10 +2,11 @@
 
 void convertResultsTOXO(){
     int countState = 0;
-    unsigned int win=0, draw=0, loss=0;
+    // unsigned int win=0, draw=0, loss=0;
     for(int total=combinationSize; total>=0 ;total--){
-        cout << "total = " << total << endl;
+        // cout << "total = " << total << endl;
         for(int oNumber=0;oNumber<=total;oNumber++){
+            unsigned int win=0, draw=0, loss=0;
             int xNumber = total - oNumber;
             vector<bool> values(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2);
             readStatesValue(&values, oNumber, xNumber);
@@ -19,12 +20,18 @@ void convertResultsTOXO(){
                 else if (values.at(i*2ll+1ll) && values.at(i*2ll+1ll)) loss++;
                 else draw++;
             }
+            cout << "/////////////////" << endl;
+            cout << "total = " << total << ", x = " << xNumber << ", o = " << oNumber << endl;
+            cout << "win states = " << win << endl;
+            cout << "loss states = " << loss << endl;
+            cout << "draw states = " << draw << endl;
+            cout << "/////////////////" << endl;
         }
     }
-    cout << "total states = " << countState << endl;
-    cout << "win states = " << win << endl;
-    cout << "loss states = " << loss << endl;
-    cout << "draw states = " << draw << endl;
+    // cout << "total states = " << countState << endl;
+    // cout << "win states = " << win << endl;
+    // cout << "loss states = " << loss << endl;
+    // cout << "draw states = " << draw << endl;
 }
 
 void printInitialStateResult(){
