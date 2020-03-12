@@ -44,6 +44,8 @@ def read_file(file_name):
                 print("present ", p_win, p_loss, p_draw)
                 if co != (p_draw+p_loss+p_win):
                     print("Error")
+                    print("o = ", o, ", x=", x)
+                    exit()
     print("total win = ", total_win)
     print("total loss = ", total_loss)
     print("total draw = ", total_draw)

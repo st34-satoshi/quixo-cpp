@@ -769,30 +769,30 @@ draw states = 35400
 /////////////////
 total = 20, x = 12, o = 8
 win states = 760308220
-loss states = 1631840236
+loss states = 5926807532
 draw states = 5670348
 /////////////////
 /////////////////
 total = 20, x = 11, o = 9
 win states = 2103959268
-loss states = 1047495708
+loss states = 5342463004
 draw states = 1477292528
 /////////////////
 /////////////////
 total = 20, x = 10, o = 10
-win states = 1796649946
+win states = 6091617242
 loss states = 691812360
 draw states = 3032656678
 /////////////////
 /////////////////
 total = 20, x = 9, o = 11
-win states = 76749492
+win states = 8666684084
 loss states = 237197276
 draw states = 19833440
 /////////////////
 /////////////////
 total = 20, x = 8, o = 12
-win states = 2326838221
+win states = 6621805517
 loss states = 70895083
 draw states = 85500
 /////////////////
@@ -883,48 +883,48 @@ draw states = 0
 /////////////////
 total = 19, x = 13, o = 6
 win states = 95153386
-loss states = 414954286
+loss states = 4709921582
 draw states = 2232
 /////////////////
 /////////////////
 total = 19, x = 12, o = 7
 win states = 513190708
-loss states = 4114713308
+loss states = 8409680604
 draw states = 843488
 /////////////////
 /////////////////
 total = 19, x = 11, o = 8
 win states = 1789260300
-loss states = 2838311964
+loss states = 11428246556
 draw states = 168065344
 /////////////////
 /////////////////
 total = 19, x = 10, o = 9
-win states = 510719360
+win states = 4805686656
 loss states = 2667611592
-draw states = 296910960
+draw states = 8886845552
 /////////////////
 /////////////////
 total = 19, x = 9, o = 10
-win states = 2283081788
+win states = 15167983676
 loss states = 476084044
 draw states = 716076080
 /////////////////
 /////////////////
 total = 19, x = 8, o = 11
-win states = 343952242
+win states = 13228854130
 loss states = 155249204
 draw states = 1468866
 /////////////////
 /////////////////
 total = 19, x = 7, o = 12
-win states = 298493668
+win states = 8888428260
 loss states = 35280848
 draw states = 5692
 /////////////////
 /////////////////
 total = 19, x = 6, o = 13
-win states = 505349624
+win states = 4800316920
 loss states = 4760280
 draw states = 0
 /////////////////
@@ -1003,42 +1003,42 @@ draw states = 0
 /////////////////
 total = 18, x = 12, o = 6
 win states = 219570996
-loss states = 114146836
+loss states = 8704081428
 draw states = 62376
 /////////////////
 /////////////////
 total = 18, x = 11, o = 7
 win states = 1030430420
-loss states = 1368123160
+loss states = 14253025048
 draw states = 14341332
 /////////////////
 /////////////////
 total = 18, x = 10, o = 8
 win states = 3205014622
-loss states = 497756670
-draw states = 151830124
+loss states = 13382658558
+draw states = 4446797420
 /////////////////
 /////////////////
 total = 18, x = 9, o = 9
-win states = 3598282560
+win states = 12188217152
 loss states = 812600552
-draw states = 1780881704
+draw states = 10370816296
 /////////////////
 /////////////////
 total = 18, x = 8, o = 10
-win states = 3559048612
+win states = 20738917796
 loss states = 260465384
 draw states = 35087420
 /////////////////
 /////////////////
 total = 18, x = 7, o = 11
-win states = 2347038548
+win states = 15231940436
 loss states = 65771488
 draw states = 84876
 /////////////////
 /////////////////
 total = 18, x = 6, o = 12
-win states = 323724688
+win states = 8913659280
 loss states = 10055520
 draw states = 0
 /////////////////
@@ -1111,48 +1111,48 @@ draw states = 0
 /////////////////
 total = 17, x = 12, o = 5
 win states = 54261644
-loss states = 2343557160
+loss states = 6638524456
 draw states = 0
 /////////////////
 /////////////////
 total = 17, x = 11, o = 6
 win states = 384215224
-loss states = 115576600
+loss states = 13000478488
 draw states = 878488
 /////////////////
 /////////////////
 total = 17, x = 10, o = 7
 win states = 1592938276
-loss states = 1969142788
+loss states = 19149011972
 draw states = 292520352
 /////////////////
 /////////////////
 total = 17, x = 9, o = 8
-win states = 537375111
+win states = 4832342407
 loss states = 2329886625
-draw states = 1950990034
+draw states = 19130859218
 /////////////////
 /////////////////
 total = 17, x = 8, o = 9
-win states = 3432248854
+win states = 24907085334
 loss states = 343505123
 draw states = 1042497793
 /////////////////
 /////////////////
 total = 17, x = 7, o = 10
-win states = 3757957436
+win states = 20937826620
 loss states = 95472552
 draw states = 1171428
 /////////////////
 /////////////////
 total = 17, x = 6, o = 11
-win states = 484326864
+win states = 13369228752
 loss states = 16343280
 draw states = 168
 /////////////////
 /////////////////
 total = 17, x = 5, o = 12
-win states = 2396561864
+win states = 6691529160
 loss states = 1256940
 draw states = 0
 /////////////////
@@ -1219,42 +1219,42 @@ draw states = 0
 /////////////////
 total = 16, x = 11, o = 5
 win states = 84089496
-loss states = 249688960
+loss states = 8839623552
 draw states = 1752
 /////////////////
 /////////////////
 total = 16, x = 10, o = 6
 win states = 524708052
-loss states = 2939299956
+loss states = 15824201844
 draw states = 11233904
 /////////////////
 /////////////////
 total = 16, x = 9, o = 7
 win states = 1943472808
-loss states = 3019898520
-draw states = 1228393488
+loss states = 15904800408
+draw states = 5523360784
 /////////////////
 /////////////////
 total = 16, x = 8, o = 8
-win states = 1317155163
+win states = 9907089755
 loss states = 382725618
-draw states = 3118370989
+draw states = 16003272877
 /////////////////
 /////////////////
 total = 16, x = 7, o = 9
-win states = 1761833668
+win states = 23236670148
 loss states = 109903168
 draw states = 25060684
 /////////////////
 /////////////////
 total = 16, x = 6, o = 10
-win states = 3454255712
+win states = 16339157600
 loss states = 20970120
 draw states = 16080
 /////////////////
 /////////////////
 total = 16, x = 5, o = 11
-win states = 331964288
+win states = 8921898880
 loss states = 1815920
 draw states = 0
 /////////////////
@@ -1315,48 +1315,48 @@ draw states = 0
 /////////////////
 total = 15, x = 11, o = 4
 win states = 8226280
-loss states = 158663824
+loss states = 4453631120
 draw states = 0
 /////////////////
 /////////////////
 total = 15, x = 10, o = 5
 win states = 102892852
-loss states = 1123101164
+loss states = 9713035756
 draw states = 157672
 /////////////////
 /////////////////
 total = 15, x = 9, o = 6
 win states = 569429164
-loss states = 2707657772
+loss states = 15592559660
 draw states = 198154976
 /////////////////
 /////////////////
 total = 15, x = 8, o = 7
 win states = 2020693944
 loss states = 783338284
-draw states = 1050569188
+draw states = 18230438372
 /////////////////
 /////////////////
 total = 15, x = 7, o = 8
-win states = 2967344170
+win states = 20147213354
 loss states = 101371308
 draw states = 785885938
 /////////////////
 /////////////////
 total = 15, x = 6, o = 9
-win states = 3453346222
+win states = 16338248110
 loss states = 21570120
 draw states = 325570
 /////////////////
 /////////////////
 total = 15, x = 5, o = 10
-win states = 1224054628
+win states = 9813989220
 loss states = 2097012
 draw states = 48
 /////////////////
 /////////////////
 total = 15, x = 4, o = 11
-win states = 166890104
+win states = 4461857400
 loss states = 0
 draw states = 0
 /////////////////
@@ -1411,42 +1411,42 @@ draw states = 0
 /////////////////
 total = 14, x = 10, o = 4
 win states = 9119876
-loss states = 157769796
+loss states = 4452737092
 draw states = 432
 /////////////////
 /////////////////
 total = 14, x = 9, o = 5
 win states = 101010816
-loss states = 229886820
+loss states = 8819821412
 draw states = 2882572
 /////////////////
 /////////////////
 total = 14, x = 8, o = 6
 win states = 496543346
-loss states = 973018076
+loss states = 9562952668
 draw states = 3326076186
 /////////////////
 /////////////////
 total = 14, x = 7, o = 7
 win states = 3380893224
 loss states = 77523356
-draw states = 3249445628
+draw states = 11839380220
 /////////////////
 /////////////////
 total = 14, x = 6, o = 8
-win states = 476016168
+win states = 13360918056
 loss states = 17921480
 draw states = 6732664
 /////////////////
 /////////////////
 total = 14, x = 5, o = 9
-win states = 331815456
+win states = 8921750048
 loss states = 1960920
 draw states = 3832
 /////////////////
 /////////////////
 total = 14, x = 4, o = 10
-win states = 166890104
+win states = 4461857400
 loss states = 0
 draw states = 0
 /////////////////
@@ -1507,24 +1507,24 @@ draw states = 33696
 /////////////////
 total = 13, x = 8, o = 5
 win states = 80204968
-loss states = 2267468518
+loss states = 6562435814
 draw states = 50145318
 /////////////////
 /////////////////
 total = 13, x = 7, o = 6
 win states = 364434480
 loss states = 107871412
-draw states = 4156441612
+draw states = 8451408908
 /////////////////
 /////////////////
 total = 13, x = 6, o = 7
-win states = 4275343788
+win states = 8570311084
 loss states = 12044440
 draw states = 341359276
 /////////////////
 /////////////////
 total = 13, x = 5, o = 8
-win states = 2396284272
+win states = 6691251568
 loss states = 1493440
 draw states = 41092
 /////////////////
@@ -1598,7 +1598,7 @@ draw states = 1096137628
 total = 12, x = 6, o = 6
 win states = 488627736
 loss states = 6628750
-draw states = 14853418
+draw states = 4309820714
 /////////////////
 /////////////////
 total = 12, x = 5, o = 7
