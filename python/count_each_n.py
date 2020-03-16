@@ -69,6 +69,8 @@ def each_n(ox_values):
     for n in range(25+1):
         for o in range(n+1):
             x = n - o
+            if not (o == x or o == x-1):
+                continue
             for i in range(3):
                 total_values[n][i] += ox_values[o][x][i]
         total = 0
@@ -84,15 +86,21 @@ def each_n(ox_values):
 
 def plot_WLD_per_total(total_values):
     n = [i for i in range(25+1)]
+    for i in range(25+1):
+        x = i // 2
+        o = i - x
+        n[i] = "("+str(x)+","+str(o)+")"
     win = [total_values[i][0] / total_values[i][3] for i in range(25+1)]
     loss = [total_values[i][1] / total_values[i][3] for i in range(25+1)]
     draw = [total_values[i][2] / total_values[i][3] for i in range(25+1)]
+    plt.figure(figsize=(8, 8))
     plt.plot(n, win, label="Win")
     plt.plot(n, loss, label="Loss")
     plt.plot(n, draw, label="Draw")
     plt.ylabel("% of Win/Loss/Draw states number")
-    plt.xlabel("the number of o + x tiles")
+    plt.xlabel("the number of  tiles (x, o)")
     plt.legend()
+    plt.xticks(rotation=75)
     plt.savefig("WLDPerN")
     # plt.show()
 
