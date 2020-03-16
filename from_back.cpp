@@ -4,8 +4,8 @@ states are represented by the number of index(i).
 bitset saves 2 bits.
 
 00: default(draw)
-01: win or draw (later draw)
-10: win, 2*i=0 2*i+1=1
+10: win or draw (later draw)
+01: win, 2*i=0 2*i+1=1
 11: loss
 
 but it is difficult to create next states and find cymmetric states using indexNumber.

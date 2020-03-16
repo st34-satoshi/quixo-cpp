@@ -51,6 +51,61 @@ void printInitialStateResult(){
     }
 }
 
+void convertResultWithReachable(){
+    // find the state which is reachable and not draw.
+    for(int total=0; total<9 ;total++){
+        cout << "total = " << total << endl;
+        for(int oNumber=0;oNumber<=total;oNumber++){
+            cout << "o number = " << oNumber << endl;
+            int xNumber = total - oNumber;
+            ll statesNumber = combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber];
+            vector<bool> values(statesNumber * 2ll);
+            readStatesValue(&values, oNumber, xNumber);
+            vector<bool> statesReachable(statesNumber * 2ll);
+            readStatesReachable(&statesReachable, oNumber, xNumber);
+            for(ll i=0ll;i<statesNumber;i++){
+                if(!statesReachable[i*2ll]) continue;
+                // TODO: if you want to see the result of state(win, loss or draw and step), please remove the "//"
+                ll s = generateState(i, oNumber, xNumber);
+                if(!values.at(i*2ll+1ll)){
+                    //  cout << "v = draw" << endl; 
+                    //  printState(s);
+                }else if(values.at(i*2ll)){
+                     cout << "v = loss" << endl; 
+                    // printState(s);
+                }else{
+                    cout << "v = win" << endl; 
+                    // printState(s);
+                }
+                // printState(s);
+            }
+            // cout << "o, x, d, w, l = " << oNumber << ", " << xNumber << ", " << dC << ", " << wC << ", " << lC << endl;
+        }
+    }
+    // cout << "total states = " << all << endl;
+    // cout << "win states = " << win << endl;
+    // cout << "loss states = " << loss << endl;
+    // cout << "draw states = " << draw << endl;
+    // cout << endl;
+    // cout << "steps to win" << endl;
+    // for(int i=0;i<maxStep;i++){
+    //     cout << "step=" << i << ", the number of states = " << winSteps[i] << endl;
+    // }
+    // cout << endl;
+    // cout << "steps to loss" << endl;
+    // for(int i=0;i<maxStep;i++){
+    //     cout << "step=" << i << ", the number of states = " << lossSteps[i] << endl;
+    // }
+    // cout << endl;
+    // cout << "total " << endl;
+    // int t = 0;
+    // for(int i=0;i<maxStep;i++){
+    //     t += lossSteps[i] + winSteps[i];
+    //     cout << i << " ; " << t << endl;
+    // }
+    // printInitialStateResult();
+}
+
 void outputStepResult(){
     int maxStep = 30; // TODO: you need to select the good number
     ull win=0ll, draw=0ll, loss=0ll, all = 0ll;
@@ -133,7 +188,7 @@ void outputReachableStates(){
             int xNumber = total - oNumber;
             vector<bool> statesReachable(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2ll);
             readStatesReachable(&statesReachable, oNumber, xNumber);
-            for(ll i=0;i<statesReachable.size()/2ll;i++){
+            for(ull i=0;i<statesReachable.size()/2ll;i++){
                 if(statesReachable[i*2]) reachableCount++;
             }
         }
@@ -155,7 +210,7 @@ void countNotReachableStates(){
             int xNumber = total - oNumber;
             vector<bool> statesReachable(combinations[combinationSize][oNumber] * combinations[(combinationSize-oNumber)][xNumber] * 2ll);
             readStatesReachable(&statesReachable, oNumber, xNumber);
-            for(ll i=0;i<statesReachable.size()/2ll;i++){
+            for(ull i=0;i<statesReachable.size()/2ll;i++){
                 if(!statesReachable[i*2]){
                     //  if(printCount>10) continue;
                      ll s = generateState(i, oNumber, xNumber);
@@ -176,7 +231,8 @@ void countNotReachableStates(){
 int main(int argc, char *argv[]){
     createCombinations();
     initState();
-    convertResultsTOXO();
+    // convertResultsTOXO();
+    convertResultWithReachable();
     // outputStepResult();
     // outputReachableStates();
     // countNotReachableStates();

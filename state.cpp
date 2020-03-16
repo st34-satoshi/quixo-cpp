@@ -720,7 +720,7 @@ void writeStatesReachable(vector<bool> *states, int oN, int xN){
 void readStatesReachable(vector<bool> *values, int oN, int xN){
     ifstream fin(fileName(oN, xN, "Reachable"), ios::in | ios::binary);
     if(!fin.is_open()){
-        cout << "cannot open file" << endl;
+        cout << "cannot open file reachable" << endl;
         return;
     }
     unsigned char data;
