@@ -105,9 +105,36 @@ def plot_WLD_per_total(total_values):
     # plt.show()
 
 
+def plot_WLD_per_total_bar(total_values):
+    left = [i for i in range(25+1)]
+    label = [i for i in range(25+1)]
+    for i in range(25+1):
+        x = i // 2
+        o = i - x
+        label[i] = "("+str(x)+","+str(o)+")"
+    win = [total_values[i][0] / total_values[i][3] for i in range(25+1)]
+    loss = [total_values[i][1] / total_values[i][3] for i in range(25+1)]
+    draw = [total_values[i][2] / total_values[i][3] for i in range(25+1)]
+    win_and_loss = [win[i]+loss[i] for i in range(25+1)]
+    plt.figure(figsize=(8, 9))
+    p_win = plt.bar(left, win, tick_label=label, align="center")
+    p_loss = plt.bar(left, loss, bottom=win, tick_label=label, align="center")
+    p_draw = plt.bar(left, draw, bottom=win_and_loss, tick_label=label, align="center")
+
+    fontsize = 22
+    plt.rcParams["font.size"] = fontsize
+    plt.ylabel("% of Win/Loss/Draw states number", fontsize=fontsize)
+    plt.xlabel("the number of  tiles (x, o)", fontsize=fontsize)
+
+    plt.legend((p_win[0], p_loss[0], p_draw[0]), ("Win", "Loss", "Draw"), fontsize=fontsize)
+    plt.xticks(rotation=75)
+    plt.savefig("WLD-percent-bar")
+    # plt.show()
+
+
 if __name__ == '__main__':
     f = "result-5by5-activeIsO.txt"
     ox_v = read_file(f)
     # print(ox_v)
     total_v = each_n(ox_v)
-    plot_WLD_per_total(total_v)
+    plot_WLD_per_total_bar(total_v)
