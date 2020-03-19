@@ -112,9 +112,9 @@ def plot_WLD_per_total_bar(total_values):
         x = i // 2
         o = i - x
         label[i] = "("+str(x)+","+str(o)+")"
-    win = [total_values[i][0] / total_values[i][3] for i in range(25+1)]
-    loss = [total_values[i][1] / total_values[i][3] for i in range(25+1)]
-    draw = [total_values[i][2] / total_values[i][3] for i in range(25+1)]
+    win = [total_values[i][0] / total_values[i][3] * 100.0 for i in range(25+1)]
+    loss = [total_values[i][1] / total_values[i][3] * 100.0 for i in range(25+1)]
+    draw = [total_values[i][2] / total_values[i][3] * 100.0 for i in range(25+1)]
     win_and_loss = [win[i]+loss[i] for i in range(25+1)]
     plt.figure(figsize=(8, 9))
     p_win = plt.bar(left, win, tick_label=label, align="center")
@@ -126,7 +126,7 @@ def plot_WLD_per_total_bar(total_values):
     plt.ylabel("% of Win/Loss/Draw states number", fontsize=fontsize)
     plt.xlabel("the number of  tiles (x, o)", fontsize=fontsize)
 
-    plt.legend((p_win[0], p_loss[0], p_draw[0]), ("Win", "Loss", "Draw"), fontsize=fontsize)
+    plt.legend((p_draw[0], p_loss[0], p_win[0]), ("Draw", "Loss", "Win"), fontsize=fontsize)
     plt.xticks(rotation=75)
     plt.savefig("WLD-percent-bar")
     # plt.show()
